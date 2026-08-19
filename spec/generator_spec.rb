@@ -4,7 +4,7 @@ require "spec_helper"
 require "fileutils"
 require "tmpdir"
 
-RSpec.describe Jekyll::ElasticlunrSearch::Generator do
+RSpec.describe Jekyll::ClientSearch::Generator do
   def build_site(source, config = {})
     jekyll_config = Jekyll.configuration(
       { "source" => source, "destination" => File.join(source, "_site"), "quiet" => true }.merge(config)
@@ -14,30 +14,36 @@ RSpec.describe Jekyll::ElasticlunrSearch::Generator do
     site
   end
 
-  it "generates a configured JSON index from posts" do
-    Dir.mktmpdir("elasticlunr-site") do |source|
-      FileUtils.mkdir_p(File.join(source, "_posts"))
-      File.write(File.join(source, "_config.yml"), "title: Test site\n")
-      File.write(
-        File.join(source, "_posts", "2026-01-01-example.md"),
-        <<~MARKDOWN
-          ---
-          title: Example article
-          categories:
-            - family
-          tags:
-            - example
-          ---
-          Searchable content appears here.
-        MARKDOWN
-      )
+  def write_post(source, name: "example", title: "Example article")
+    FileUtils.mkdir_p(File.join(source, "_posts"))
+    File.write(
+      File.join(source, "_posts", "2026-01-01-#{name}.md"),
+      <<~MARKDOWN
+        ---
+        title: #{title}
+        categories:
+          - family
+        tags:
+          - example
+        ---
+        Searchable content appears here.
+      MARKDOWN
+    )
+  end
 
+  def generated_documents(site, output = "/search-index.json")
+    page = site.pages.find { |candidate| candidate.url == output }
+    JSON.parse(page.content)
+  end
+
+  it "generates a JSON index and registers the packaged runtime asset" do
+    Dir.mktmpdir("client-search-site") do |source|
+      write_post(source)
       site = build_site(source)
+
       described_class.new.generate(site)
 
-      page = site.pages.find { |candidate| candidate.url == "/search-index.json" }
-      expect(page).not_to be_nil
-      expect(JSON.parse(page.content)).to include(
+      expect(generated_documents(site)).to include(
         hash_including(
           "title" => "Example article",
           "content" => include("Searchable content appears here."),
@@ -45,33 +51,69 @@ RSpec.describe Jekyll::ElasticlunrSearch::Generator do
           "tags" => ["example"]
         )
       )
+      runtime_files = site.static_files.select do |file|
+        file.relative_path.delete_prefix("/") == "assets/client-search.js"
+      end
+      expect(runtime_files.size).to eq(1)
     end
   end
 
-  it "indexes configured custom collections without duplicating posts" do
-    Dir.mktmpdir("elasticlunr-collections") do |source|
-      FileUtils.mkdir_p(File.join(source, "_posts"))
+  it "indexes configured custom collections without duplicates" do
+    Dir.mktmpdir("client-search-collections") do |source|
+      write_post(source, name: "post", title: "Post")
       FileUtils.mkdir_p(File.join(source, "_docs"))
-      File.write(
-        File.join(source, "_config.yml"),
-        <<~YAML
-          collections:
-            docs:
-              output: false
-          elasticlunr_search:
-            collections:
-              - posts
-              - docs
-        YAML
-      )
-      File.write(File.join(source, "_posts", "2026-01-01-post.md"), "---\ntitle: Post\n---\nPost")
       File.write(File.join(source, "_docs", "guide.md"), "---\ntitle: Guide\n---\nGuide")
+      site = build_site(
+        source,
+        "collections" => { "docs" => { "output" => false } },
+        "client_search" => { "collections" => ["posts", "docs", "posts"] }
+      )
 
-      site = build_site(source)
       described_class.new.generate(site)
-      documents = JSON.parse(site.pages.find { |page| page.url == "/search-index.json" }.content)
 
-      expect(documents.map { |document| document["title"] }).to contain_exactly("Post", "Guide")
+      expect(generated_documents(site).map { |document| document["title"] })
+        .to contain_exactly("Post", "Guide")
+    end
+  end
+
+  it "includes titled pages when configured" do
+    Dir.mktmpdir("client-search-pages") do |source|
+      File.write(File.join(source, "about.md"), "---\ntitle: About\n---\nAbout this site")
+      site = build_site(source, "client_search" => { "include_pages" => true })
+
+      described_class.new.generate(site)
+
+      expect(generated_documents(site)).to include(
+        hash_including("title" => "About", "content" => "About this site")
+      )
+    end
+  end
+
+  it "supports a nested output path and disabling the runtime asset" do
+    Dir.mktmpdir("client-search-output") do |source|
+      write_post(source)
+      site = build_site(
+        source,
+        "client_search" => {
+          "output" => "indexes/search.json",
+          "copy_runtime" => false
+        }
+      )
+
+      described_class.new.generate(site)
+
+      expect(site.pages.map(&:url)).to include("/indexes/search.json")
+      expect(site.static_files.map(&:relative_path)).not_to include("/assets/client-search.js")
+    end
+  end
+
+  it "does nothing when disabled" do
+    Dir.mktmpdir("client-search-disabled") do |source|
+      write_post(source)
+      site = build_site(source, "client_search" => false)
+
+      expect { described_class.new.generate(site) }
+        .not_to change { [site.pages.size, site.static_files.size] }
     end
   end
 end

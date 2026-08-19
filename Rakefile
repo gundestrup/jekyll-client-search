@@ -3,8 +3,8 @@
 require "bundler/gem_tasks"
 require "rake"
 
-VERSION_FILE = File.expand_path("lib/jekyll/elasticlunr_search/version.rb", __dir__)
-GEMSPEC_FILE = File.expand_path("jekyll-elasticlunr-search.gemspec", __dir__)
+VERSION_FILE = File.expand_path("lib/jekyll/client_search/version.rb", __dir__)
+GEMSPEC_FILE = File.expand_path("jekyll-client-search.gemspec", __dir__)
 
 namespace :version do
   desc "Print the current gem version"
@@ -35,7 +35,8 @@ end
 desc "Run the test suite and Ruby syntax checks"
 task :ci do
   sh "bundle exec rspec"
-  sh "bundle exec ruby -c lib/jekyll/elasticlunr_search.rb"
-  sh "bundle exec ruby -c lib/jekyll/elasticlunr_search/generator.rb"
+  sh "bundle exec ruby -c lib/jekyll/client_search.rb"
+  sh "bundle exec ruby -c lib/jekyll/client_search/generator.rb"
+  sh "npm test"
   sh "gem build #{GEMSPEC_FILE}"
 end

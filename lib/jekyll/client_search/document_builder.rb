@@ -1,18 +1,21 @@
 # frozen_string_literal: true
 
 module Jekyll
-  module ElasticlunrSearch
+  module ClientSearch
     class DocumentBuilder
       def from_document(document)
+        url = document.url.to_s
+        return if url.empty?
+
         data = document.data
         {
-          "id" => document.url,
-          "title" => data["title"] || "Untitled",
-          "url" => document.url,
+          "id" => url,
+          "title" => clean(data["title"] || "Untitled"),
+          "url" => url,
           "excerpt" => clean(data["excerpt"] || excerpt_for(document)),
           "content" => clean(document.content),
-          "categories" => Array(data["categories"]),
-          "tags" => Array(data["tags"])
+          "categories" => normalize_list(data["categories"]),
+          "tags" => normalize_list(data["tags"])
         }
       end
 
@@ -22,15 +25,23 @@ module Jekyll
         document.excerpt if document.respond_to?(:excerpt)
       end
 
+      def normalize_list(value)
+        Array(value).compact.map { |item| clean(item) }.reject(&:empty?).uniq
+      end
+
       def clean(value)
-        value.to_s
+        cleaned = value.to_s
+          .gsub(/<script\b[^>]*>.*?<\/script>/mi, " ")
+          .gsub(/<style\b[^>]*>.*?<\/style>/mi, " ")
           .gsub(/\{%.*?%\}/m, " ")
+          .gsub(/\{\{.*?\}\}/m, " ")
           .gsub(/!\[[^\]]*\]\([^)]*\)/, " ")
           .gsub(/<[^>]+>/, " ")
           .gsub(/[`*_>#\[\]()]/, " ")
           .gsub(/\s+/, " ")
           .gsub(/\s+([,.!?;:])/, '\\1')
           .strip
+        CGI.unescapeHTML(cleaned)
       end
     end
   end

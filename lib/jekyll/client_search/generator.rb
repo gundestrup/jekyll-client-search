@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 module Jekyll
-  module ElasticlunrSearch
+  module ClientSearch
     class Generator < Jekyll::Generator
+      RUNTIME_PATH = "assets/client-search.js"
+
       safe true
       priority :low
 
@@ -13,8 +15,10 @@ module Jekyll
         builder = DocumentBuilder.new
         documents = collection_documents(site, configuration, builder)
         documents.concat(page_documents(site, builder, configuration)) if configuration.include_pages?
+        documents = documents.compact.uniq { |document| document["id"] }
+
         site.pages << SearchIndexPage.new(site, configuration.output, documents)
-        add_runtime_asset(site)
+        add_runtime_asset(site) if configuration.copy_runtime?
       end
 
       private
@@ -24,7 +28,7 @@ module Jekyll
           collection = label == "posts" ? site.posts : site.collections[label]
           next [] unless collection
 
-          collection.docs.map { |document| builder.from_document(document) }
+          collection.docs.filter_map { |document| builder.from_document(document) }
         end
       end
 
@@ -32,15 +36,18 @@ module Jekyll
         site.pages
           .reject { |page| page.url == "/#{configuration.output}" }
           .select { |page| page.data["title"] }
-          .map { |page| builder.from_document(page) }
+          .filter_map { |page| builder.from_document(page) }
       end
 
       def add_runtime_asset(site)
+        return if site.static_files.any? { |file| normalized_path(file.relative_path) == RUNTIME_PATH }
+
         root = File.expand_path("../../..", __dir__)
-        asset = Jekyll::StaticFile.new(site, root, "assets", "elasticlunr-search.js")
-        site.static_files << asset unless site.static_files.any? do |file|
-          file.relative_path == "assets/elasticlunr-search.js"
-        end
+        site.static_files << Jekyll::StaticFile.new(site, root, "assets", "client-search.js")
+      end
+
+      def normalized_path(path)
+        path.to_s.sub(%r{\A/}, "")
       end
     end
   end

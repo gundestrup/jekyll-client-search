@@ -1,0 +1,22 @@
+{
+  "name": "jekyll-client-search",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser runtime tests for the jekyll-client-search gem",
+  "scripts": {
+    "test": "node --test test/runtime.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gundestrup/jekyll-client-search.git"
+  },
+  "license": "AGPL-3.0-or-later",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "jsdom": "26.1.0",
+    "minisearch": "7.2.0"
+  }
+}
