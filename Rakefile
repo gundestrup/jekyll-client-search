@@ -21,7 +21,7 @@ namespace :version do
     segments = current.segments
     index = { "major" => 0, "minor" => 1, "patch" => 2 }.fetch(part)
     segments[index] += 1
-    (index + 1...segments.length).each { |position| segments[position] = 0 }
+    ((index + 1)...segments.length).each { |position| segments[position] = 0 }
     next_version = segments.join(".")
 
     content = File.read(VERSION_FILE)
@@ -35,6 +35,7 @@ end
 desc "Run the test suite and Ruby syntax checks"
 task :ci do
   sh "bundle exec rspec"
+  sh "bundle exec rubocop"
   sh "bundle exec ruby -c lib/jekyll/client_search.rb"
   sh "bundle exec ruby -c lib/jekyll/client_search/generator.rb"
   sh "npm test"

@@ -2,6 +2,8 @@
 
 module Jekyll
   module ClientSearch
+    # Normalizes Jekyll documents and pages into the flat hash shape that the
+    # search index JSON emits.
     class DocumentBuilder
       def from_document(document)
         url = document.url.to_s
@@ -31,16 +33,16 @@ module Jekyll
 
       def clean(value)
         cleaned = value.to_s
-          .gsub(/<script\b[^>]*>.*?<\/script>/mi, " ")
-          .gsub(/<style\b[^>]*>.*?<\/style>/mi, " ")
-          .gsub(/\{%.*?%\}/m, " ")
-          .gsub(/\{\{.*?\}\}/m, " ")
-          .gsub(/!\[[^\]]*\]\([^)]*\)/, " ")
-          .gsub(/<[^>]+>/, " ")
-          .gsub(/[`*_>#\[\]()]/, " ")
-          .gsub(/\s+/, " ")
-          .gsub(/\s+([,.!?;:])/, '\\1')
-          .strip
+                       .gsub(%r{<script\b[^>]*>.*?</script>}mi, " ")
+                       .gsub(%r{<style\b[^>]*>.*?</style>}mi, " ")
+                       .gsub(/\{%.*?%\}/m, " ")
+                       .gsub(/\{\{.*?\}\}/m, " ")
+                       .gsub(/!\[[^\]]*\]\([^)]*\)/, " ")
+                       .gsub(/<[^>]+>/, " ")
+                       .gsub(/[`*_>#\[\]()]/, " ")
+                       .gsub(/\s+/, " ")
+                       .gsub(/\s+([,.!?;:])/, '\\1')
+                       .strip
         CGI.unescapeHTML(cleaned)
       end
     end

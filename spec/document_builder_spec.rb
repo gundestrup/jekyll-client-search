@@ -29,7 +29,7 @@ RSpec.describe Jekyll::ClientSearch::DocumentBuilder do
       "url" => "/family/travel/greenland/",
       "excerpt" => "A short excerpt.",
       "content" => "A story about Greenland and.",
-      "categories" => ["family", "travel"],
+      "categories" => %w[family travel],
       "tags" => ["ice"]
     )
   end

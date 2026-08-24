@@ -1,0 +1,71 @@
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.4
+  SuggestExtensions: false
+  Exclude:
+    - "_site/**/*"
+    - "vendor/**/*"
+    - "node_modules/**/*"
+    - "tmp/**/*"
+    - "spec/fixtures/**/*"
+    - "benchmarks/**/*"
+
+require:
+  - rubocop-rspec
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+
+Layout/LineLength:
+  Max: 120
+
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
+    - "*.gemspec"
+
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/AbcSize:
+  Max: 20
+
+RSpec/ExampleLength:
+  Exclude:
+    - "spec/**/*"
+
+RSpec/MultipleExpectations:
+  Exclude:
+    - "spec/**/*"
+
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
+RSpec/DescribeClass:
+  Exclude:
+    - "spec/gemspec_spec.rb"
+    - "spec/runtime_assets_spec.rb"
+    - "spec/system_spec.rb"
+    - "spec/llm_injection_spec.rb"
+
+RSpec/BeforeAfterAll:
+  Exclude:
+    - "spec/system_spec.rb"
+    - "spec/ollama_integration_spec.rb"
+    - "spec/llm_injection_spec.rb"
+
+RSpec/LeakyConstantDeclaration:
+  Exclude:
+    - "spec/llm_injection_spec.rb"
+
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - "spec/system_spec.rb"
+
+Naming/FileName:
+  Exclude:
+    - "lib/jekyll-client-search.rb"
+    - "jekyll-client-search.gemspec"

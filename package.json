@@ -4,7 +4,8 @@
   "private": true,
   "description": "Browser runtime tests for the jekyll-client-search gem",
   "scripts": {
-    "test": "node --test test/runtime.test.js"
+    "lint": "eslint assets/ test/ eslint.config.js",
+    "test": "npm run lint && node --test test/runtime.test.js test/system.test.js test/gold-standard.test.js test/comparison.test.js test/meta.test.js"
   },
   "repository": {
     "type": "git",
@@ -16,6 +17,9 @@
     "node": ">=20"
   },
   "devDependencies": {
+    "elasticlunr": "0.9.5",
+    "eslint": "9.39.5",
+    "globals": "15.15.0",
     "jsdom": "26.1.0",
     "minisearch": "7.2.0"
   }

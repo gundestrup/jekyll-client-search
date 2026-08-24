@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   test:
-    name: Ruby 3.4.10 tests (MiniSearch)
+    name: Ruby 3.4.10 tests + linting
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository

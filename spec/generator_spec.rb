@@ -52,9 +52,10 @@ RSpec.describe Jekyll::ClientSearch::Generator do
         )
       )
       runtime_files = site.static_files.select do |file|
-        file.relative_path.delete_prefix("/") == "assets/client-search.js"
+        file.relative_path.to_s.delete_prefix("/").start_with?("assets/")
       end
-      expect(runtime_files.size).to eq(1)
+      expect(runtime_files.map { |file| file.relative_path.to_s.delete_prefix("/") })
+        .to contain_exactly("assets/client-search-base.js", "assets/adapters/minisearch.js")
     end
   end
 
@@ -66,7 +67,7 @@ RSpec.describe Jekyll::ClientSearch::Generator do
       site = build_site(
         source,
         "collections" => { "docs" => { "output" => false } },
-        "client_search" => { "collections" => ["posts", "docs", "posts"] }
+        "client_search" => { "collections" => %w[posts docs posts] }
       )
 
       described_class.new.generate(site)
@@ -103,7 +104,34 @@ RSpec.describe Jekyll::ClientSearch::Generator do
       described_class.new.generate(site)
 
       expect(site.pages.map(&:url)).to include("/indexes/search.json")
-      expect(site.static_files.map(&:relative_path)).not_to include("/assets/client-search.js")
+      paths = site.static_files.map { |file| file.relative_path.to_s.delete_prefix("/") }
+      expect(paths).not_to include("assets/client-search-base.js")
+      expect(paths).not_to include("assets/adapters/minisearch.js")
+    end
+  end
+
+  it "copies the base and adapter runtimes for the configured JS engine" do
+    Dir.mktmpdir("client-search-elasticlunr") do |source|
+      write_post(source)
+      site = build_site(source, "client_search" => { "engine" => "elasticlunr" })
+
+      described_class.new.generate(site)
+
+      expect(site.pages.map(&:url)).to include("/search-index.json")
+      expect(site.static_files.map { |file| file.relative_path.to_s.delete_prefix("/") })
+        .to contain_exactly("assets/client-search-base.js", "assets/adapters/elasticlunr.js")
+    end
+  end
+
+  it "copies the base and minisearch adapter runtimes by default" do
+    Dir.mktmpdir("client-search-minisearch") do |source|
+      write_post(source)
+      site = build_site(source)
+
+      described_class.new.generate(site)
+
+      expect(site.static_files.map { |file| file.relative_path.to_s.delete_prefix("/") })
+        .to contain_exactly("assets/client-search-base.js", "assets/adapters/minisearch.js")
     end
   end
 
@@ -113,7 +141,7 @@ RSpec.describe Jekyll::ClientSearch::Generator do
       site = build_site(source, "client_search" => false)
 
       expect { described_class.new.generate(site) }
-        .not_to change { [site.pages.size, site.static_files.size] }
+        .not_to(change { [site.pages.size, site.static_files.size] })
     end
   end
 end

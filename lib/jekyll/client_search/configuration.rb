@@ -2,13 +2,19 @@
 
 module Jekyll
   module ClientSearch
+    # Reads the +client_search+ section of the Jekyll site config and exposes
+    # validated, normalized values to the generator.
     class Configuration
+      ENGINES = %w[minisearch elasticlunr semantic].freeze
+
       DEFAULTS = {
         "enabled" => true,
+        "engine" => "minisearch",
         "output" => "search-index.json",
         "collections" => ["posts"],
         "include_pages" => false,
-        "copy_runtime" => true
+        "copy_runtime" => true,
+        "embedding" => { "enabled" => false, "model" => "embeddinggemma:300m", "base_url" => "http://localhost:11434" }
       }.freeze
 
       def initialize(site)
@@ -21,10 +27,20 @@ module Jekyll
         end
 
         @values = DEFAULTS.merge(configured)
+        @values["embedding"] = DEFAULTS.fetch("embedding").merge(configured["embedding"] || {})
+        validate_engine!
       end
 
       def enabled?
         @values["enabled"] != false
+      end
+
+      def engine
+        @values.fetch("engine").to_s
+      end
+
+      def runtime_assets
+        ["assets/client-search-base.js", "assets/adapters/#{engine}.js"]
       end
 
       def output
@@ -47,7 +63,26 @@ module Jekyll
         @values["copy_runtime"] != false
       end
 
+      def embedding_enabled?
+        @values.fetch("embedding").fetch("enabled") == true
+      end
+
+      def embedding_model
+        @values.fetch("embedding").fetch("model").to_s
+      end
+
+      def embedding_base_url
+        @values.fetch("embedding").fetch("base_url").to_s
+      end
+
       private
+
+      def validate_engine!
+        return if ENGINES.include?(engine)
+
+        raise Jekyll::Errors::FatalException,
+              "client_search engine must be one of #{ENGINES.join(', ')} (got #{engine.inspect})"
+      end
 
       def normalize_output(value)
         output = value.to_s.sub(%r{\A/+}, "")

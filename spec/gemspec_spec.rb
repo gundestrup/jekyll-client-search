@@ -16,10 +16,15 @@ RSpec.describe "gem specification" do
     expect(specification.required_ruby_version).not_to be_satisfied_by(Gem::Version.new("3.4.9"))
   end
 
-  it "packages the generator and browser runtime" do
+  it "packages the generator, base runtime, adapters, cache, and embedding adapter" do
     expect(specification.files).to include(
       "lib/jekyll/client_search/generator.rb",
-      "assets/client-search.js",
+      "lib/jekyll/client_search/index_cache.rb",
+      "lib/jekyll/client_search/ollama_embedding_adapter.rb",
+      "assets/client-search-base.js",
+      "assets/adapters/minisearch.js",
+      "assets/adapters/elasticlunr.js",
+      "assets/adapters/semantic.js",
       "LICENSE"
     )
   end

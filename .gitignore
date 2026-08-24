@@ -3,3 +3,7 @@
 /*.gem
 /coverage/
 /node_modules/
+/.jekyll-client-search-cache.json
+/spec/fixtures/site/_site/
+/spec/fixtures/site/_site/search-index-semantic.json
+/benchmarks/results.json

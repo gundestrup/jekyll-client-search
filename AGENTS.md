@@ -31,7 +31,9 @@ npm ci
 
 ```bash
 bundle exec rspec
+bundle exec rubocop
 npm test
+npm run lint
 bundle exec ruby -c lib/jekyll/client_search/generator.rb
 bundle exec rake ci
 bundle exec rake version:show
@@ -57,41 +59,88 @@ expected and is separate from the search plugin.
 - `lib/jekyll/client_search/configuration.rb` — site configuration and defaults
 - `lib/jekyll/client_search/document_builder.rb` — normalized search documents
 - `lib/jekyll/client_search/search_index_page.rb` — generated JSON page
-- `assets/client-search.js` — optional browser runtime copied by the plugin
-- `spec/` — unit tests
+- `lib/jekyll/client_search/index_cache.rb` — content-hash cache for
+  incremental indexing (avoids re-embedding unchanged documents)
+- `lib/jekyll/client_search/ollama_embedding_adapter.rb` — generates
+  embeddings via a local Ollama server (lazy-loads `ollama-ruby`)
+- `assets/client-search-base.js` — engine-agnostic browser runtime shell
+  (owns the two-stage search strategy)
+- `assets/adapters/minisearch.js` — MiniSearch translator adapter
+- `assets/adapters/elasticlunr.js` — ElasticLunr translator adapter
+- `assets/adapters/semantic.js` — cosine similarity adapter for
+  pre-computed embeddings
+- `spec/` — Ruby unit and system tests
+- `spec/fixtures/site/` — Jekyll fixture site with 80 real-world posts
+  (40 Wikipedia articles CC BY-SA 3.0 + 40 arXiv papers)
+- `spec/fixtures/download_wikipedia.rb` — script to download Wikipedia articles
+- `spec/fixtures/download_arxiv.rb` — script to download arXiv papers
+- `test/runtime.test.js` — uniform JS unit tests parameterized over adapters
+- `test/system.test.js` — JS system tests using the built 80-post fixture site
 
-The generator creates `search-index.json` by default. It does not require a
-Ruby search runtime; MiniSearch is a JavaScript browser library and is
-loaded by the consuming Jekyll site.
+The generator creates `search-index.json` and copies the base runtime + the
+selected engine adapter. When embeddings are enabled, it also generates
+embedding vectors via Ollama and stores them in the JSON. The browser
+runtime uses a base + adapter architecture: the base shell owns form
+wiring, fetching, DOM rendering, URL safety, and the two-stage search
+strategy (AND first, fuzzy OR fallback). Each adapter is a pure translator
+that converts the uniform query `{ combineWith, fuzzy, prefix }` into the
+engine's native API and returns `[{ ref, score }]`. The semantic adapter
+is an exception — it uses cosine similarity instead of the AND/OR strategy.
+
+For Pagefind, use the `jekyll-pagefind` gem directly — it is a different
+approach (HTML crawling + own UI) that does not fit this plugin's
+JSON-index + adapter model.
 
 ## Configuration
 
 ```yaml
 client_search:
   enabled: true
+  engine: minisearch
   output: search-index.json
   collections:
     - posts
   include_pages: false
+  copy_runtime: true
+  embedding:
+    enabled: false
+    model: embeddinggemma:300m
+    base_url: http://localhost:11434
 ```
 
+The `engine` option selects `minisearch`, `elasticlunr`, or `semantic`.
 Configured collections are indexed as documents with `id`, `title`, `url`,
-`excerpt`, `content`, `categories`, and `tags` fields. The browser runtime
-configures MiniSearch fields and query-time boosts.
+`excerpt`, `content`, `categories`, and `tags` fields. When
+`embedding.enabled` is true, an `embedding` field (float vector) is added
+to each document. The browser runtime configures engine fields and
+query-time boosts via the selected adapter.
+
+## Embeddings and incremental indexing
+
+When `embedding.enabled: true`:
+- The `OllamaEmbeddingAdapter` sends each document's text to a local
+  Ollama server and receives a float vector.
+- The `IndexCache` (`.jekyll-client-search-cache.json` in the site source)
+  stores content hashes + cached embeddings per document ID.
+- On rebuild, unchanged documents (matching content hash) reuse the cached
+  embedding — only new or modified documents are sent to the model.
+- The cache is git-ignored and safe to delete.
+- `ollama-ruby` is an optional dependency — lazy-loaded only when
+  embeddings are enabled. Users who don't use embeddings never need it.
 
 ## Search strategy
 
-The packaged runtime (`assets/client-search.js`) uses a two-stage strategy:
+The base runtime owns the two-stage strategy, applied uniformly:
 
-1. **Exact AND search** with `combineWith: "AND"`, `prefix: true`, and field
-   boosting — returns only documents matching all query terms.
-2. **Fuzzy OR fallback** — if the AND search returns no results, retries with
-   `combineWith: "OR"`, `fuzzy: 0.2`, and `prefix: true` for typo tolerance.
+1. **Exact AND search** with prefix matching and field boosting — returns
+   only documents matching all query terms.
+2. **Fuzzy OR fallback** — if the AND search returns no results, retries
+   with relaxed matching for typo tolerance.
 
-MiniSearch indexes `title`, `excerpt`, `content`, `categoriesText`, and
-`tagsText` (categories and tags joined into strings). The `storeFields`
-configuration keeps `title`, `url`, `excerpt`, `categories`, and `tags`
-available in results without a separate lookup.
+The base runtime passes a uniform query `{ combineWith, fuzzy, prefix }`
+to the adapter for each stage. The adapter translates this into the engine's
+native options and returns `[{ ref, score }]`. The base shell looks up
+documents by `ref` (id) regardless of engine.
 
 ## Coding conventions
 
@@ -106,11 +155,12 @@ available in results without a separate lookup.
 
 ## JavaScript dependency policy
 
-The gem does not pin or bundle MiniSearch. The consuming Jekyll site owns
-that browser dependency. Keep its CDN version exact and add a Subresource
-Integrity hash, or self-host the reviewed asset for offline builds and strict
-Content Security Policy deployments. Upgrade MiniSearch separately from the
-Ruby gem and verify the consuming site's search behavior afterward.
+The gem does not pin or bundle the search engine library (MiniSearch or
+ElasticLunr). The consuming Jekyll site owns that dependency.
+Keep CDN versions exact and add Subresource Integrity hashes, or self-host
+reviewed assets for offline builds and strict Content Security Policy
+deployments. Upgrade the engine separately from the Ruby gem and verify
+the consuming site's search behavior afterward.
 
 ## Release checklist
 
