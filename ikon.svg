@@ -1,0 +1,133 @@
+<svg width="900" height="950" viewBox="0 0 900 950" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <style>
+      .dark { fill:#101826; }
+      .accent { fill:#e45842; }
+      .title {
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        font-size: 88px;
+        font-weight: 700;
+      }
+      .subtitle {
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        font-size: 32px;
+        fill: #6b7280;
+        letter-spacing: 3px;
+      }
+    </style>
+  </defs>
+
+  <!-- Main frame -->
+  <rect x="180"
+        y="40"
+        width="540"
+        height="540"
+        rx="45"
+        fill="white"
+        stroke="#101826"
+        stroke-width="16"/>
+
+  <!-- document -->
+
+  <rect x="280"
+        y="130"
+        width="250"
+        height="320"
+        rx="18"
+        fill="#101826"/>
+
+  <!-- folded corner -->
+  <polygon points="470,130 530,130 530,190"
+           class="accent"/>
+
+  <!-- text lines -->
+  <rect x="320" y="200" width="170" height="12" fill="white" opacity="0.9"/>
+  <rect x="320" y="245" width="140" height="12" fill="white" opacity="0.9"/>
+  <rect x="320" y="290" width="160" height="12" fill="white" opacity="0.9"/>
+  <rect x="320" y="335" width="120" height="12" fill="white" opacity="0.9"/>
+
+  <!-- accent highlight -->
+  <rect x="280"
+        y="395"
+        width="250"
+        height="55"
+        class="accent"/>
+
+  <!-- search badge -->
+  <g transform="translate(620,460)">
+
+      <circle r="120"
+              fill="#101826"
+              stroke="white"
+              stroke-width="8"/>
+
+      <!-- magnifier -->
+      <circle cx="-18"
+              cy="-18"
+              r="42"
+              fill="none"
+              stroke="white"
+              stroke-width="16"/>
+
+      <line x1="15"
+            y1="15"
+            x2="55"
+            y2="55"
+            stroke="white"
+            stroke-width="16"
+            stroke-linecap="round"/>
+
+      <!-- small accent dot -->
+      <circle cx="-70"
+              cy="-75"
+              r="10"
+              class="accent"/>
+
+  </g>
+
+  <!-- title -->
+
+  <text x="450"
+        y="720"
+        text-anchor="middle"
+        class="title">
+
+      <tspan fill="#101826">jekyll-client-</tspan>
+      <tspan fill="#e45842">search</tspan>
+
+  </text>
+
+  <!-- subtitle -->
+
+  <text x="450"
+        y="805"
+        text-anchor="middle"
+        class="subtitle">
+
+      FAST CLIENT-SIDE SEARCH FOR JEKYLL
+
+  </text>
+
+  <!-- decorative divider -->
+
+  <line x1="330"
+        y1="860"
+        x2="420"
+        y2="860"
+        stroke="#101826"
+        stroke-width="4"/>
+
+  <circle cx="450"
+          cy="860"
+          r="8"
+          class="accent"/>
+
+  <line x1="480"
+        y1="860"
+        x2="570"
+        y2="860"
+        stroke="#101826"
+        stroke-width="4"/>
+
+</svg>
