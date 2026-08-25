@@ -12,8 +12,8 @@ group :development, :test do
   gem "rspec", "~> 3.13"
 end
 
-gem "rubocop", "~> 1.75", group: :development
+gem "rubocop", "~> 1.90", group: :development
 
 gem "rubocop-rspec", "~> 3.10", group: :development
 
-gem "simplecov", "~> 0.22", group: :test
+gem "simplecov", "~> 1.1", group: :test

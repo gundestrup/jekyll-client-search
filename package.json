@@ -14,13 +14,13 @@
   "license": "AGPL-3.0-or-later",
   "type": "commonjs",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "devDependencies": {
     "elasticlunr": "0.9.5",
-    "eslint": "9.39.5",
-    "globals": "15.15.0",
-    "jsdom": "26.1.0",
+    "eslint": "10.9.1",
+    "globals": "17.11.0",
+    "jsdom": "30.0.1",
     "minisearch": "7.2.0"
   }
 }

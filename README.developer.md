@@ -12,7 +12,7 @@ rbenv install 3.4.10       # if not already installed
 rbenv local 3.4.10
 bundle install
 npm ci
-bundle exec rspec          # Ruby tests (175 examples; 7 opt-in Ollama examples pending)
+bundle exec rspec          # Ruby tests (176 examples; 7 opt-in Ollama examples pending)
 npm test                   # JavaScript tests (130 tests)
 ```
 
