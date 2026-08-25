@@ -3,8 +3,9 @@ title: "Astrophotography"
 categories: ["astronomy"]
 tags: ["photography", "night", "astronomy", "light"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Astrophotography"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1368356129"
 download_date: "2026-08-22"
+wikipedia_oldid: "1368356129"
 license: "CC BY-SA 3.0"
 ---
 

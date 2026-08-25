@@ -3,8 +3,9 @@ title: "Camera lens"
 categories: ["optics"]
 tags: ["photography", "lens", "optics", "camera"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Camera_lens"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1357736907"
 download_date: "2026-08-22"
+wikipedia_oldid: "1357736907"
 license: "CC BY-SA 3.0"
 ---
 

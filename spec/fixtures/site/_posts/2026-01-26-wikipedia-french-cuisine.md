@@ -3,8 +3,9 @@ title: "French cuisine"
 categories: ["food"]
 tags: ["food", "cooking", "french", "technique"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/French_cuisine"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1368521403"
 download_date: "2026-08-22"
+wikipedia_oldid: "1368521403"
 license: "CC BY-SA 3.0"
 ---
 

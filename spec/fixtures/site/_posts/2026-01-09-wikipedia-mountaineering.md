@@ -3,8 +3,9 @@ title: "Mountaineering"
 categories: ["sports"]
 tags: ["climbing", "mountain", "adventure", "cold"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Mountaineering"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1369453933"
 download_date: "2026-08-22"
+wikipedia_oldid: "1369453933"
 license: "CC BY-SA 3.0"
 ---
 

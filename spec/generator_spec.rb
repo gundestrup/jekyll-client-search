@@ -4,7 +4,7 @@ require "spec_helper"
 require "fileutils"
 require "tmpdir"
 
-RSpec.describe Jekyll::ClientSearch::Generator do
+RSpec.describe Jekyll::ClientSearch::Generator, :unit do
   def build_site(source, config = {})
     jekyll_config = Jekyll.configuration(
       { "source" => source, "destination" => File.join(source, "_site"), "quiet" => true }.merge(config)
@@ -90,6 +90,79 @@ RSpec.describe Jekyll::ClientSearch::Generator do
     end
   end
 
+  it "generates a separate relation JSON page from shared metadata" do
+    Dir.mktmpdir("client-search-related") do |source|
+      write_post(source, name: "one", title: "One")
+      FileUtils.mkdir_p(File.join(source, "_posts"))
+      File.write(File.join(source, "_posts", "2026-01-02-two.md"), <<~MARKDOWN)
+        ---
+        title: Two
+        categories:
+          - family
+        tags:
+          - example
+        ---
+        Related content.
+      MARKDOWN
+      site = build_site(source, "client_search" => { "related" => { "enabled" => true } })
+
+      described_class.new.generate(site)
+
+      relation_page = site.pages.find { |page| page.url == "/search-relations.json" }
+      expect(relation_page).not_to be_nil
+      relations = JSON.parse(relation_page.content).fetch("relations")
+      one_id = generated_documents(site).find { |document| document["title"] == "One" }.fetch("id")
+      expect(relations.fetch(one_id).map { |relation| relation["title"] }).to eq(["Two"])
+      expect(relations.fetch(one_id).first["reasons"]).to include("shared-category: family", "shared-tag: example")
+      expect(site.static_files.map { |file| file.relative_path.to_s.delete_prefix("/") })
+        .to include("assets/client-search-related.js")
+    end
+  end
+
+  it "removes temporary embeddings from a lexical index after related analysis" do
+    Dir.mktmpdir("client-search-related-embeddings") do |source|
+      write_post(source)
+      site = build_site(
+        source,
+        "client_search" => {
+          "engine" => "minisearch",
+          "embedding" => { "enabled" => true, "model" => "test-model" },
+          "related" => { "enabled" => true, "minimum_similarity" => -1 }
+        }
+      )
+      generator = described_class.new
+      allow(generator).to receive(:build_embedding_adapter).and_return(double(embed: [1.0, 0.0]))
+
+      generator.generate(site)
+
+      documents = generated_documents(site)
+      expect(documents.first).not_to have_key("embedding")
+      expect(site.pages.map(&:url)).to include("/search-relations.json")
+    end
+  end
+
+  it "generates runtime configuration with the index URL and live-search settings" do
+    Dir.mktmpdir("client-search-runtime-config") do |source|
+      write_post(source)
+      site = build_site(
+        source,
+        "baseurl" => "/blog",
+        "client_search" => {
+          "output" => "indexes/search.json",
+          "live_search" => { "enabled" => true, "debounce_ms" => 200 }
+        }
+      )
+
+      described_class.new.generate(site)
+
+      page = site.pages.find { |candidate| candidate.url == "/assets/search-runtime-config.js" }
+      expect(page).not_to be_nil
+      expect(page.content).to include('"indexUrl":"/blog/indexes/search.json"')
+      expect(page.content).to include('"enabled":true')
+      expect(page.content).to include('"debounceMs":200')
+    end
+  end
+
   it "supports a nested output path and disabling the runtime asset" do
     Dir.mktmpdir("client-search-output") do |source|
       write_post(source)
@@ -104,6 +177,7 @@ RSpec.describe Jekyll::ClientSearch::Generator do
       described_class.new.generate(site)
 
       expect(site.pages.map(&:url)).to include("/indexes/search.json")
+      expect(site.pages.map(&:url)).not_to include("/assets/search-runtime-config.js")
       paths = site.static_files.map { |file| file.relative_path.to_s.delete_prefix("/") }
       expect(paths).not_to include("assets/client-search-base.js")
       expect(paths).not_to include("assets/adapters/minisearch.js")
@@ -142,6 +216,103 @@ RSpec.describe Jekyll::ClientSearch::Generator do
 
       expect { described_class.new.generate(site) }
         .not_to(change { [site.pages.size, site.static_files.size] })
+    end
+  end
+
+  it "skips a configured collection label that does not exist on the site" do
+    Dir.mktmpdir("client-search-missing-collection") do |source|
+      write_post(source)
+      site = build_site(
+        source,
+        "client_search" => { "collections" => %w[posts nonexistent] }
+      )
+
+      described_class.new.generate(site)
+
+      titles = generated_documents(site).map { |doc| doc["title"] }
+      expect(titles).to contain_exactly("Example article")
+    end
+  end
+
+  it "does not duplicate runtime assets when generate is called twice" do
+    Dir.mktmpdir("client-search-duplicate-assets") do |source|
+      write_post(source)
+      site = build_site(source)
+
+      generator = described_class.new
+      generator.generate(site)
+      initial_count = site.static_files.size
+
+      generator.generate(site)
+
+      expect(site.static_files.size).to eq(initial_count),
+                                        "second generate call should not add duplicate runtime assets"
+    end
+  end
+
+  it "generates an embedder config JS file when embeddings are enabled" do
+    Dir.mktmpdir("client-search-embedder-config") do |source|
+      write_post(source)
+      site = build_site(
+        source,
+        "client_search" => {
+          "engine" => "semantic",
+          "embedding" => { "enabled" => true, "model" => "embeddinggemma:300m" }
+        }
+      )
+
+      generator = described_class.new
+      allow(generator).to receive(:build_embedding_adapter).and_return(double(embed: [0.1]))
+      generator.generate(site)
+
+      config_page = site.pages.find { |p| p.url == "/assets/search-embedder-config.js" }
+      expect(config_page).not_to be_nil
+      expect(config_page.content).to include("ClientSearchEmbedderConfig")
+      expect(config_page.content).to include("onnx-community/embeddinggemma-300m-ONNX")
+      expect(config_page.content).to include("embeddinggemma:300m")
+    end
+  end
+
+  it "copies the query embedder script for semantic engine with embeddings" do
+    Dir.mktmpdir("client-search-embedder-asset") do |source|
+      write_post(source)
+      site = build_site(
+        source,
+        "client_search" => {
+          "engine" => "semantic",
+          "embedding" => { "enabled" => true }
+        }
+      )
+
+      generator = described_class.new
+      allow(generator).to receive(:build_embedding_adapter).and_return(double(embed: [0.1]))
+      generator.generate(site)
+
+      paths = site.static_files.map { |f| f.relative_path.to_s.delete_prefix("/") }
+      expect(paths).to include(
+        "assets/query-embedders/transformers.js",
+        "assets/query-embedders/transformers-worker.js"
+      )
+    end
+  end
+
+  it "does not generate embedder config when query_embedder type is none" do
+    Dir.mktmpdir("client-search-embedder-none") do |source|
+      write_post(source)
+      site = build_site(
+        source,
+        "client_search" => {
+          "engine" => "semantic",
+          "embedding" => { "enabled" => true, "query_embedder" => { "type" => "none" } }
+        }
+      )
+
+      generator = described_class.new
+      allow(generator).to receive(:build_embedding_adapter).and_return(double(embed: [0.1]))
+      generator.generate(site)
+
+      config_page = site.pages.find { |p| p.url == "/assets/search-embedder-config.js" }
+      expect(config_page).to be_nil
     end
   end
 end

@@ -3,8 +3,9 @@ title: "Japanese cuisine"
 categories: ["food"]
 tags: ["food", "cooking", "japanese", "technique"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Japanese_cuisine"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1367515918"
 download_date: "2026-08-22"
+wikipedia_oldid: "1367515918"
 license: "CC BY-SA 3.0"
 ---
 

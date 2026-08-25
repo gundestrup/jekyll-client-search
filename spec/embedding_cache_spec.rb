@@ -7,23 +7,6 @@ require "json"
 require "yaml"
 require_relative "support/mock_embedding_adapter"
 
-# A mock embedding adapter that returns deterministic vectors and tracks
-# which texts were embedded. This lets us verify exactly which documents
-# were sent to the "LLM" vs served from cache, without needing a real
-# Ollama server.
-class CacheMockEmbeddingAdapter
-  attr_reader :embedded_texts
-
-  def initialize
-    @embedded_texts = []
-  end
-
-  def embed(text)
-    @embedded_texts << text
-    [text.length.to_f / 100.0, @embedded_texts.length.to_f / 10.0]
-  end
-end
-
 # Comprehensive tests for the embedding + cache system using a mock
 # embedding adapter (no real Ollama server needed). These tests verify:
 #
@@ -61,13 +44,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
       "quiet" => true
     )
 
-    if mock_adapter
-      allow(Jekyll::ClientSearch::Generator).to receive(:new).and_wrap_original do |method, *args|
-        instance = method.call(*args)
-        allow(instance).to receive(:build_embedding_adapter).and_return(mock_adapter)
-        instance
-      end
-    end
+    stub_embedding_adapter(mock_adapter) if mock_adapter
 
     site = Jekyll::Site.new(config)
     site.process
@@ -76,6 +53,17 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
     documents = File.exist?(index_json) ? JSON.parse(File.read(index_json)) : []
 
     { dest: dest, documents: documents }
+  rescue StandardError
+    FileUtils.remove_entry(dest) if dest && Dir.exist?(dest)
+    raise
+  end
+
+  def stub_embedding_adapter(mock_adapter)
+    allow(Jekyll::ClientSearch::Generator).to receive(:new).and_wrap_original do |method, *args|
+      instance = method.call(*args)
+      allow(instance).to receive(:build_embedding_adapter).and_return(mock_adapter)
+      instance
+    end
   end
 
   def cleanup(dest)
@@ -88,7 +76,14 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
     File.write(File.join(source_dir, "_config.yml"), YAML.dump(config))
   end
 
-  let(:embedding_config) { { "enabled" => true, "model" => "test-model", "base_url" => "http://localhost:1" } }
+  let(:embedding_config) do
+    {
+      "enabled" => true,
+      "model" => "test-model",
+      "base_url" => "http://localhost:1",
+      "query_embedder" => { "type" => "none" }
+    }
+  end
 
   # --- Test 1: Config with LLM (embeddings enabled) ---
   #
@@ -97,15 +92,16 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
       create_site(source, [
                     { filename: "2026-01-01-post-a.md", title: "Post A", content: "Content about glaciers and ice." },
                     { filename: "2026-01-02-post-b.md", title: "Post B", content: "Content about pasta and cooking." }
-                  ], embedding_config)
+                  ], embedding_config.merge("model" => "embeddinggemma:300m"))
 
-      mock = CacheMockEmbeddingAdapter.new
+      mock = MockEmbeddingAdapter.new
       result = build_site(source, mock)
 
       begin
         with_embeddings = result[:documents].select { |d| d["embedding"] }
         expect(with_embeddings.length).to eq(2)
         expect(mock.embedded_texts.length).to eq(2)
+        expect(mock.embedded_texts).to all(start_with("title: none | text: "))
       ensure
         cleanup(result[:dest])
       end
@@ -131,6 +127,69 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
     end
   end
 
+  it "fails the build when embedding generation fails by default" do
+    Dir.mktmpdir("embedding-failure") do |source|
+      create_site(source, [
+                    { filename: "2026-01-01-post-a.md", title: "Post A", content: "Content about glaciers." }
+                  ], embedding_config)
+
+      failing_adapter = instance_double(Jekyll::ClientSearch::OllamaEmbeddingAdapter, embed: nil)
+      expect { build_site(source, failing_adapter) }
+        .to raise_error(Jekyll::Errors::FatalException, /embedding generation failed/)
+    end
+  end
+
+  it "can continue without an embedding when fail_on_error is disabled" do
+    Dir.mktmpdir("embedding-warning") do |source|
+      create_site(source, [
+                    { filename: "2026-01-01-post-a.md", title: "Post A", content: "Content about glaciers." }
+                  ], embedding_config.merge("fail_on_error" => false))
+
+      failing_adapter = instance_double(Jekyll::ClientSearch::OllamaEmbeddingAdapter, embed: nil)
+      result = build_site(source, failing_adapter)
+      begin
+        expect(result[:documents].first).not_to have_key("embedding")
+      ensure
+        cleanup(result[:dest])
+      end
+    end
+  end
+
+  it "re-embeds all documents when the embedding model changes" do
+    Dir.mktmpdir("embedding-model-change") do |source|
+      create_site(source, [
+                    { filename: "2026-01-01-post-a.md", title: "Post A", content: "Content about glaciers." }
+                  ], embedding_config.merge("model" => "model-a"))
+
+      mock1 = MockEmbeddingAdapter.new
+      result1 = build_site(source, mock1)
+
+      begin
+        expect(mock1.embedded_texts.length).to eq(1)
+        mock2 = MockEmbeddingAdapter.new
+        result2 = build_site(source, mock2)
+
+        begin
+          expect(mock2.embedded_texts.length).to eq(0)
+          rewrite_config(source, embedding_config.merge("model" => "model-b"))
+          mock3 = MockEmbeddingAdapter.new
+          result3 = build_site(source, mock3)
+
+          begin
+            expect(mock3.embedded_texts.length).to eq(1)
+            expect(result3[:documents].first["embedding"]).not_to be_nil
+          ensure
+            cleanup(result3[:dest])
+          end
+        ensure
+          cleanup(result2[:dest])
+        end
+      ensure
+        cleanup(result1[:dest])
+      end
+    end
+  end
+
   # --- Test 3: Changed file content → only that file gets re-embedded ---
   #
   it "re-embeds only the changed file on second build" do
@@ -141,7 +200,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
                   ], embedding_config)
 
       # First build — both files get embedded
-      mock1 = CacheMockEmbeddingAdapter.new
+      mock1 = MockEmbeddingAdapter.new
       result1 = build_site(source, mock1)
 
       begin
@@ -156,7 +215,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
         MD
 
         # Second build — only post A should be re-embedded
-        mock2 = CacheMockEmbeddingAdapter.new
+        mock2 = MockEmbeddingAdapter.new
         result2 = build_site(source, mock2)
 
         begin
@@ -180,7 +239,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
                   ], embedding_config)
 
       # First build — one file
-      mock1 = CacheMockEmbeddingAdapter.new
+      mock1 = MockEmbeddingAdapter.new
       result1 = build_site(source, mock1)
 
       begin
@@ -195,7 +254,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
         MD
 
         # Second build — only the new file should be embedded
-        mock2 = CacheMockEmbeddingAdapter.new
+        mock2 = MockEmbeddingAdapter.new
         result2 = build_site(source, mock2)
 
         begin
@@ -220,7 +279,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
                   ], embedding_config)
 
       # First build
-      mock1 = CacheMockEmbeddingAdapter.new
+      mock1 = MockEmbeddingAdapter.new
       result1 = build_site(source, mock1)
 
       begin
@@ -233,7 +292,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
         File.delete(File.join(source, "_posts", "2026-01-02-post-b.md"))
 
         # Second build
-        mock2 = CacheMockEmbeddingAdapter.new
+        mock2 = MockEmbeddingAdapter.new
         result2 = build_site(source, mock2)
 
         begin
@@ -258,7 +317,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
                   ], embedding_config)
 
       # First build
-      mock1 = CacheMockEmbeddingAdapter.new
+      mock1 = MockEmbeddingAdapter.new
       result1 = build_site(source, mock1)
 
       begin
@@ -266,7 +325,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
         first_embeddings = result1[:documents].sort_by { |d| d["id"] }.map { |d| d["embedding"] }
 
         # Second build — no changes, simulating a server restart
-        mock2 = CacheMockEmbeddingAdapter.new
+        mock2 = MockEmbeddingAdapter.new
         result2 = build_site(source, mock2)
 
         begin
@@ -294,7 +353,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
                   ], embedding_config)
 
       # First build — 3 files
-      mock1 = CacheMockEmbeddingAdapter.new
+      mock1 = MockEmbeddingAdapter.new
       result1 = build_site(source, mock1)
 
       begin
@@ -316,7 +375,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
         File.delete(File.join(source, "_posts", "2026-01-03-deleted.md"))
 
         # Second build
-        mock2 = CacheMockEmbeddingAdapter.new
+        mock2 = MockEmbeddingAdapter.new
         result2 = build_site(source, mock2)
 
         begin
@@ -363,7 +422,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
 
         # Second build — enable embeddings (simulating config change + restart)
         rewrite_config(source, embedding_config)
-        mock = CacheMockEmbeddingAdapter.new
+        mock = MockEmbeddingAdapter.new
         result2 = build_site(source, mock)
 
         begin
@@ -389,7 +448,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
                   ], embedding_config)
 
       # First build — with embeddings
-      mock1 = CacheMockEmbeddingAdapter.new
+      mock1 = MockEmbeddingAdapter.new
       result1 = build_site(source, mock1)
 
       begin
@@ -461,7 +520,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
                   ], embedding_config)
 
       # Initial build with LLM
-      mock1 = CacheMockEmbeddingAdapter.new
+      mock1 = MockEmbeddingAdapter.new
       result1 = build_site(source, mock1)
 
       begin
@@ -477,7 +536,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :system do
         MD
 
         # Rebuild with LLM
-        mock2 = CacheMockEmbeddingAdapter.new
+        mock2 = MockEmbeddingAdapter.new
         result2 = build_site(source, mock2)
 
         begin

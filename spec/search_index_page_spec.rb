@@ -3,7 +3,7 @@
 require "spec_helper"
 require "tmpdir"
 
-RSpec.describe Jekyll::ClientSearch::SearchIndexPage do
+RSpec.describe Jekyll::ClientSearch::SearchIndexPage, :unit do
   it "creates valid JSON without a layout or sitemap entry" do
     Dir.mktmpdir("client-search-page") do |source|
       site = Jekyll::Site.new(

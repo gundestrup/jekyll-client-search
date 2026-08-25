@@ -3,8 +3,9 @@ title: "Sea ice"
 categories: ["oceanography"]
 tags: ["ice", "cold", "arctic", "ocean"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Sea_ice"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1368938251"
 download_date: "2026-08-22"
+wikipedia_oldid: "1368938251"
 license: "CC BY-SA 3.0"
 ---
 

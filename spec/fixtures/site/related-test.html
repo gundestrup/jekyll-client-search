@@ -1,0 +1,71 @@
+---
+layout: page
+title: Related articles test
+permalink: /related-test/
+---
+
+<p>This page demonstrates every way to use the related-articles feature.</p>
+
+<h3>1. Liquid tag — default (relevance sort, with scripts)</h3>
+{% related_articles %}
+
+<hr>
+
+<h3>2. Liquid tag — sort:date, no scripts</h3>
+{% related_articles sort:date no_scripts %}
+<div id="related-articles-date"></div>
+<script>
+  ClientSearchRelated.run({
+    container: "#related-articles-date",
+    currentUrl: "/2026/01/01/wikipedia-glacier/",
+    sort: "date"
+  });
+</script>
+
+<hr>
+
+<h3>3. Custom renderItem callback</h3>
+<p>Shows score and reasons for each relation.</p>
+<div id="related-articles-custom"></div>
+<script>
+  ClientSearchRelated.run({
+    container: "#related-articles-custom",
+    currentUrl: "/2026/01/01/wikipedia-glacier/",
+    renderItem: function (item, document) {
+      var li = document.createElement("li");
+      var link = document.createElement("a");
+      link.href = item.url;
+      link.textContent = item.title;
+      li.appendChild(link);
+      var score = document.createElement("span");
+      score.textContent = " — " + (item.score * 100).toFixed(0) + "%";
+      li.appendChild(score);
+      if (item.reasons && item.reasons.length) {
+        var reasons = document.createElement("div");
+        reasons.style.fontSize = "0.8em";
+        reasons.textContent = item.reasons.join(", ");
+        li.appendChild(reasons);
+      }
+      return li;
+    }
+  });
+</script>
+
+<hr>
+
+<h3>4. Filter — only semantic relations above 0.65</h3>
+<div id="related-articles-filtered"></div>
+<script>
+  ClientSearchRelated.run({
+    container: "#related-articles-filtered",
+    currentUrl: "/2026/01/01/wikipedia-glacier/",
+    filter: function (item) {
+      return item.semantic_similarity && item.semantic_similarity > 0.65;
+    }
+  });
+</script>
+
+<hr>
+
+<h3>5. Raw JSON inspection</h3>
+<p>The full relations file is at <a href="/search-relations.json">/search-relations.json</a>.</p>

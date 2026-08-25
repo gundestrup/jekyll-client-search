@@ -2,6 +2,7 @@
 
 require "bundler/gem_tasks"
 require "rake"
+require_relative "lib/jekyll/client_search/tasks"
 
 VERSION_FILE = File.expand_path("lib/jekyll/client_search/version.rb", __dir__)
 GEMSPEC_FILE = File.expand_path("jekyll-client-search.gemspec", __dir__)
@@ -29,6 +30,35 @@ namespace :version do
     File.write(VERSION_FILE, updated)
     puts "Bumped #{current} -> #{next_version}"
     puts "Update CHANGELOG.md before committing or releasing."
+  end
+end
+
+namespace :jekyll_client_search do
+  desc "List reference files, show diff against site copies, and offer to update"
+  task :reference_files do
+    Jekyll::ClientSearch::Tasks.list_reference_files
+    puts "Diff against installed copies:"
+    puts
+    Jekyll::ClientSearch::Tasks.diff_reference_files
+    puts "To install or update, run: bundle exec rake jekyll_client_search:install"
+  end
+
+  desc "Copy reference layouts and includes into the site (use overwrite=true to replace modified copies)"
+  task :install, [:overwrite] do |_task, args|
+    overwrite = args[:overwrite] == "true"
+    puts "Installing jekyll-client-search reference files into #{Jekyll::ClientSearch::Tasks.site_root}:"
+    result = Jekyll::ClientSearch::Tasks.install_reference_files(overwrite: overwrite)
+    puts
+    puts "Installed/updated: #{result[:installed].join(', ')}" if result[:installed].any?
+    if result[:skipped].any?
+      puts "Skipped (exists, differs): #{result[:skipped].join(', ')}"
+      puts "Run with overwrite=true to replace: bundle exec rake 'jekyll_client_search:install[true]'"
+    end
+    puts
+    puts "These files are starting points — customize them freely."
+    puts "For upgrade-safe adoption without copying files, use the Liquid tags:"
+    puts "  {% search_form %}        — search form + scripts (config-driven)"
+    puts "  {% related_articles %}   — related articles section"
   end
 end
 

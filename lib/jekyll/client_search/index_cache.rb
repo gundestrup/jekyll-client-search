@@ -2,6 +2,7 @@
 
 require "json"
 require "digest"
+require "fileutils"
 
 module Jekyll
   module ClientSearch
@@ -14,25 +15,29 @@ module Jekyll
 
       attr_reader :path
 
-      def initialize(site_source)
+      def initialize(site_source, embedding_identity: nil)
         @path = File.join(site_source, CACHE_FILE)
+        @embedding_identity = embedding_identity
         @entries = load
       end
 
-      # Returns the cached entry for +id+ if the content hash matches,
-      # nil otherwise (or if not cached).
+      # Returns the cached entry for +id+ if the content hash and embedding
+      # identity match, nil otherwise (or if not cached).
       def lookup(id, content_hash)
         entry = @entries[id]
         return nil unless entry
+        return nil unless entry["content_hash"] == content_hash
+        return nil if @embedding_identity && entry["embedding_identity"] != @embedding_identity
 
-        entry["content_hash"] == content_hash ? entry : nil
+        entry
       end
 
       # Stores or updates a cache entry for +id+.
       def store(id, content_hash, embedding = nil)
         @entries[id] = {
           "content_hash" => content_hash,
-          "embedding" => embedding
+          "embedding" => embedding,
+          "embedding_identity" => @embedding_identity
         }.compact
       end
 
@@ -45,7 +50,11 @@ module Jekyll
       def save
         return unless dirty?
 
-        File.write(@path, JSON.pretty_generate(@entries))
+        temporary_path = "#{@path}.tmp.#{Process.pid}.#{Thread.current.object_id}"
+        File.write(temporary_path, JSON.pretty_generate(@entries))
+        File.rename(temporary_path, @path)
+      ensure
+        FileUtils.rm_f(temporary_path) if temporary_path && File.exist?(temporary_path)
       end
 
       def self.content_hash(document)

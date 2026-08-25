@@ -29,11 +29,8 @@ require "fileutils"
 require "open3"
 require "tempfile"
 
-POSTS_DIR = File.expand_path("_posts", __dir__)
+POSTS_DIR = File.expand_path("site/_posts", __dir__)
 FileUtils.mkdir_p(POSTS_DIR)
-
-# Remove old arXiv posts
-Dir.glob(File.join(POSTS_DIR, "arxiv-*.md")).each { |f| File.delete(f) }
 
 DOWNLOAD_DATE = Date.today.strftime("%Y-%m-%d")
 SOURCE = "arXiv.org"
@@ -65,16 +62,53 @@ def fetch_arxiv_papers(cat, max_results)
     published = REXML::XPath.first(entry, "published/text()").to_s[0..9]
     pdf_url = "#{SOURCE_URL}/pdf/#{id}"
 
+    # Fetch the actual per-article license from the abstract page.
+    # arXiv papers use different licenses (arXiv non-exclusive, CC BY 4.0,
+    # CC BY-NC-SA 4.0, CC BY-NC-ND 4.0, etc.) — each article must record
+    # its own license.
+    license_name, license_url = fetch_arxiv_license(id)
+
     papers << {
       id: id,
       title: title,
       summary: summary,
       published: published,
       pdf_url: pdf_url,
-      abs_url: "#{SOURCE_URL}/abs/#{id}"
+      abs_url: "#{SOURCE_URL}/abs/#{id}",
+      license_name: license_name,
+      license_url: license_url
     }
   end
   papers
+end
+
+def fetch_arxiv_license(id)
+  abs_uri = URI("#{SOURCE_URL}/abs/#{id}")
+  response = Net::HTTP.get_response(abs_uri)
+  return [nil, nil] unless response.is_a?(Net::HTTPSuccess)
+
+  # The abs page contains: <div class="abs-license"><a href="URL">view license</a></div>
+  match = response.body.match(/abs-license"><a\s+href="([^"]+)"/)
+  return [nil, nil] unless match
+
+  license_url = match[1]
+  # Classify the license
+  case license_url
+  when /creativecommons\/licenses\/by\/(\d+\.\d+)/
+    ["CC BY #{$1}", license_url]
+  when /creativecommons\/licenses\/by-nc\/(\d+\.\d+)/
+    ["CC BY-NC #{$1}", license_url]
+  when /creativecommons\/licenses\/by-nc-nd\/(\d+\.\d+)/
+    ["CC BY-NC-ND #{$1}", license_url]
+  when /creativecommons\/licenses\/by-nc-sa\/(\d+\.\d+)/
+    ["CC BY-NC-SA #{$1}", license_url]
+  when /creativecommons\/licenses\/by-sa\/(\d+\.\d+)/
+    ["CC BY-SA #{$1}", license_url]
+  when /nonexclusive-distrib/
+    ["arXiv non-exclusive license to distribute", license_url]
+  else
+    ["Unknown (see #{license_url})", license_url]
+  end
 end
 
 def download_and_extract_text(pdf_url)
@@ -120,6 +154,12 @@ def write_post(paper, category, tags, index)
   filename = "#{date.strftime('%Y-%m-%d')}-arxiv-#{slug}.md"
   filepath = File.join(POSTS_DIR, filename)
 
+  license_str = if paper[:license_url]
+    "#{paper[:license_name]} (see #{paper[:license_url]})"
+  else
+    "Unknown (see #{paper[:abs_url]})"
+  end
+
   frontmatter = {
     "title" => paper[:title],
     "categories" => [category],
@@ -129,7 +169,7 @@ def write_post(paper, category, tags, index)
     "arxiv_id" => paper[:id],
     "published" => paper[:published],
     "download_date" => DOWNLOAD_DATE,
-    "license" => "arXiv non-exclusive license (see #{paper[:abs_url]})"
+    "license" => license_str
   }
 
   yaml = frontmatter.map do |k, v|
@@ -149,13 +189,18 @@ end
 
 generated = []
 skipped = []
+seen_ids = {}
 index = 0
 
 QUERIES.each do |query|
   puts "\nFetching papers from #{query[:arxiv_cat]} (#{query[:category]})..."
-  papers = fetch_arxiv_papers(query[:arxiv_cat], query[:max])
+  papers = fetch_arxiv_papers(query[:arxiv_cat], query[:max] * QUERIES.length)
+  generated_for_query = 0
 
   papers.each do |paper|
+    next if seen_ids[paper[:id]]
+    break if generated_for_query >= query[:max]
+
     print "  #{paper[:id]}: #{paper[:title][0..60]}... "
     full_text = download_and_extract_text(paper[:pdf_url])
     if full_text && full_text.split.length > 500
@@ -163,13 +208,23 @@ QUERIES.each do |query|
       path = write_post(paper, query[:category], query[:tags], index)
       words = File.read(path).split.length
       generated << { id: paper[:id], path: path, words: words }
+      seen_ids[paper[:id]] = true
+      generated_for_query += 1
+      index += 1
       puts "#{words} words"
     else
       skipped << paper[:id]
       puts "FAILED (text too short or extraction failed)"
     end
-    index += 1
     sleep 1 # Be polite to arXiv
+  end
+end
+
+expected_count = QUERIES.sum { |query| query[:max] }
+if generated.length == expected_count
+  generated_paths = generated.map { |entry| entry[:path] }
+  Dir.glob(File.join(POSTS_DIR, "*-arxiv-*.md")).each do |file|
+    File.delete(file) unless generated_paths.include?(file)
   end
 end
 

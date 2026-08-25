@@ -16,8 +16,8 @@ const adapterDir = path.join(__dirname, "..", "assets", "adapters");
 
 /**
  * Uniform test suite — the same assertions run against every JS adapter so
- * that adding a new engine (e.g. a future vector/semantic adapter) only
- * requires registering it here, not writing a new test file.
+ * that adding an engine only requires registering it here, not duplicating
+ * the shared behavior tests.
  */
 function adapterSuites() {
     return [
@@ -73,16 +73,20 @@ function adapterSuites() {
     ];
 }
 
-function createWindow(suite, index, query = "greenland") {
+function createWindow(suite, index, query = "greenland", clientConfig = null) {
     var effectiveIndex = suite.makeIndex ? suite.makeIndex(index) : index;
     const dom = new JSDOM(
         `<!doctype html>
         <form id="search-form"><input id="search-query"><button>Search</button></form>
+        <select id="search-sort"><option value="relevance">Relevant</option><option value="date">Newest</option></select>
         <div id="search-status"></div><div id="search-results"></div>`,
         { url: `https://example.com/search/?q=${encodeURIComponent(query)}`, runScripts: "outside-only" }
     );
     suite.setupWindow(dom);
     dom.window.searchIndexUrl = "/search-index.json";
+    if (clientConfig) {
+        dom.window.clientSearchConfig = Object.assign({ indexUrl: "/search-index.json" }, clientConfig);
+    }
     dom.window.fetch = async function () {
         return { ok: true, json: async function () { return effectiveIndex; } };
     };
@@ -177,6 +181,60 @@ adapterSuites().forEach(function (suite) {
 
         assert.equal(window.document.querySelector("#search-results").children.length, 0);
     });
+
+    test(`[${suite.name}] performs debounced live search while typing`, async function () {
+        const window = createWindow(suite, sampleIndex, "", {
+            liveSearch: { enabled: true, minChars: 2, debounceMs: 5, updateUrl: true }
+        });
+        await settle();
+        const input = window.document.querySelector("#search-query");
+
+        input.value = "greenland";
+        input.dispatchEvent(new window.Event("input", { bubbles: true }));
+        assert.equal(window.document.querySelector("#search-status").textContent, "Waiting to search…");
+        await new Promise(function (resolve) { setTimeout(resolve, 15); });
+        await settle();
+
+        assert.equal(window.document.querySelector("#search-status").textContent, "1 result");
+        assert.equal(window.document.querySelector(".client-search-result h2").textContent, "Greenland");
+        assert.equal(new window.URL(window.location.href).searchParams.get("q"), "greenland");
+    });
+});
+
+test("search results can be sorted newest-first by publication date", async function () {
+    const suite = adapterSuites()[0];
+    const window = createWindow(suite, [
+        { id: "/old/", title: "Old", url: "/old/", content: "shared", date_timestamp: 1 },
+        { id: "/new/", title: "New", url: "/new/", content: "shared", date_timestamp: 2 }
+    ], "shared");
+    await settle();
+    const sort = window.document.querySelector("#search-sort");
+    sort.value = "date";
+    sort.dispatchEvent(new window.Event("change", { bubbles: true }));
+    await settle();
+
+    assert.deepEqual(
+        Array.from(window.document.querySelectorAll(".client-search-result h2"))
+            .map(function (heading) { return heading.textContent; }),
+        ["New", "Old"]
+    );
+});
+
+test("live search enforces minimum characters without updating the URL when disabled", async function () {
+    const suite = adapterSuites()[0];
+    const window = createWindow(suite, sampleIndex, "", {
+        liveSearch: { enabled: true, minChars: 3, debounceMs: 0, updateUrl: false }
+    });
+    await settle();
+    const input = window.document.querySelector("#search-query");
+
+    input.value = "gr";
+    input.dispatchEvent(new window.Event("input", { bubbles: true }));
+    await settle();
+
+    assert.equal(window.document.querySelector("#search-status").textContent, "Type at least 3 characters.");
+    assert.equal(window.document.querySelector("#search-results").children.length, 0);
+    assert.equal(new window.URL(window.location.href).searchParams.get("q"), "");
 });
 
 // --- Semantic adapter specific tests ---
@@ -285,7 +343,16 @@ test("[semantic] available() returns false when no embedder is loaded", async fu
     dom.window.eval(semanticAdapterSource);
 
     var adapter = dom.window.ClientSearchAdapters.semantic;
-    assert.equal(adapter.available(), false, "should be unavailable without transformers.js or embedder");
+    assert.equal(adapter.available(), false, "should be unavailable without a query embedder");
+});
+
+test("[semantic] available() remains false when only a model library is loaded", async function () {
+    var semanticAdapterSource = fs.readFileSync(path.join(adapterDir, "semantic.js"), "utf8");
+    var dom = new JSDOM("<!doctype html><body></body>", { runScripts: "outside-only" });
+    dom.window.transformers = {};
+    dom.window.eval(semanticAdapterSource);
+
+    assert.equal(dom.window.ClientSearchAdapters.semantic.available(), false);
 });
 
 test("[semantic] available() returns true when ClientSearchQueryEmbedder is set", async function () {
@@ -297,4 +364,269 @@ test("[semantic] available() returns true when ClientSearchQueryEmbedder is set"
 
     var adapter = dom.window.ClientSearchAdapters.semantic;
     assert.equal(adapter.available(), true);
+});
+
+test("[semantic] supports async query embeddings and caches repeated queries", async function () {
+    var semanticAdapterSource = fs.readFileSync(path.join(adapterDir, "semantic.js"), "utf8");
+    var calls = 0;
+    var index = [{ id: "/a/", title: "A", embedding: [1, 0] }];
+    var dom = new JSDOM("<!doctype html><body></body>", { runScripts: "outside-only" });
+    dom.window.ClientSearchQueryEmbedder = function () {
+        calls += 1;
+        return Promise.resolve([1, 0]);
+    };
+    dom.window.eval(semanticAdapterSource);
+
+    var adapter = dom.window.ClientSearchAdapters.semantic;
+    var first = await adapter.search(index, "same query", {});
+    var second = await adapter.search(index, "same query", {});
+
+    assert.deepEqual(JSON.parse(JSON.stringify(first)), [{ ref: "/a/", score: 1 }]);
+    assert.deepEqual(JSON.parse(JSON.stringify(second)), JSON.parse(JSON.stringify(first)));
+    assert.equal(calls, 1, "repeated query should use the cached embedding");
+});
+
+test("[semantic] bounds the query embedding cache", async function () {
+    var semanticAdapterSource = fs.readFileSync(path.join(adapterDir, "semantic.js"), "utf8");
+    var calls = 0;
+    var index = [{ id: "/a/", title: "A", embedding: [1, 0] }];
+    var dom = new JSDOM("<!doctype html><body></body>", { runScripts: "outside-only" });
+    dom.window.ClientSearchQueryEmbedder = function () {
+        calls += 1;
+        return [1, 0];
+    };
+    dom.window.eval(semanticAdapterSource);
+
+    var adapter = dom.window.ClientSearchAdapters.semantic;
+    for (var i = 0; i <= 100; i++) {
+        adapter.search(index, `query-${i}`, {});
+    }
+    adapter.search(index, "query-0", {});
+
+    assert.equal(calls, 102, "oldest query should be re-embedded after cache eviction");
+});
+
+test("[semantic] retries a query after an async embedder rejection", async function () {
+    var semanticAdapterSource = fs.readFileSync(path.join(adapterDir, "semantic.js"), "utf8");
+    var attempts = 0;
+    var index = [{ id: "/a/", title: "A", embedding: [1, 0] }];
+    var dom = new JSDOM("<!doctype html><body></body>", { runScripts: "outside-only" });
+    dom.window.ClientSearchQueryEmbedder = function () {
+        attempts += 1;
+        return attempts === 1 ? Promise.reject(new Error("model failed")) : Promise.resolve([1, 0]);
+    };
+    dom.window.eval(semanticAdapterSource);
+
+    var adapter = dom.window.ClientSearchAdapters.semantic;
+    await assert.rejects(adapter.search(index, "retry", {}), /model failed/);
+    var matches = await adapter.search(index, "retry", {});
+
+    assert.deepEqual(JSON.parse(JSON.stringify(matches)), [{ ref: "/a/", score: 1 }]);
+    assert.equal(attempts, 2, "a rejected query embedding must not remain cached");
+});
+
+test("[semantic] rejects an invalid synchronous query embedding", function () {
+    var semanticAdapterSource = fs.readFileSync(path.join(adapterDir, "semantic.js"), "utf8");
+    var dom = new JSDOM("<!doctype html><body></body>", { runScripts: "outside-only" });
+    dom.window.ClientSearchQueryEmbedder = function () { return null; };
+    dom.window.eval(semanticAdapterSource);
+
+    assert.throws(
+        function () {
+            dom.window.ClientSearchAdapters.semantic.search(
+                [{ id: "/a/", embedding: [1, 0] }], "invalid", {}
+            );
+        },
+        /finite numeric values/
+    );
+});
+
+test("[semantic] rejects non-finite and mismatched query embeddings", function () {
+    var semanticAdapterSource = fs.readFileSync(path.join(adapterDir, "semantic.js"), "utf8");
+    var dom = new JSDOM("<!doctype html><body></body>", { runScripts: "outside-only" });
+    dom.window.ClientSearchQueryEmbedder = function () { return [Number.NaN, 0]; };
+    dom.window.eval(semanticAdapterSource);
+    var adapter = dom.window.ClientSearchAdapters.semantic;
+    var index = [{ id: "/a/", embedding: [1, 0] }];
+
+    assert.throws(function () { adapter.search(index, "invalid", {}); }, /finite numeric values/);
+
+    dom.window.ClientSearchQueryEmbedder = function () { return [1, 0, 0]; };
+    assert.throws(function () { adapter.search(index, "mismatch", {}); }, /does not match document dimension/);
+});
+
+test("[semantic] rejects inconsistent document embedding dimensions", function () {
+    var semanticAdapterSource = fs.readFileSync(path.join(adapterDir, "semantic.js"), "utf8");
+    var dom = new JSDOM("<!doctype html><body></body>", { runScripts: "outside-only" });
+    dom.window.ClientSearchQueryEmbedder = function () { return [1, 0]; };
+    dom.window.eval(semanticAdapterSource);
+
+    assert.throws(function () {
+        dom.window.ClientSearchAdapters.semantic.buildIndex([
+            { id: "/a/", embedding: [1, 0] },
+            { id: "/b/", embedding: [1, 0, 0] }
+        ]);
+    }, /dimensions do not match/);
+});
+
+test("[semantic] accepts typed-array query embeddings", async function () {
+    var semanticAdapterSource = fs.readFileSync(path.join(adapterDir, "semantic.js"), "utf8");
+    var index = [{ id: "/a/", title: "A", embedding: [1, 0] }];
+    var dom = new JSDOM("<!doctype html><body></body>", { runScripts: "outside-only" });
+    dom.window.ClientSearchQueryEmbedder = function () { return new dom.window.Float32Array([1, 0]); };
+    dom.window.eval(semanticAdapterSource);
+
+    var matches = await dom.window.ClientSearchAdapters.semantic.search(index, "typed", {});
+    assert.deepEqual(JSON.parse(JSON.stringify(matches)), [{ ref: "/a/", score: 1 }]);
+});
+
+test("base runtime displays query-embedder progress status", async function () {
+    var dom = new JSDOM(
+        `<!doctype html>
+        <form id="search-form"><input id="search-query"><button>Search</button></form>
+        <div id="search-status"></div><div id="search-results"></div>`,
+        { url: "https://example.com/search/?q=query", runScripts: "outside-only" }
+    );
+    var resolveSearch;
+    dom.window.searchIndexUrl = "/search-index.json";
+    dom.window.fetch = async function () {
+        return { ok: true, json: async function () { return [{ id: "/a/", title: "A", url: "/a/" }]; } };
+    };
+    dom.window.eval(baseRuntime);
+    dom.window.ClientSearch.run({
+        available: function () { return true; },
+        buildIndex: function (documents) { return documents; },
+        search: function () {
+            dom.window.dispatchEvent(new dom.window.CustomEvent("client-search:status", {
+                detail: { message: "Loading semantic model… 50%" }
+            }));
+            return new Promise(function (resolve) { resolveSearch = resolve; });
+        }
+    });
+    await settle();
+
+    assert.equal(
+        dom.window.document.querySelector("#search-status").textContent,
+        "Loading semantic model… 50%"
+    );
+    resolveSearch([{ ref: "/a/", score: 1 }]);
+    await settle();
+    assert.equal(dom.window.document.querySelector("#search-status").textContent, "1 result");
+});
+
+test("base runtime reports async adapter failures as unavailable", async function () {
+    var semanticAdapterSource = fs.readFileSync(path.join(adapterDir, "semantic.js"), "utf8");
+    var dom = new JSDOM(
+        `<!doctype html>
+        <form id="search-form"><input id="search-query"><button>Search</button></form>
+        <div id="search-status"></div><div id="search-results"></div>`,
+        { url: "https://example.com/search/?q=broken", runScripts: "outside-only" }
+    );
+    dom.window.ClientSearchQueryEmbedder = function () {
+        return Promise.reject(new Error("model failed"));
+    };
+    dom.window.searchIndexUrl = "/search-index.json";
+    dom.window.fetch = async function () {
+        return {
+            ok: true,
+            json: async function () {
+                return [{ id: "/a/", title: "A", url: "/a/", embedding: [1, 0] }];
+            }
+        };
+    };
+    dom.window.eval(baseRuntime);
+    dom.window.eval(semanticAdapterSource);
+    await settle();
+
+    assert.equal(
+        dom.window.document.querySelector("#search-status").textContent,
+        "Search is temporarily unavailable."
+    );
+    assert.equal(dom.window.document.querySelectorAll(".client-search-result").length, 0);
+});
+
+test("base runtime ignores stale async failures after a newer query", async function () {
+    var dom = new JSDOM(
+        `<!doctype html>
+        <form id="search-form"><input id="search-query"><button>Search</button></form>
+        <div id="search-status"></div><div id="search-results"></div>`,
+        { url: "https://example.com/search/?q=old", runScripts: "outside-only" }
+    );
+    var index = [
+        { id: "/new/", title: "New", url: "/new/", excerpt: "new", content: "new" }
+    ];
+    dom.window.searchIndexUrl = "/search-index.json";
+    dom.window.fetch = async function () {
+        return { ok: true, json: async function () { return index; } };
+    };
+    dom.window.eval(baseRuntime);
+    dom.window.ClientSearch.run({
+        available: function () { return true; },
+        buildIndex: function (documents) { return documents; },
+        search: function (_documents, query) {
+            if (query === "old") {
+                return new Promise(function (_resolve, reject) {
+                    setTimeout(function () { reject(new Error("obsolete")); }, 20);
+                });
+            }
+            return Promise.resolve([{ ref: "/new/", score: 1 }]);
+        }
+    });
+
+    await new Promise(function (resolve) { setTimeout(resolve, 0); });
+    var input = dom.window.document.querySelector("#search-query");
+    input.value = "new";
+    input.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+    dom.window.document.querySelector("#search-form").dispatchEvent(
+        new dom.window.Event("submit", { bubbles: true, cancelable: true })
+    );
+    await new Promise(function (resolve) { setTimeout(resolve, 30); });
+
+    assert.equal(dom.window.document.querySelector("#search-status").textContent, "1 result");
+    assert.equal(dom.window.document.querySelector(".client-search-result h2").textContent, "New");
+});
+
+test("base runtime ignores stale async search results", async function () {
+    var dom = new JSDOM(
+        `<!doctype html>
+        <form id="search-form"><input id="search-query"><button>Search</button></form>
+        <div id="search-status"></div><div id="search-results"></div>`,
+        { url: "https://example.com/search/?q=old", runScripts: "outside-only" }
+    );
+    var index = [
+        { id: "/old/", title: "Old", url: "/old/", excerpt: "old", content: "old" },
+        { id: "/new/", title: "New", url: "/new/", excerpt: "new", content: "new" }
+    ];
+    dom.window.searchIndexUrl = "/search-index.json";
+    dom.window.fetch = async function () {
+        return { ok: true, json: async function () { return index; } };
+    };
+    dom.window.eval(baseRuntime);
+    dom.window.ClientSearchAdapters = {};
+    dom.window.ClientSearchAdapters.test = {
+        available: function () { return true; },
+        buildIndex: function (documents) { return documents; },
+        search: function (documents, query) {
+            return new Promise(function (resolve) {
+                setTimeout(function () {
+                    resolve([{ ref: query === "old" ? "/old/" : "/new/", score: 1 }]);
+                }, query === "old" ? 30 : 0);
+            });
+        }
+    };
+    dom.window.ClientSearch.run(dom.window.ClientSearchAdapters.test);
+
+    await new Promise(function (resolve) { setTimeout(resolve, 0); });
+    var input = dom.window.document.querySelector("#search-query");
+    input.value = "new";
+    dom.window.document.querySelector("#search-form").dispatchEvent(
+        new dom.window.Event("submit", { bubbles: true, cancelable: true })
+    );
+    await new Promise(function (resolve) { setTimeout(resolve, 10); });
+
+    assert.deepEqual(
+        Array.from(dom.window.document.querySelectorAll(".client-search-result h2"))
+            .map(function (heading) { return heading.textContent; }),
+        ["New"]
+    );
 });

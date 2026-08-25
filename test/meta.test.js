@@ -7,10 +7,9 @@ const test = require("node:test");
 const { JSDOM } = require("jsdom");
 const MiniSearch = require("minisearch");
 const elasticlunr = require("elasticlunr");
+const { loadSemanticFixture } = require("./semantic-fixture");
 
-const FIXTURE_SITE = path.join(__dirname, "..", "spec", "fixtures", "site");
 const BASELINE_PATH = path.join(__dirname, "..", "spec", "fixtures", "baseline", "search-index-baseline.json");
-const SEMANTIC_INDEX_PATH = path.join(FIXTURE_SITE, "_site", "search-index-semantic.json");
 const BASE_RUNTIME = fs.readFileSync(
     path.join(__dirname, "..", "assets", "client-search-base.js"),
     "utf8"
@@ -29,13 +28,16 @@ const ADAPTER_DIR = path.join(__dirname, "..", "assets", "adapters");
  *     might rank differently than lexical, or find results via synonyms
  *     that lexical misses)
  *   - The same test logic runs for every engine, avoiding duplication
- *   - For semantic tests, the real Ollama-generated index is used when
- *     available; otherwise tests skip honestly
+ *   - Semantic tests inject committed real-model vectors into the shared
+ *     baseline index, so they run in normal CI without an Ollama service
  *
  * The baseline JSON (search-index-baseline.json) is a committed fixture
- * containing the 80-post index WITHOUT embeddings. This is the stable
- * reference that all engines are tested against. The semantic tests
- * additionally use the Ollama-generated index WITH embeddings.
+ * containing the 80-post index WITHOUT embeddings (40 Wikipedia + 40 arXiv).
+ * The arXiv .md source posts are NOT committed due to mixed licenses —
+ * see README.developer.md. The baseline JSON and semantic-embeddings.json
+ * are committed test artifacts that don't require the source .md files.
+ * The semantic tests additionally use the Ollama-generated index WITH
+ * embeddings.
  */
 
 // --- Shared query definitions ---
@@ -160,12 +162,12 @@ var SHARED_QUERIES = [
             minResults: 2
         },
         semantic: {
-            top1: "Landscape photography",
-            mustInclude: ["Aperture"],
+            top1: "Aperture",
+            mustInclude: ["Aperture", "Landscape photography"],
             mustExclude: ["Glacier", "Pasta"],
-            minResults: 1
+            minResults: 2
         },
-        notes: "two-term — semantic ranks Landscape photography #1, Aperture in top 5"
+        notes: "two-term — corrected query/document prefixes rank Aperture #1"
     },
     {
         query: "camera lens",
@@ -205,17 +207,7 @@ var SEMANTIC_ADAPTER_SOURCE = fs.readFileSync(path.join(ADAPTER_DIR, "semantic.j
 // --- Helpers ---
 
 function loadBaselineIndex() {
-    if (!fs.existsSync(BASELINE_PATH)) {
-        return null;
-    }
     return JSON.parse(fs.readFileSync(BASELINE_PATH, "utf8"));
-}
-
-function loadSemanticIndex() {
-    if (!fs.existsSync(SEMANTIC_INDEX_PATH)) {
-        return null;
-    }
-    return JSON.parse(fs.readFileSync(SEMANTIC_INDEX_PATH, "utf8"));
 }
 
 function resultTitles(window) {
@@ -273,10 +265,8 @@ function createSemanticWindow(semanticData, query) {
 var baselineIndex = loadBaselineIndex();
 
 LEXICAL_ENGINES.forEach(function (engine) {
-    var runOrSkip = baselineIndex ? test : test.skip;
-
     SHARED_QUERIES.forEach(function (q) {
-        runOrSkip(`[meta/${engine.name}] ${q.notes} — query: "${q.query}"`, async function () {
+        test(`[meta/${engine.name}] ${q.notes} — query: "${q.query}"`, async function () {
             var window = createLexicalWindow(engine, baselineIndex, q.query);
             await settle();
             var titles = resultTitles(window);
@@ -303,14 +293,14 @@ LEXICAL_ENGINES.forEach(function (engine) {
 // --- Meta-tests: semantic engine (with LLM) ---
 //
 // These run the same shared queries against the semantic adapter
-// using the real Ollama-generated index (with embeddings).
-// Skips when the Ollama index is not available.
+// using the committed real-model embedding fixture injected into the
+// baseline index. The opt-in Ollama integration test regenerates and
+// validates the fixture source data.
 
-var semanticData = loadSemanticIndex();
-var runSemantic = semanticData ? test : test.skip;
+var semanticData = loadSemanticFixture();
 
 SHARED_QUERIES.forEach(function (q) {
-    runSemantic(`[meta/semantic] ${q.notes} — query: "${q.query}"`, async function () {
+    test(`[meta/semantic] ${q.notes} — query: "${q.query}"`, async function () {
         var window = createSemanticWindow(semanticData, q.query);
         await settle();
         var titles = resultTitles(window);
@@ -340,9 +330,7 @@ SHARED_QUERIES.forEach(function (q) {
 // For queries where all engines should agree (exact keyword matches),
 // verify that the #1 result is the same across all engines.
 
-var runConsistency = (baselineIndex && semanticData) ? test : test.skip;
-
-runConsistency("[meta/cross-engine] exact-match queries produce same #1 across all engines", async function () {
+test("[meta/cross-engine] exact-match queries produce same #1 across all engines", async function () {
     var exactMatchQueries = SHARED_QUERIES.filter(function (q) {
         return q.lexical.top1 === q.semantic.top1;
     });

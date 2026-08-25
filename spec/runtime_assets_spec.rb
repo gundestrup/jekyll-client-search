@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe "ClientSearch browser runtime assets" do
+RSpec.describe "ClientSearch browser runtime assets", :unit do
   def read_asset(relative)
     File.read(File.expand_path("../#{relative}", __dir__))
   end

@@ -17,11 +17,19 @@ module Jekyll
 
         documents = build_documents(site, configuration)
         documents = enhance_with_embeddings(site, documents, configuration) if configuration.embedding_enabled?
-        site.pages << SearchIndexPage.new(site, configuration.output, documents)
+        add_generated_pages(site, documents, configuration)
         add_runtime_asset(site, configuration) if configuration.copy_runtime?
       end
 
       private
+
+      def add_generated_pages(site, documents, configuration)
+        add_related_page(site, documents, configuration) if configuration.related_enabled?
+        remove_embeddings(documents) unless configuration.embedding_include_in_index?
+        site.pages << SearchIndexPage.new(site, configuration.output, documents)
+        site.pages << RuntimeConfigPage.new(site, configuration) if configuration.copy_runtime?
+        add_embedder_config(site, configuration) if semantic_query_embedder?(configuration)
+      end
 
       def build_documents(site, configuration)
         builder = DocumentBuilder.new
@@ -31,10 +39,10 @@ module Jekyll
       end
 
       def enhance_with_embeddings(site, documents, configuration)
-        cache = IndexCache.new(site.source)
+        cache = IndexCache.new(site.source, embedding_identity: configuration.embedding_identity)
         adapter = build_embedding_adapter(configuration)
 
-        documents.each { |document| embed_document(document, cache, adapter) }
+        documents.each { |entry| embed_document(entry, cache, adapter, configuration) }
         cache.prune(documents.map { |doc| doc["id"] })
         cache.save
         documents
@@ -43,24 +51,42 @@ module Jekyll
       def build_embedding_adapter(configuration)
         OllamaEmbeddingAdapter.new(
           model: configuration.embedding_model,
-          base_url: configuration.embedding_base_url
+          base_url: configuration.embedding_base_url,
+          connect_timeout: configuration.embedding_connect_timeout,
+          read_timeout: configuration.embedding_read_timeout
         )
       end
 
-      def embed_document(document, cache, adapter)
+      def add_related_page(site, documents, configuration)
+        relation_data = RelatedAnalyzer.new(configuration.related_configuration).analyze(documents)
+        site.pages << RelatedPage.new(site, configuration.related_output, relation_data)
+      end
+
+      def remove_embeddings(documents)
+        documents.each { |document| document.delete("embedding") }
+      end
+
+      def embed_document(document, cache, adapter, configuration)
         hash = IndexCache.content_hash(document)
         cached = cache.lookup(document["id"], hash)
-        if cached
-          document["embedding"] = cached["embedding"] if cached["embedding"]
-        else
-          embedding = adapter.embed(embedding_text(document))
-          document["embedding"] = embedding if embedding
+        if cached && cached["embedding"]
+          document["embedding"] = cached["embedding"]
+          return
+        end
+
+        embedding = adapter.embed(embedding_text(document, configuration))
+        if embedding
+          document["embedding"] = embedding
           cache.store(document["id"], hash, embedding)
+        elsif configuration.embedding_fail_on_error?
+          raise Jekyll::Errors::FatalException,
+                "embedding generation failed for document #{document['id'].inspect}"
         end
       end
 
-      def embedding_text(document)
-        [document["title"], document["excerpt"], document["content"]].compact.join(" ")
+      def embedding_text(document, configuration)
+        text = [document["title"], document["excerpt"], document["content"]].compact.join(" ")
+        "#{configuration.embedding_document_prefix}#{text}"
       end
 
       def collection_documents(site, configuration, builder)
@@ -89,6 +115,15 @@ module Jekyll
           name = File.basename(asset)
           site.static_files << Jekyll::StaticFile.new(site, root, base, name)
         end
+      end
+
+      def add_embedder_config(site, configuration)
+        site.pages << EmbedderConfigPage.new(site, configuration)
+      end
+
+      def semantic_query_embedder?(configuration)
+        configuration.engine == "semantic" && configuration.embedding_enabled? &&
+          configuration.query_embedder_type != "none"
       end
 
       def normalized_path(path)

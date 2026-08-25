@@ -3,8 +3,9 @@ title: "Global Positioning System"
 categories: ["technology"]
 tags: ["technology", "gps", "satellite", "navigation"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Global_Positioning_System"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1368526505"
 download_date: "2026-08-22"
+wikipedia_oldid: "1368526505"
 license: "CC BY-SA 3.0"
 ---
 

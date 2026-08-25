@@ -3,8 +3,9 @@ title: "Belay device"
 categories: ["climbing"]
 tags: ["climbing", "gear", "safety", "rope"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Belay_device"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1357742907"
 download_date: "2026-08-22"
+wikipedia_oldid: "1357742907"
 license: "CC BY-SA 3.0"
 ---
 

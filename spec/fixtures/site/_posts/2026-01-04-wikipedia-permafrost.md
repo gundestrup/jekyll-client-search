@@ -3,8 +3,9 @@ title: "Permafrost"
 categories: ["geography"]
 tags: ["cold", "arctic", "ground", "climate"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Permafrost"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1369948943"
 download_date: "2026-08-22"
+wikipedia_oldid: "1369948943"
 license: "CC BY-SA 3.0"
 ---
 

@@ -3,8 +3,9 @@ title: "Tundra"
 categories: ["ecology"]
 tags: ["cold", "arctic", "vegetation", "climate"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Tundra"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1370213427"
 download_date: "2026-08-22"
+wikipedia_oldid: "1370213427"
 license: "CC BY-SA 3.0"
 ---
 

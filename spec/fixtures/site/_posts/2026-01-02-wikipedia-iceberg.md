@@ -3,8 +3,9 @@ title: "Iceberg"
 categories: ["geography"]
 tags: ["ice", "cold", "arctic", "ocean"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Iceberg"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1368843433"
 download_date: "2026-08-22"
+wikipedia_oldid: "1368843433"
 license: "CC BY-SA 3.0"
 ---
 

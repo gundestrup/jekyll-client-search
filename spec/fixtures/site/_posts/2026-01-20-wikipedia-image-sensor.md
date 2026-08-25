@@ -3,8 +3,9 @@ title: "Image sensor"
 categories: ["technology"]
 tags: ["photography", "sensor", "digital", "camera"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Image_sensor"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1369103525"
 download_date: "2026-08-22"
+wikipedia_oldid: "1369103525"
 license: "CC BY-SA 3.0"
 ---
 

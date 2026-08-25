@@ -82,26 +82,33 @@ unless results
 end
 
 history = results["history"] || []
-baseline = history.first
+baseline = history.find { |entry| entry["benchmark_schema"] == 3 } || history.first
 latest = results["latest"] || history.last
 
-def history_section(history)
+def history_section(history, baseline)
   history.each_with_index.map do |entry, i|
-    title = i.zero? ? "Baseline" : "Run ##{i + 1}"
+    title = entry.equal?(baseline) ? "Baseline" : "Run ##{i + 1}"
     <<~SECTION
       ### #{title} — #{entry['timestamp']}
 
       | Metric | Value |
       | --- | --- |
+      | Benchmark schema | #{entry['benchmark_schema'] || 'legacy'} |
       | Ruby | #{entry['ruby_version']} |
       | Ollama model | #{entry['ollama_model'] || 'not used'} |
       | Build time (no LLM) | #{format_ms(entry['metrics']['build_time_without_llm_ms'])} |
-      | Build time (with LLM) | #{format_ms(entry['metrics']['build_time_with_llm_ms'])} |
+      | Cold build time (with LLM) | #{format_ms(entry['metrics']['build_time_with_llm_ms'])} |
+      | Warm build time (with LLM) | #{format_ms(entry['metrics']['warm_build_time_with_llm_ms'])} |
+      | Incremental build time (with LLM) | #{format_ms(entry['metrics']['incremental_build_time_with_llm_ms'])} |
       | Index size (no LLM) | #{format_bytes(entry['metrics']['index_size_without_llm_bytes'])} |
       | Index size (with LLM) | #{format_bytes(entry['metrics']['index_size_with_llm_bytes'])} |
       | Documents | #{entry['metrics']['document_count']} |
       | Embedding dims | #{entry['metrics']['embedding_dimensions'] || 'N/A'} |
       | Cache size | #{format_bytes(entry['metrics']['cache_size_bytes'])} |
+      | MiniSearch avg query | #{format_ms(entry.dig("metrics", "search", "metrics", "minisearch", "avg_query_ms"))} |
+      | ElasticLunr avg query | #{format_ms(entry.dig("metrics", "search", "metrics", "elasticlunr", "avg_query_ms"))} |
+      | Semantic cosine search | #{format_ms(entry.dig("metrics", "search", "metrics", "semantic", "avg_query_ms"))} |
+      | Semantic query embedding | #{format_ms(entry.dig("metrics", "query_embedding_avg_ms"))} |
     SECTION
   end.join("\n")
 end
@@ -114,11 +121,16 @@ template = <<~ERB
 
   ## Methodology
 
-  - **Fixture site**: 80 real-world articles (40 Wikipedia + 40 arXiv papers)
+  - **Fixture site**: 80 source posts (40 Wikipedia + 40 unique arXiv papers)
   - **Ruby**: <%= latest["ruby_version"] %>
   - **LLM model**: <%= latest["ollama_model"] || "not used" %>
-  - **Measurements**: build time (Jekyll build), index size (JSON bytes),
-    cache size, embedding dimensions
+  - **Measurements**: cold, warm, and incremental Jekyll build time;
+    index/cache size; embedding dimensions; and average engine-core query
+    latency using the same search options as the runtime adapters
+
+  Build and query timings are environment-sensitive, especially cold Ollama
+  runs. Compare measurements from equivalent hardware, model state, and system
+  load; index and cache sizes are deterministic for the same fixture/model.
 
   Run the benchmarks:
 
@@ -129,21 +141,30 @@ template = <<~ERB
 
   ## Baseline vs Current
 
-  The baseline is the first recorded measurement. The current is the latest.
+  The baseline is the first measurement for the current benchmark schema. The
+  current is the latest measurement. Compare only rows with the same schema;
+  fixture or methodology changes increment the schema, and older rows may show
+  `N/A` for metrics that did not exist yet.
 
   | Metric | Baseline | Current | Change |
   | --- | --- | --- | --- |
   | Build time (no LLM) | <%= format_ms(baseline&.dig("metrics", "build_time_without_llm_ms")) %> | <%= format_ms(latest&.dig("metrics", "build_time_without_llm_ms")) %> | <%= delta_ms(latest&.dig("metrics", "build_time_without_llm_ms"), baseline&.dig("metrics", "build_time_without_llm_ms")) %> |
-  | Build time (with LLM) | <%= format_ms(baseline&.dig("metrics", "build_time_with_llm_ms")) %> | <%= format_ms(latest&.dig("metrics", "build_time_with_llm_ms")) %> | <%= delta_ms(latest&.dig("metrics", "build_time_with_llm_ms"), baseline&.dig("metrics", "build_time_with_llm_ms")) %> |
+  | Cold build time (with LLM) | <%= format_ms(baseline&.dig("metrics", "build_time_with_llm_ms")) %> | <%= format_ms(latest&.dig("metrics", "build_time_with_llm_ms")) %> | <%= delta_ms(latest&.dig("metrics", "build_time_with_llm_ms"), baseline&.dig("metrics", "build_time_with_llm_ms")) %> |
+  | Warm build time (with LLM) | <%= format_ms(baseline&.dig("metrics", "warm_build_time_with_llm_ms")) %> | <%= format_ms(latest&.dig("metrics", "warm_build_time_with_llm_ms")) %> | <%= delta_ms(latest&.dig("metrics", "warm_build_time_with_llm_ms"), baseline&.dig("metrics", "warm_build_time_with_llm_ms")) %> |
+  | Incremental build time (with LLM) | <%= format_ms(baseline&.dig("metrics", "incremental_build_time_with_llm_ms")) %> | <%= format_ms(latest&.dig("metrics", "incremental_build_time_with_llm_ms")) %> | <%= delta_ms(latest&.dig("metrics", "incremental_build_time_with_llm_ms"), baseline&.dig("metrics", "incremental_build_time_with_llm_ms")) %> |
   | Index size (no LLM) | <%= format_bytes(baseline&.dig("metrics", "index_size_without_llm_bytes")) %> | <%= format_bytes(latest&.dig("metrics", "index_size_without_llm_bytes")) %> | <%= delta(latest&.dig("metrics", "index_size_without_llm_bytes"), baseline&.dig("metrics", "index_size_without_llm_bytes")) %> |
   | Index size (with LLM) | <%= format_bytes(baseline&.dig("metrics", "index_size_with_llm_bytes")) %> | <%= format_bytes(latest&.dig("metrics", "index_size_with_llm_bytes")) %> | <%= delta(latest&.dig("metrics", "index_size_with_llm_bytes"), baseline&.dig("metrics", "index_size_with_llm_bytes")) %> |
   | Document count | <%= baseline&.dig("metrics", "document_count") || "N/A" %> | <%= latest&.dig("metrics", "document_count") || "N/A" %> | — |
   | Embedding dimensions | <%= baseline&.dig("metrics", "embedding_dimensions") || "N/A" %> | <%= latest&.dig("metrics", "embedding_dimensions") || "N/A" %> | — |
   | Cache size | <%= format_bytes(baseline&.dig("metrics", "cache_size_bytes")) %> | <%= format_bytes(latest&.dig("metrics", "cache_size_bytes")) %> | <%= delta(latest&.dig("metrics", "cache_size_bytes"), baseline&.dig("metrics", "cache_size_bytes")) %> |
+  | MiniSearch avg query | <%= format_ms(baseline&.dig("metrics", "search", "metrics", "minisearch", "avg_query_ms")) %> | <%= format_ms(latest&.dig("metrics", "search", "metrics", "minisearch", "avg_query_ms")) %> | <%= delta_ms(latest&.dig("metrics", "search", "metrics", "minisearch", "avg_query_ms"), baseline&.dig("metrics", "search", "metrics", "minisearch", "avg_query_ms")) %> |
+  | ElasticLunr avg query | <%= format_ms(baseline&.dig("metrics", "search", "metrics", "elasticlunr", "avg_query_ms")) %> | <%= format_ms(latest&.dig("metrics", "search", "metrics", "elasticlunr", "avg_query_ms")) %> | <%= delta_ms(latest&.dig("metrics", "search", "metrics", "elasticlunr", "avg_query_ms"), baseline&.dig("metrics", "search", "metrics", "elasticlunr", "avg_query_ms")) %> |
+  | Semantic cosine search | <%= format_ms(baseline&.dig("metrics", "search", "metrics", "semantic", "avg_query_ms")) %> | <%= format_ms(latest&.dig("metrics", "search", "metrics", "semantic", "avg_query_ms")) %> | <%= delta_ms(latest&.dig("metrics", "search", "metrics", "semantic", "avg_query_ms"), baseline&.dig("metrics", "search", "metrics", "semantic", "avg_query_ms")) %> |
+  | Semantic query embedding | <%= format_ms(baseline&.dig("metrics", "query_embedding_avg_ms")) %> | <%= format_ms(latest&.dig("metrics", "query_embedding_avg_ms")) %> | <%= delta_ms(latest&.dig("metrics", "query_embedding_avg_ms"), baseline&.dig("metrics", "query_embedding_avg_ms")) %> |
 
   ## History
 
-  <%= history_section(history) %>
+  <%= history_section(history, baseline) %>
 ERB
 
 output = ERB.new(template, trim_mode: "-").result(binding)

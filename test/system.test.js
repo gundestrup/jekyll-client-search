@@ -8,7 +8,7 @@ const { JSDOM } = require("jsdom");
 const MiniSearch = require("minisearch");
 const elasticlunr = require("elasticlunr");
 
-const FIXTURE_SITE = path.join(__dirname, "..", "spec", "fixtures", "site");
+const BASELINE_PATH = path.join(__dirname, "..", "spec", "fixtures", "baseline", "search-index-baseline.json");
 const BASE_RUNTIME = fs.readFileSync(
     path.join(__dirname, "..", "assets", "client-search-base.js"),
     "utf8"
@@ -16,10 +16,14 @@ const BASE_RUNTIME = fs.readFileSync(
 const ADAPTER_DIR = path.join(__dirname, "..", "assets", "adapters");
 
 /**
- * System tests — build a real Jekyll fixture site containing 80 real-world
- * articles (40 Wikipedia + 40 arXiv papers), load the generated
- * search-index.json in jsdom with the base runtime + adapter, and assert
- * search results against known expected outcomes.
+ * System tests — load the committed baseline search-index JSON (generated
+ * from 80 source posts: 40 Wikipedia + 40 unique arXiv papers) in jsdom
+ * with the base runtime + adapter, and assert search results against known
+ * expected outcomes.
+ *
+ * The baseline JSON is a committed test artifact. The arXiv .md source
+ * posts are NOT committed (mixed/restrictive licenses) — developers run
+ * download_arxiv.rb to regenerate them. See README.developer.md.
  *
  * The fixture posts cover 6 topic clusters with deliberate vocabulary
  * overlap (ice, cold, photography, family, gear, retrieval, embeddings)
@@ -47,12 +51,11 @@ const ENGINES = [
     }
 ];
 
-function loadGeneratedIndex() {
-    const indexJson = path.join(FIXTURE_SITE, "_site", "search-index.json");
-    if (!fs.existsSync(indexJson)) {
+function loadBaselineIndex() {
+    if (!fs.existsSync(BASELINE_PATH)) {
         return null;
     }
-    return JSON.parse(fs.readFileSync(indexJson, "utf8"));
+    return JSON.parse(fs.readFileSync(BASELINE_PATH, "utf8"));
 }
 
 function createWindow(engine, index, query) {
@@ -82,12 +85,10 @@ function resultTitles(window) {
         .map(function (h2) { return h2.textContent; });
 }
 
-const index = loadGeneratedIndex();
+const index = loadBaselineIndex();
 
 ENGINES.forEach(function (engine) {
-    const runOrSkip = index ? test : test.skip;
-
-    runOrSkip(`[${engine.name}] system: single-term search returns the matching article`, async function () {
+    test(`[${engine.name}] system: single-term search returns the matching article`, async function () {
         const window = createWindow(engine, index, "glacier");
         await settle();
         const titles = resultTitles(window);
@@ -95,7 +96,7 @@ ENGINES.forEach(function (engine) {
         assert.ok(titles.includes("Glacier"), "should include the Glacier article");
     });
 
-    runOrSkip(`[${engine.name}] system: shared term returns multiple articles`, async function () {
+    test(`[${engine.name}] system: shared term returns multiple articles`, async function () {
         const window = createWindow(engine, index, "ice");
         await settle();
         const titles = resultTitles(window);
@@ -104,7 +105,7 @@ ENGINES.forEach(function (engine) {
         assert.ok(titles.includes("Iceberg"), "should include Iceberg");
     });
 
-    runOrSkip(`[${engine.name}] system: AND search narrows to matching articles`, async function () {
+    test(`[${engine.name}] system: AND search narrows to matching articles`, async function () {
         const window = createWindow(engine, index, "photography aperture");
         await settle();
         const titles = resultTitles(window);
@@ -112,7 +113,7 @@ ENGINES.forEach(function (engine) {
         assert.ok(titles.some(function (t) { return t.includes("Aperture"); }), "should include an aperture article");
     });
 
-    runOrSkip(`[${engine.name}] system: AND mismatch falls back to OR`, async function () {
+    test(`[${engine.name}] system: AND mismatch falls back to OR`, async function () {
         const window = createWindow(engine, index, "glacier pasta");
         await settle();
         const titles = resultTitles(window);
@@ -121,14 +122,14 @@ ENGINES.forEach(function (engine) {
         assert.ok(titles.includes("Pasta"), "should include Pasta");
     });
 
-    runOrSkip(`[${engine.name}] system: arXiv topic search finds scientific papers`, async function () {
+    test(`[${engine.name}] system: arXiv topic search finds scientific papers`, async function () {
         const window = createWindow(engine, index, "embeddings retrieval");
         await settle();
         const titles = resultTitles(window);
         assert.ok(titles.length >= 1, "expected at least 1 result for 'embeddings retrieval'");
     });
 
-    runOrSkip(`[${engine.name}] system: cross-domain search finds food articles`, async function () {
+    test(`[${engine.name}] system: cross-domain search finds food articles`, async function () {
         const window = createWindow(engine, index, "sourdough fermentation");
         await settle();
         const titles = resultTitles(window);
@@ -140,48 +141,43 @@ ENGINES.forEach(function (engine) {
 
     // --- Edge case tests ---
 
-    runOrSkip(`[${engine.name}] edge: empty query clears results`, async function () {
+    test(`[${engine.name}] edge: empty query clears results`, async function () {
         const window = createWindow(engine, index, "");
         await settle();
         const titles = resultTitles(window);
         assert.equal(titles.length, 0, "empty query should return no results");
     });
 
-    runOrSkip(`[${engine.name}] edge: query with no matches returns empty results`, async function () {
+    test(`[${engine.name}] edge: query with no matches returns empty results`, async function () {
         const window = createWindow(engine, index, "zzzzzzzzznomatchxyz");
         await settle();
         const titles = resultTitles(window);
         assert.equal(titles.length, 0, "gibberish query should return no results");
     });
 
-    runOrSkip(`[${engine.name}] edge: special characters in query do not crash`, async function () {
+    test(`[${engine.name}] edge: special-character query completes`, async function () {
         const window = createWindow(engine, index, "glacier! @#$%^&*()");
         await settle();
-        // Should not throw — may return 0 or some results depending on engine
-        var status = window.document.querySelector("#search-status");
-        assert.ok(status, "status element should exist");
+        assert.match(window.document.querySelector("#search-status").textContent, /^\d+ results?$/);
     });
 
-    runOrSkip(`[${engine.name}] edge: very long query does not crash`, async function () {
+    test(`[${engine.name}] edge: very long repeated query completes`, async function () {
         var longQuery = "glacier ".repeat(100);
         var window = createWindow(engine, index, longQuery.trim());
         await settle();
-        // Should not throw or hang
-        var status = window.document.querySelector("#search-status");
-        assert.ok(status, "status element should exist after long query");
+        assert.ok(resultTitles(window).includes("Glacier"), "long repeated query should find Glacier");
+        assert.match(window.document.querySelector("#search-status").textContent, /^\d+ results?$/);
     });
 
-    runOrSkip(`[${engine.name}] edge: non-ASCII query does not crash`, async function () {
+    test(`[${engine.name}] edge: non-ASCII query completes`, async function () {
         var window = createWindow(engine, index, "glaciér");
         await settle();
-        // Should not throw — accented characters should be handled
-        var status = window.document.querySelector("#search-status");
-        assert.ok(status, "status element should exist after non-ASCII query");
+        assert.match(window.document.querySelector("#search-status").textContent, /^\d+ results?$/);
     });
 
     // --- Error handling tests ---
 
-    runOrSkip(`[${engine.name}] error: malformed JSON from fetch shows error, no results`, async function () {
+    test(`[${engine.name}] error: failed index request shows unavailable, no results`, async function () {
         var dom = new JSDOM(
             `<!doctype html>
             <form id="search-form"><input id="search-query"><button>Search</button></form>
@@ -198,21 +194,25 @@ ENGINES.forEach(function (engine) {
         await settle();
         var results = dom.window.document.querySelectorAll(".client-search-result");
         assert.equal(results.length, 0, "failed fetch should produce no results");
+        assert.equal(
+            dom.window.document.querySelector("#search-status").textContent,
+            "Search is temporarily unavailable."
+        );
     });
 
-    runOrSkip(`[${engine.name}] error: empty index array shows no results`, async function () {
+    test(`[${engine.name}] error: empty index array shows no results`, async function () {
         var window = createWindow(engine, [], "glacier");
         await settle();
         var titles = resultTitles(window);
         assert.equal(titles.length, 0, "empty index should return no results");
     });
 
-    runOrSkip(`[${engine.name}] error: index with missing fields does not crash`, async function () {
-        var partialIndex = [{ id: "test", title: "Test" }]; // missing url, content, etc.
+    test(`[${engine.name}] error: index with optional fields missing uses safe defaults`, async function () {
+        var partialIndex = [{ id: "test", title: "Test" }];
         var window = createWindow(engine, partialIndex, "test");
         await settle();
-        // Should not throw — may return 0 or some results
-        var status = window.document.querySelector("#search-status");
-        assert.ok(status, "status element should exist with partial index");
+        assert.deepEqual(resultTitles(window), ["Test"]);
+        assert.equal(window.document.querySelector(".client-search-result a").getAttribute("href"), "#");
+        assert.equal(window.document.querySelector("#search-status").textContent, "1 result");
     });
 });

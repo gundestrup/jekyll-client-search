@@ -18,6 +18,12 @@ RSpec.describe Jekyll::ClientSearch::OllamaEmbeddingAdapter, :ollama_integration
   before(:all) do
     skip "Set OLLAMA_INTEGRATION=1 to run Ollama integration tests" unless ENV["OLLAMA_INTEGRATION"]
 
+    fixture_site = File.expand_path("fixtures/site", __dir__)
+    arxiv_present = Dir.glob(File.join(fixture_site, "_posts", "*-arxiv-*.md")).any?
+    unless arxiv_present
+      skip "arXiv fixture posts not found — run `ruby spec/fixtures/download_arxiv.rb` first (see README.developer.md)"
+    end
+
     uri = URI("#{OLLAMA_BASE_URL}/api/tags")
     response = Net::HTTP.get_response(uri)
     models = JSON.parse(response.body).fetch("models", []).map { |m| m["name"] }
@@ -246,17 +252,22 @@ RSpec.describe Jekyll::ClientSearch::OllamaEmbeddingAdapter, :ollama_integration
       index_json = File.join(dest, "search-index.json")
       documents = JSON.parse(File.read(index_json))
       adapter = described_class.new(model: OLLAMA_MODEL, base_url: OLLAMA_BASE_URL)
+      settings = Jekyll::ClientSearch::Configuration.new(site)
 
       # Pre-compute query embeddings and save for JS test
       query_embeddings = {}
       semantic_queries.each do |sq|
-        query_embeddings[sq[:query]] = adapter.embed(sq[:query])
+        query_text = "#{settings.embedding_query_prefix}#{sq[:query]}"
+        query_embeddings[sq[:query]] = adapter.embed(query_text)
       end
 
       # Save the index + query embeddings for the JS comparison test
       FileUtils.mkdir_p(File.dirname(semantic_index_path))
       File.write(semantic_index_path, JSON.generate({
                                                       "model" => OLLAMA_MODEL,
+                                                      "document_prefix" => settings.embedding_document_prefix,
+                                                      "query_prefix" => settings.embedding_query_prefix,
+                                                      "schema" => 2,
                                                       "documents" => documents,
                                                       "query_embeddings" => query_embeddings
                                                     }))

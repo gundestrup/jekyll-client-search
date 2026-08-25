@@ -8,7 +8,7 @@ const { JSDOM } = require("jsdom");
 const MiniSearch = require("minisearch");
 const elasticlunr = require("elasticlunr");
 
-const FIXTURE_SITE = path.join(__dirname, "..", "spec", "fixtures", "site");
+const BASELINE_PATH = path.join(__dirname, "..", "spec", "fixtures", "baseline", "search-index-baseline.json");
 const BASE_RUNTIME = fs.readFileSync(
     path.join(__dirname, "..", "assets", "client-search-base.js"),
     "utf8"
@@ -18,16 +18,13 @@ const ADAPTER_DIR = path.join(__dirname, "..", "assets", "adapters");
 /**
  * Gold standard tests — curated (query, expected_top_results) pairs that
  * define what "correct" search behavior looks like. These are not smoke
- * tests: they check exact ranking order, not just inclusion.
+ * tests: they verify the exact top result, required relevant results, minimum
+ * result counts, and irrelevant-result exclusion.
  *
  * The gold standard is defined for lexical engines (MiniSearch, ElasticLunr)
  * where results are deterministic based on text matching. For each query,
- * we specify:
- *   - query: the search string
- *   - expectedTopN: the exact titles that must appear in the top N results,
- *                   in the specified order
- *   - minResults: minimum number of results expected
- *   - mustNotInclude: titles that must NOT appear in results (discrimination)
+ * we specify the query, exact top result, required and excluded titles, and
+ * minimum result count.
  *
  * The semantic adapter is tested separately with controlled mock embeddings
  * in the comparison tests below.
@@ -126,12 +123,11 @@ const GOLD_STANDARD = [
     }
 ];
 
-function loadGeneratedIndex() {
-    const indexJson = path.join(FIXTURE_SITE, "_site", "search-index.json");
-    if (!fs.existsSync(indexJson)) {
+function loadBaselineIndex() {
+    if (!fs.existsSync(BASELINE_PATH)) {
         return null;
     }
-    return JSON.parse(fs.readFileSync(indexJson, "utf8"));
+    return JSON.parse(fs.readFileSync(BASELINE_PATH, "utf8"));
 }
 
 function createWindow(engine, index, query) {
@@ -161,13 +157,11 @@ function resultTitles(window) {
         .map(function (h2) { return h2.textContent; });
 }
 
-const index = loadGeneratedIndex();
+const index = loadBaselineIndex();
 
 LEXICAL_ENGINES.forEach(function (engine) {
-    const runOrSkip = index ? test : test.skip;
-
     GOLD_STANDARD.forEach(function (gold) {
-        runOrSkip(`[${engine.name}] gold: ${gold.description}`, async function () {
+        test(`[${engine.name}] gold: ${gold.description}`, async function () {
             const window = createWindow(engine, index, gold.query);
             await settle();
 

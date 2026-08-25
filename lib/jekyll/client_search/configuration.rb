@@ -5,7 +5,16 @@ module Jekyll
     # Reads the +client_search+ section of the Jekyll site config and exposes
     # validated, normalized values to the generator.
     class Configuration
+      include ConfigurationAccessors
+      include EmbeddingConfiguration
+
       ENGINES = %w[minisearch elasticlunr semantic].freeze
+
+      ENGINE_CDN_URLS = {
+        "minisearch" => "https://cdn.jsdelivr.net/npm/minisearch@7.2.0/dist/umd/index.min.js",
+        "elasticlunr" => "https://cdn.jsdelivr.net/npm/elasticlunr@0.9.5/elasticlunr.min.js",
+        "semantic" => nil
+      }.freeze
 
       DEFAULTS = {
         "enabled" => true,
@@ -14,7 +23,17 @@ module Jekyll
         "collections" => ["posts"],
         "include_pages" => false,
         "copy_runtime" => true,
-        "embedding" => { "enabled" => false, "model" => "embeddinggemma:300m", "base_url" => "http://localhost:11434" }
+        "embedding" => {
+          "enabled" => false,
+          "model" => "embeddinggemma:300m",
+          "base_url" => "http://localhost:11434",
+          "connect_timeout" => 5,
+          "read_timeout" => 120,
+          "fail_on_error" => true,
+          "query_embedder" => {
+            "type" => "transformers"
+          }
+        }
       }.freeze
 
       def initialize(site)
@@ -27,9 +46,38 @@ module Jekyll
         end
 
         @values = DEFAULTS.merge(configured)
-        @values["embedding"] = DEFAULTS.fetch("embedding").merge(configured["embedding"] || {})
+        @live_search = LiveSearchConfiguration.new(configured["live_search"] || {}, engine: engine)
+        @related = RelatedConfiguration.new(configured["related"] || {})
+        merge_embedding_config(configured["embedding"])
         validate_engine!
+        return unless embedding_enabled?
+
+        validate_embedding!
+        validate_query_embedder!
       end
+
+      private
+
+      def merge_embedding_config(configured_embedding)
+        embedding = configured_embedding || {}
+        unless embedding.is_a?(Hash)
+          raise Jekyll::Errors::FatalException,
+                "client_search embedding configuration must be a mapping"
+        end
+        @values["embedding"] = DEFAULTS.fetch("embedding").merge(embedding)
+        merge_query_embedder_config(embedding["query_embedder"])
+      end
+
+      def merge_query_embedder_config(configured_query_embedder)
+        @query_embedder = QueryEmbedderConfiguration.new(
+          configured_query_embedder || {},
+          build_model: embedding_model,
+          build_base_url: embedding_base_url,
+          query_prefix: embedding_query_prefix
+        )
+      end
+
+      public
 
       def enabled?
         @values["enabled"] != false
@@ -39,8 +87,23 @@ module Jekyll
         @values.fetch("engine").to_s
       end
 
+      def engine_url
+        @values.key?("engine_url") ? @values.fetch("engine_url") : ENGINE_CDN_URLS.fetch(engine)
+      end
+
+      def engine_sri
+        @values.fetch("engine_sri", nil)
+      end
+
+      def engine_crossorigin
+        @values.fetch("engine_crossorigin", nil)
+      end
+
       def runtime_assets
-        ["assets/client-search-base.js", "assets/adapters/#{engine}.js"]
+        assets = ["assets/client-search-base.js", "assets/adapters/#{engine}.js"]
+        assets.concat(query_embedder_assets) if engine == "semantic" && embedding_enabled?
+        assets << "assets/client-search-related.js" if related_enabled?
+        assets
       end
 
       def output
@@ -63,19 +126,11 @@ module Jekyll
         @values["copy_runtime"] != false
       end
 
-      def embedding_enabled?
-        @values.fetch("embedding").fetch("enabled") == true
-      end
-
-      def embedding_model
-        @values.fetch("embedding").fetch("model").to_s
-      end
-
-      def embedding_base_url
-        @values.fetch("embedding").fetch("base_url").to_s
-      end
-
       private
+
+      def validate_query_embedder!
+        query_embedder_model if engine == "semantic" && query_embedder_type == "transformers"
+      end
 
       def validate_engine!
         return if ENGINES.include?(engine)

@@ -3,8 +3,9 @@ title: "Digital photography"
 categories: ["technology"]
 tags: ["photography", "digital", "camera", "technology"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Digital_photography"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1362911875"
 download_date: "2026-08-22"
+wikipedia_oldid: "1362911875"
 license: "CC BY-SA 3.0"
 ---
 

@@ -3,8 +3,9 @@ title: "Alpine climate"
 categories: ["climatology"]
 tags: ["mountain", "cold", "climate", "weather"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Alpine_climate"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1368863795"
 download_date: "2026-08-22"
+wikipedia_oldid: "1368863795"
 license: "CC BY-SA 3.0"
 ---
 

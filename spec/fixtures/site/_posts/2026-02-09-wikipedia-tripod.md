@@ -3,8 +3,9 @@ title: "Tripod"
 categories: ["photography"]
 tags: ["photography", "gear", "camera", "support"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Tripod"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1352206495"
 download_date: "2026-08-22"
+wikipedia_oldid: "1352206495"
 license: "CC BY-SA 3.0"
 ---
 

@@ -3,8 +3,9 @@ title: "Chocolate"
 categories: ["food"]
 tags: ["food", "cooking", "chocolate", "sweet"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Chocolate"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1368980551"
 download_date: "2026-08-22"
+wikipedia_oldid: "1368980551"
 license: "CC BY-SA 3.0"
 ---
 

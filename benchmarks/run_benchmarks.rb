@@ -33,9 +33,11 @@ require "time"
 require "tmpdir"
 require "fileutils"
 require "benchmark"
+require "open3"
 
 BENCHMARKS_DIR = __dir__
 RESULTS_PATH = File.join(BENCHMARKS_DIR, "results.json")
+SEMANTIC_BENCHMARK_PATH = File.join(BENCHMARKS_DIR, "semantic-benchmark.json")
 FIXTURE_SITE = File.expand_path("spec/fixtures/site", File.join(BENCHMARKS_DIR, ".."))
 
 def load_results
@@ -81,11 +83,39 @@ def measure_build_without_llm
   end
 end
 
+def measure_search
+  script = File.join(BENCHMARKS_DIR, "search_benchmark.js")
+  output, status = Open3.capture2("node", script)
+  raise "search benchmark failed" unless status.success?
+
+  JSON.parse(output)
+end
+
+def timed_build(source, embedding_config)
+  Dir.mktmpdir("bench-llm-dest") do |dest|
+    elapsed = Benchmark.realtime { build_site(source, dest, embedding_config) }
+    yield dest, (elapsed * 1000).round
+  end
+end
+
+def write_semantic_benchmark(documents, model, base_url)
+  queries = ["glacier", "ice climbing", "sourdough bread", "fermentation", "camera lens"]
+  adapter = Jekyll::ClientSearch::OllamaEmbeddingAdapter.new(model: model, base_url: base_url)
+  query_embeddings = {}
+  elapsed = Benchmark.realtime do
+    queries.each { |query| query_embeddings[query] = adapter.embed(query) }
+  end
+  File.write(
+    SEMANTIC_BENCHMARK_PATH,
+    JSON.generate("documents" => documents, "query_embeddings" => query_embeddings)
+  )
+  (elapsed * 1000 / queries.length).round(3)
+end
+
 def measure_build_with_llm
   model = "embeddinggemma:300m"
   base_url = "http://localhost:11434"
 
-  # Check if Ollama is available
   require "net/http"
   begin
     uri = URI("#{base_url}/api/tags")
@@ -96,34 +126,37 @@ def measure_build_with_llm
     return nil
   end
 
-  cache_file = File.join(FIXTURE_SITE, ".jekyll-client-search-cache.json")
-  FileUtils.rm_f(cache_file)
-
-  Dir.mktmpdir("bench-llm") do |dest|
-    time = Benchmark.realtime do
-      build_site(FIXTURE_SITE, dest, { "enabled" => true, "model" => model, "base_url" => base_url })
-    end
-
-    index_path = File.join(dest, "search-index.json")
-    index_size = File.size(index_path)
-    documents = JSON.parse(File.read(index_path))
-    cache_size = File.exist?(cache_file) ? File.size(cache_file) : 0
-    embedding_dims = documents.find { |d| d["embedding"] }&.dig("embedding")&.length
-
+  embedding_config = { "enabled" => true, "model" => model, "base_url" => base_url }
+  Dir.mktmpdir("bench-llm-source") do |source|
+    FileUtils.cp_r("#{FIXTURE_SITE}/.", source)
+    FileUtils.rm_rf(File.join(source, "_site"))
+    cache_file = File.join(source, ".jekyll-client-search-cache.json")
     FileUtils.rm_f(cache_file)
 
-    {
-      time_ms: (time * 1000).round,
-      index_size_bytes: index_size,
-      document_count: documents.length,
-      embedding_dimensions: embedding_dims,
-      cache_size_bytes: cache_size
-    }
+    result = {}
+    timed_build(source, embedding_config) do |dest, elapsed|
+      documents = JSON.parse(File.read(File.join(dest, "search-index.json")))
+      result.merge!(
+        time_ms: elapsed,
+        index_size_bytes: File.size(File.join(dest, "search-index.json")),
+        document_count: documents.length,
+        embedding_dimensions: documents.find { |entry| entry["embedding"] }&.dig("embedding")&.length,
+        cache_size_bytes: File.size(cache_file),
+        query_embedding_avg_ms: write_semantic_benchmark(documents, model, base_url)
+      )
+    end
+    timed_build(source, embedding_config) { |_dest, elapsed| result[:warm_time_ms] = elapsed }
+
+    changed_post = Dir[File.join(source, "_posts", "*.md")].first
+    File.write(changed_post, "#{File.read(changed_post)}\nIncremental benchmark change.\n")
+    timed_build(source, embedding_config) { |_dest, elapsed| result[:incremental_time_ms] = elapsed }
+    result
   end
 end
 
 puts "Running benchmarks..."
 puts "  Ruby: #{RUBY_VERSION}"
+FileUtils.rm_f(SEMANTIC_BENCHMARK_PATH)
 
 # Measure build without LLM
 print "  Building without LLM... "
@@ -134,24 +167,35 @@ puts "#{no_llm[:time_ms]}ms, #{no_llm[:index_size_bytes]} bytes"
 print "  Building with LLM... "
 with_llm = measure_build_with_llm
 if with_llm
-  puts "#{with_llm[:time_ms]}ms, #{with_llm[:index_size_bytes]} bytes"
+  puts "cold #{with_llm[:time_ms]}ms, warm #{with_llm[:warm_time_ms]}ms, " \
+       "incremental #{with_llm[:incremental_time_ms]}ms, #{with_llm[:index_size_bytes]} bytes"
 else
   puts "skipped (Ollama not available)"
 end
 
+print "  Measuring search latency... "
+search = measure_search
+FileUtils.rm_f(SEMANTIC_BENCHMARK_PATH)
+puts "done"
+
 # Build result entry
 entry = {
+  "benchmark_schema" => 3,
   "timestamp" => Time.now.utc.iso8601,
   "ruby_version" => RUBY_VERSION,
   "ollama_model" => with_llm ? "embeddinggemma:300m" : nil,
   "metrics" => {
     "build_time_without_llm_ms" => no_llm[:time_ms],
     "build_time_with_llm_ms" => with_llm&.dig(:time_ms),
+    "warm_build_time_with_llm_ms" => with_llm&.dig(:warm_time_ms),
+    "incremental_build_time_with_llm_ms" => with_llm&.dig(:incremental_time_ms),
     "index_size_without_llm_bytes" => no_llm[:index_size_bytes],
     "index_size_with_llm_bytes" => with_llm&.dig(:index_size_bytes),
     "document_count" => no_llm[:document_count],
     "embedding_dimensions" => with_llm&.dig(:embedding_dimensions),
-    "cache_size_bytes" => with_llm&.dig(:cache_size_bytes)
+    "cache_size_bytes" => with_llm&.dig(:cache_size_bytes),
+    "query_embedding_avg_ms" => with_llm&.dig(:query_embedding_avg_ms),
+    "search" => search
   }
 }
 

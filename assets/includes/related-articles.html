@@ -1,0 +1,36 @@
+---
+# Reference include for related articles.
+#
+# Copy this file into your site's _includes/ directory:
+#   cp $(bundle show jekyll-client-search)/assets/includes/related-articles.html _includes/
+#
+# Then add one line to your post layout:
+#   {% include related-articles.html %}
+#
+# Or use the Liquid tag directly (no file copy needed):
+#   {% related_articles %}
+#
+# Available parameters via include variables:
+#   sort: "relevance" (default) or "date"
+#   scripts: true (default) to load runtime scripts, false to skip
+---
+
+{% assign related_sort = include.sort | default: "relevance" %}
+{% assign include_scripts = include.scripts | default: true %}
+{% if include_scripts == false or include_scripts == "false" %}
+  {% assign include_scripts = false %}
+{% endif %}
+
+<section class="related-articles-section">
+  <label for="related-sort">Sort related articles</label>
+  <select id="related-sort">
+    <option value="relevance">Most related</option>
+    <option value="date">Newest</option>
+  </select>
+  <div id="related-articles" data-related-sort="{{ related_sort }}"></div>
+</section>
+
+{% if include_scripts %}
+<script src="{{ '/assets/search-runtime-config.js' | relative_url }}"></script>
+<script src="{{ '/assets/client-search-related.js' | relative_url }}"></script>
+{% endif %}

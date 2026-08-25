@@ -29,9 +29,11 @@ require_relative "support/mock_embedding_adapter"
 #   9. Verifies the real embeddings are valid 768-dim float vectors
 
 BASELINE_PATH = File.expand_path("fixtures/baseline/search-index-baseline.json", __dir__).freeze
+SEMANTIC_GOLD_PATH = File.expand_path("fixtures/baseline/semantic-embeddings.json", __dir__).freeze
 
 RSpec.describe "LLM injection into baseline JSON", :system do
   let(:baseline_documents) { JSON.parse(File.read(BASELINE_PATH)) }
+  let(:semantic_gold) { JSON.parse(File.read(SEMANTIC_GOLD_PATH)) }
   let(:mock_embedding) { Array.new(768) { |i| (i * 0.001).to_f } }
 
   it "has a committed baseline JSON without embeddings" do
@@ -50,6 +52,20 @@ RSpec.describe "LLM injection into baseline JSON", :system do
                        "document #{doc['id']} missing required field '#{field}'"
       end
     end
+  end
+
+  it "has a committed semantic gold fixture for every baseline document" do
+    expect(File.exist?(SEMANTIC_GOLD_PATH)).to be(true)
+    expect(semantic_gold["model"]).to eq("embeddinggemma:300m")
+    expect(semantic_gold["document_prefix"]).to eq("title: none | text: ")
+    expect(semantic_gold["query_prefix"]).to eq("task: search result | query: ")
+    expect(semantic_gold["schema"]).to eq(2)
+    expect(semantic_gold.fetch("document_embeddings").keys.sort)
+      .to eq(baseline_documents.map { |entry| entry.fetch("id") }.sort)
+    expect(semantic_gold.fetch("document_embeddings").values).to all(
+      satisfy { |embedding| embedding.length == 768 && embedding.all?(Float) }
+    )
+    expect(semantic_gold.fetch("query_embeddings")).not_to be_empty
   end
 
   it "can inject embeddings into the baseline JSON producing a valid semantic index" do
@@ -96,7 +112,12 @@ RSpec.describe "LLM injection into baseline JSON", :system do
         "plugins" => ["jekyll-client-search"],
         "client_search" => {
           "engine" => "semantic",
-          "embedding" => { "enabled" => true, "model" => "test", "base_url" => "http://localhost:1" }
+          "embedding" => {
+            "enabled" => true,
+            "model" => "test",
+            "base_url" => "http://localhost:1",
+            "query_embedder" => { "type" => "none" }
+          }
         }
       }
       require "yaml"
@@ -145,6 +166,10 @@ RSpec.describe "LLM injection into baseline JSON", :system do
   context "with real Ollama embeddings", :ollama_integration do
     before(:all) do
       skip "Set OLLAMA_INTEGRATION=1 to run Ollama integration tests" unless ENV["OLLAMA_INTEGRATION"]
+
+      fixture_site = File.expand_path("fixtures/site", __dir__)
+      arxiv_present = Dir.glob(File.join(fixture_site, "_posts", "*-arxiv-*.md")).any?
+      skip "arXiv fixture posts not found — run download_arxiv.rb (see README.developer.md)" unless arxiv_present
 
       uri = URI("http://localhost:11434/api/tags")
       response = Net::HTTP.get_response(uri)

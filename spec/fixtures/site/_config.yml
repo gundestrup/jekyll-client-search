@@ -3,10 +3,11 @@ url: "https://example.com"
 plugins:
   - jekyll-client-search
 client_search:
-  enabled: true
-  engine: minisearch
-  output: search-index.json
-  collections:
-    - posts
-  include_pages: false
-  copy_runtime: true
+  related:
+    enabled: true
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: post

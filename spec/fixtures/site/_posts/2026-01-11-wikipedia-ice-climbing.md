@@ -3,8 +3,9 @@ title: "Ice climbing"
 categories: ["sports"]
 tags: ["ice", "climbing", "cold", "adventure", "gear"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Ice_climbing"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1352128881"
 download_date: "2026-08-22"
+wikipedia_oldid: "1352128881"
 license: "CC BY-SA 3.0"
 ---
 

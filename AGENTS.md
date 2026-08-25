@@ -1,22 +1,29 @@
 # AI Assistant Guide — jekyll-client-search
 
+See [README.md](README.md) for user-facing configuration and usage docs.
+See [README.developer.md](README.developer.md) for fixture setup and
+LLM/vector testing instructions.
+
 ## Project overview
 
 This repository contains the `jekyll-client-search` Ruby gem. It provides a
-Jekyll generator that creates a JSON document index for client-side
-[MiniSearch](https://lucaong.github.io/minisearch/) search.
+Jekyll generator that creates a JSON document index for client-side search
+using [MiniSearch](https://lucaong.github.io/minisearch/),
+[ElasticLunr](https://github.com/weixsong/elasticlunr.js), or a semantic
+cosine-similarity adapter over pre-computed embeddings.
 
 The integration test platform is `/Users/svend/workspace/gundestrup.dk`, which
 uses this gem through a local Bundler path dependency.
 
 ## Runtime and development environment
 
-- Ruby: 3.4.10, managed with rbenv via `.ruby-version`
+- Development Ruby: 3.4.10 via `.ruby-version`; supported Ruby: 3.2+
 - Bundler: 4.0.9, pinned in `Gemfile.lock`
 - License: AGPL-3.0-or-later
 - Jekyll: 4.x
 - Test framework: RSpec
-- Browser search engine: MiniSearch 7.2.0, loaded by the consuming site
+- Browser search engine: MiniSearch 7.2.0, ElasticLunr 0.9.5, or
+  transformers.js/Ollama API for semantic — loaded by the consuming site
 
 Set up the environment with:
 
@@ -26,6 +33,15 @@ rbenv local 3.4.10
 bundle install
 npm ci
 ```
+
+For the full 80-post fixture set (needed for Ollama integration tests and
+baseline regeneration), also run:
+
+```bash
+ruby spec/fixtures/download_arxiv.rb
+```
+
+See `README.developer.md` for detailed fixture setup and licensing notes.
 
 ## Commands
 
@@ -38,6 +54,8 @@ bundle exec ruby -c lib/jekyll/client_search/generator.rb
 bundle exec rake ci
 bundle exec rake version:show
 bundle exec rake "version:bump[patch]"
+bundle exec rake jekyll_client_search:reference_files
+bundle exec rake jekyll_client_search:install
 gem build jekyll-client-search.gemspec
 ```
 
@@ -69,13 +87,49 @@ expected and is separate from the search plugin.
 - `assets/adapters/elasticlunr.js` — ElasticLunr translator adapter
 - `assets/adapters/semantic.js` — cosine similarity adapter for
   pre-computed embeddings
+- `assets/query-embedders/transformers.js` — browser-side Transformers.js
+  query embedder and Web Worker client
+- `assets/query-embedders/transformers-worker.js` — off-main-thread
+  tokenization and WebGPU/WASM inference
+- `assets/query-embedders/ollama-api.js` — cancellable Ollama-compatible HTTP
+  query embeddings
+- `assets/client-search-related.js` — related-article renderer with
+  relevance/newest sorting, `renderItem` callback, `filter` callback, and
+  richer default rendering (date, shared tags, categories, excerpt)
+- `lib/jekyll/client_search/related_tag.rb` — `{% related_articles %}` Liquid
+  tag for one-line adoption in post layouts
+- `lib/jekyll/client_search/search_tag.rb` — `{% search_form %}` Liquid tag
+  for config-driven search form + scripts (engine-agnostic)
+- `lib/jekyll/client_search/tasks.rb` — rake tasks for inspecting and
+  installing reference files (`jekyll_client_search:reference_files`,
+  `jekyll_client_search:install`)
+- `assets/includes/related-articles.html` — reference include file for
+  copy-paste adoption
+- `assets/layouts/post-with-related.html` — reference drop-in post layout
+- `lib/jekyll/client_search/related_analyzer.rb` — build-time metadata/vector
+  relation analysis with a similarity cutoff
 - `spec/` — Ruby unit and system tests
-- `spec/fixtures/site/` — Jekyll fixture site with 80 real-world posts
-  (40 Wikipedia articles CC BY-SA 3.0 + 40 arXiv papers)
+- `spec/fixtures/site/` — Jekyll fixture site with up to 80 real-world source
+  posts (40 committed Wikipedia articles + 40 gitignored arXiv papers)
 - `spec/fixtures/download_wikipedia.rb` — script to download Wikipedia articles
+  (kept for reference; Wikipedia fixtures are committed under CC BY-SA 3.0)
 - `spec/fixtures/download_arxiv.rb` — script to download arXiv papers
+  (not committed due to mixed/restrictive licenses; run locally if needed)
 - `test/runtime.test.js` — uniform JS unit tests parameterized over adapters
-- `test/system.test.js` — JS system tests using the built 80-post fixture site
+- `test/related.test.js` — JS tests for the related renderer (default,
+  renderItem, filter, sort)
+- `test/system.test.js` — JS system tests using the committed baseline index
+- `spec/related_tag_spec.rb` — unit tests for the `{% related_articles %}`
+  Liquid tag
+- `spec/search_tag_spec.rb` — unit tests for the `{% search_form %}` Liquid tag
+- `spec/tasks_spec.rb` — unit tests for the rake tasks (reference_files, install)
+- `spec/related_analyzer_spec.rb` — unit tests for the relation analyzer
+- `spec/fixtures/site/_layouts/post.html` — fixture site post layout using
+  `{% related_articles %}`
+- `spec/fixtures/site/related-test.html` — fixture site demo page exercising
+  all related-articles adoption paths
+- `spec/fixtures/site/search-test.html` — fixture site demo page using
+  `{% search_form %}`
 
 The generator creates `search-index.json` and copies the base runtime + the
 selected engine adapter. When embeddings are enabled, it also generates
@@ -97,38 +151,68 @@ JSON-index + adapter model.
 client_search:
   enabled: true
   engine: minisearch
+  engine_url: null              # null = per-engine CDN default; set to self-host
+  engine_sri: null              # optional Subresource Integrity hash
+  engine_crossorigin: null      # optional crossorigin attribute
   output: search-index.json
   collections:
     - posts
   include_pages: false
   copy_runtime: true
+  live_search:
+    enabled: true               # default: true for lexical, false for semantic
+    min_chars: 2
+    debounce_ms: 150
+    semantic_debounce_ms: 500
+  related:
+    enabled: false
+    output: search-relations.json
+    minimum_similarity: 0.55
+    max_items: null
   embedding:
     enabled: false
     model: embeddinggemma:300m
     base_url: http://localhost:11434
+    query_embedder:
+      type: transformers
+    connect_timeout: 5
+    read_timeout: 120
+    fail_on_error: true
 ```
 
 The `engine` option selects `minisearch`, `elasticlunr`, or `semantic`.
 Configured collections are indexed as documents with `id`, `title`, `url`,
-`excerpt`, `content`, `categories`, and `tags` fields. When
-`embedding.enabled` is true, an `embedding` field (float vector) is added
-to each document. The browser runtime configures engine fields and
-query-time boosts via the selected adapter.
+`excerpt`, `content`, `categories`, `tags`, and normalized publication date
+fields. When `embedding.enabled` is true, vectors are generated at build time;
+they remain in the index for semantic search and can be omitted from lexical
+indexes after related analysis. When `related.enabled` is true, the generator
+writes a separate cutoff-based `search-relations.json` file.
 
 ## Embeddings and incremental indexing
 
 When `embedding.enabled: true`:
-- The `OllamaEmbeddingAdapter` sends each document's text to a local
+- The `OllamaEmbeddingAdapter` sends each prefixed document's text to a local
   Ollama server and receives a float vector.
+- The default query embedder runs the compatible ONNX model in the browser
+  through transformers.js. `ollama_api` calls a reachable `/api/embed`
+  endpoint instead. Model-specific document/query prefixes must remain
+  aligned.
 - The `IndexCache` (`.jekyll-client-search-cache.json` in the site source)
-  stores content hashes + cached embeddings per document ID.
-- On rebuild, unchanged documents (matching content hash) reuse the cached
-  embedding — only new or modified documents are sent to the model.
-- The cache is git-ignored and safe to delete.
+  stores content hashes, embedding identity, and cached vectors per document ID.
+- On rebuild, unchanged documents reuse cached embeddings only when the model,
+  endpoint, provider, and cache schema also match.
+- Cache writes are atomic; the cache is git-ignored and safe to delete.
+- Embedding failures fail the build by default. Warning-only behavior requires
+  the explicit `embedding.fail_on_error: false` setting.
 - `ollama-ruby` is an optional dependency — lazy-loaded only when
   embeddings are enabled. Users who don't use embeddings never need it.
 
 ## Search strategy
+
+The base runtime owns form submission and optional engine-aware live search.
+Live search uses a 150 ms lexical debounce or 500 ms semantic debounce by
+default, invalidates stale work immediately, and preserves explicit form
+submission.
 
 The base runtime owns the two-stage strategy, applied uniformly:
 
@@ -139,8 +223,12 @@ The base runtime owns the two-stage strategy, applied uniformly:
 
 The base runtime passes a uniform query `{ combineWith, fuzzy, prefix }`
 to the adapter for each stage. The adapter translates this into the engine's
-native options and returns `[{ ref, score }]`. The base shell looks up
-documents by `ref` (id) regardless of engine.
+native options and returns `[{ ref, score }]` or a Promise of that array. The
+semantic adapter requires `window.ClientSearchQueryEmbedder`, caches query
+vectors, and accepts arrays or typed arrays. The packaged transformers.js and
+Ollama API scripts provide that function; sites may still provide a custom one.
+The base shell ignores stale async results and looks up documents by `ref` (id)
+regardless of engine.
 
 ## Coding conventions
 

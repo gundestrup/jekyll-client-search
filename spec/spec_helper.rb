@@ -1,5 +1,14 @@
 # frozen_string_literal: true
 
+require "simplecov"
+
+SimpleCov.start do
+  enable_coverage :branch
+  add_filter "/spec/"
+  track_files "lib/**/*.rb"
+  minimum_coverage line: 85, branch: 75 if ENV["CI"] || ENV["COVERAGE"]
+end
+
 require "bundler/setup"
 require "jekyll-client-search"
 

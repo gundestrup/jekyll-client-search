@@ -3,8 +3,9 @@ title: "Solar panel"
 categories: ["technology"]
 tags: ["technology", "solar", "power", "electronics"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Solar_panel"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1370187219"
 download_date: "2026-08-22"
+wikipedia_oldid: "1370187219"
 license: "CC BY-SA 3.0"
 ---
 

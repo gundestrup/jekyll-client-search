@@ -3,8 +3,9 @@ title: "Pasta"
 categories: ["food"]
 tags: ["food", "cooking", "italian", "pasta"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Pasta"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1369777495"
 download_date: "2026-08-22"
+wikipedia_oldid: "1369777495"
 license: "CC BY-SA 3.0"
 ---
 

@@ -1,0 +1,49 @@
+jekyll-client-search — Test Fixture Attribution
+================================================
+
+This repository includes test fixture posts derived from publicly available
+sources. Each fixture post records its source, license, and a permanent link
+in its YAML frontmatter.
+
+Wikipedia articles (40 posts)
+-----------------------------
+Location: spec/fixtures/site/_posts/*-wikipedia-*.md
+Source:   Wikipedia — The Free Encyclopedia
+License:  CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/)
+Link:     Each post has a `wikipedia_oldid` field and a `source_url` pointing
+          to a permanent revision link (https://en.wikipedia.org/w/index.php?oldid=XXXX)
+          so the exact downloaded version can be referenced even as Wikipedia
+          articles change over time.
+
+The download script (spec/fixtures/download_wikipedia.rb) is kept for
+reference and regeneration but does not need to be re-run — the Wikipedia
+fixtures are committed under their CC BY-SA 3.0 license with attribution.
+
+arXiv papers (40 posts — NOT committed)
+---------------------------------------
+Location: spec/fixtures/site/_posts/*-arxiv-*.md (gitignored)
+Source:   arXiv.org
+License:  Varies per paper — arXiv non-exclusive license, CC BY 4.0,
+          CC BY-NC-SA 4.0, or CC BY-NC-ND 4.0. Each paper's actual license
+          is recorded in its frontmatter by the download script.
+
+arXiv fixture posts are NOT committed to this repository because some
+papers use licenses that restrict redistribution (non-commercial, no
+derivatives, or arXiv-only distribution rights). Developers who need the
+full 80-post fixture set must run the download script locally:
+
+    ruby spec/fixtures/download_arxiv.rb
+
+See README.developer.md for details.
+
+Committed test artifacts
+------------------------
+The following committed JSON files are generated test artifacts derived
+from the fixture posts. They contain indexed/search-processed data (titles,
+excerpts, tokenized content, embedding vectors), not the raw article text:
+
+  spec/fixtures/baseline/search-index-baseline.json
+  spec/fixtures/baseline/semantic-embeddings.json
+
+These are kept as stable gold-standard fixtures so that tests can run
+without requiring developers to download the arXiv papers or run Ollama.

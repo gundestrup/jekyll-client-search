@@ -3,8 +3,9 @@ title: "Arctic Circle"
 categories: ["geography"]
 tags: ["arctic", "cold", "geography"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Arctic_Circle"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1369806384"
 download_date: "2026-08-22"
+wikipedia_oldid: "1369806384"
 license: "CC BY-SA 3.0"
 ---
 

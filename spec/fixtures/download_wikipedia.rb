@@ -23,13 +23,10 @@ require "net/http"
 require "json"
 require "date"
 require "fileutils"
-require "cgi"
+require "cgi/escape"
 
-POSTS_DIR = File.expand_path("_posts", __dir__)
+POSTS_DIR = File.expand_path("site/_posts", __dir__)
 FileUtils.mkdir_p(POSTS_DIR)
-
-# Remove old Wikipedia posts
-Dir.glob(File.join(POSTS_DIR, "wikipedia-*.md")).each { |f| File.delete(f) }
 
 DOWNLOAD_DATE = Date.today.strftime("%Y-%m-%d")
 LICENSE = "CC BY-SA 3.0"
@@ -86,8 +83,11 @@ ARTICLES = [
 ].freeze
 
 def fetch_wikipedia_extract(title)
+  # Request both the extract and the current revision ID in one call.
+  # The revision ID lets us build a permanent link to the exact version
+  # that was downloaded, since Wikipedia articles change over time.
   api_url = "https://en.wikipedia.org/w/api.php?action=query&titles=#{CGI.escape(title)}" \
-            "&prop=extracts&explaintext=1&format=json&redirects=1"
+            "&prop=extracts|revisions&explaintext=1&rvprop=ids&rvlimit=1&format=json&redirects=1"
   uri = URI(api_url)
 
   3.times do |attempt|
@@ -107,10 +107,14 @@ def fetch_wikipedia_extract(title)
         extract = words.take(2500).join(" ") + "..."
       end
 
+      revid = page.dig("revisions", 0, "revid")
+      permanent_url = revid ? "#{SOURCE_URL}/w/index.php?oldid=#{revid}" : "#{SOURCE_URL}/wiki/#{page['title'].tr(' ', '_')}"
+
       return {
         title: page["title"],
         extract: extract,
-        url: "#{SOURCE_URL}/wiki/#{page['title'].tr(' ', '_')}"
+        url: permanent_url,
+        revid: revid
       }
     elsif response.code == "429" || response.code == "503"
       sleep(3 * (attempt + 1))
@@ -138,6 +142,7 @@ def write_post(article, index, fetch_result)
     "download_date" => DOWNLOAD_DATE,
     "license" => LICENSE
   }
+  frontmatter["wikipedia_oldid"] = fetch_result[:revid].to_s if fetch_result[:revid]
 
   yaml = frontmatter.map do |k, v|
     if v.is_a?(Array)
@@ -169,6 +174,13 @@ ARTICLES.each_with_index do |article, index|
     puts "FAILED"
   end
   sleep 2 # Be polite to the API
+end
+
+if generated.length == ARTICLES.length
+  generated_paths = generated.map { |entry| entry[:path] }
+  Dir.glob(File.join(POSTS_DIR, "*-wikipedia-*.md")).each do |file|
+    File.delete(file) unless generated_paths.include?(file)
+  end
 end
 
 puts "\nGenerated #{generated.length} Wikipedia posts"

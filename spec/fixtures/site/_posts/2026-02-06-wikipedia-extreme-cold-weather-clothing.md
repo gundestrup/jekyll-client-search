@@ -3,8 +3,9 @@ title: "Extreme cold weather clothing"
 categories: ["technology"]
 tags: ["cold", "clothing", "gear", "technology"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Extreme_cold_weather_clothing"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1336885535"
 download_date: "2026-08-22"
+wikipedia_oldid: "1336885535"
 license: "CC BY-SA 3.0"
 ---
 

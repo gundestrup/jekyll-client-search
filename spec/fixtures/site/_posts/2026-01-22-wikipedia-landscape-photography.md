@@ -3,8 +3,9 @@ title: "Landscape photography"
 categories: ["arts"]
 tags: ["photography", "landscape", "nature", "light"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Landscape_photography"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1342337385"
 download_date: "2026-08-22"
+wikipedia_oldid: "1342337385"
 license: "CC BY-SA 3.0"
 ---
 

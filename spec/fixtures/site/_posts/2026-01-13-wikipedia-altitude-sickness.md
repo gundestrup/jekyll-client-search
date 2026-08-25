@@ -3,8 +3,9 @@ title: "Altitude sickness"
 categories: ["medicine"]
 tags: ["mountain", "health", "altitude"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Altitude_sickness"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1368017111"
 download_date: "2026-08-22"
+wikipedia_oldid: "1368017111"
 license: "CC BY-SA 3.0"
 ---
 

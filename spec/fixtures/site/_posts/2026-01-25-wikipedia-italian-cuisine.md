@@ -3,8 +3,9 @@ title: "Italian cuisine"
 categories: ["food"]
 tags: ["food", "cooking", "italian", "family"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Italian_cuisine"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1368167269"
 download_date: "2026-08-22"
+wikipedia_oldid: "1368167269"
 license: "CC BY-SA 3.0"
 ---
 

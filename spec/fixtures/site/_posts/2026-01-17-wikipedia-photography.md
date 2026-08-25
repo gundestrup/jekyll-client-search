@@ -3,8 +3,9 @@ title: "Photography"
 categories: ["arts"]
 tags: ["photography", "light", "art", "image"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Photography"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1369263105"
 download_date: "2026-08-22"
+wikipedia_oldid: "1369263105"
 license: "CC BY-SA 3.0"
 ---
 

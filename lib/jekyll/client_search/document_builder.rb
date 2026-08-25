@@ -17,8 +17,10 @@ module Jekyll
           "excerpt" => clean(data["excerpt"] || excerpt_for(document)),
           "content" => clean(document.content),
           "categories" => normalize_list(data["categories"]),
-          "tags" => normalize_list(data["tags"])
-        }
+          "tags" => normalize_list(data["tags"]),
+          "date" => normalized_date(document),
+          "date_timestamp" => normalized_timestamp(document)
+        }.compact
       end
 
       private
@@ -29,6 +31,20 @@ module Jekyll
 
       def normalize_list(value)
         Array(value).compact.map { |item| clean(item) }.reject(&:empty?).uniq
+      end
+
+      def normalized_date(document)
+        value = document.data["date"] || document.date if document.respond_to?(:date)
+        return if value.nil? || value.to_s.empty?
+
+        value.respond_to?(:iso8601) ? value.iso8601 : value.to_s
+      end
+
+      def normalized_timestamp(document)
+        date = normalized_date(document)
+        date ? Time.iso8601(date).to_i : nil
+      rescue ArgumentError
+        nil
       end
 
       def clean(value)

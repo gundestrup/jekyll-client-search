@@ -3,7 +3,7 @@
 require "spec_helper"
 require "tmpdir"
 
-RSpec.describe Jekyll::ClientSearch::IndexCache do
+RSpec.describe Jekyll::ClientSearch::IndexCache, :unit do
   let(:dir) { Dir.mktmpdir("index-cache") }
   let(:cache) { described_class.new(dir) }
 
@@ -21,6 +21,28 @@ RSpec.describe Jekyll::ClientSearch::IndexCache do
   it "returns nil when the content hash has changed" do
     cache.store("/post/", "hash1", [0.1, 0.2])
     expect(cache.lookup("/post/", "hash2")).to be_nil
+  end
+
+  it "invalidates entries when the embedding identity changes" do
+    identity_a = { "provider" => "ollama", "model" => "model-a", "schema" => 1 }
+    identity_b = { "provider" => "ollama", "model" => "model-b", "schema" => 1 }
+    cache = described_class.new(dir, embedding_identity: identity_a)
+    cache.store("/post/", "hash1", [0.1, 0.2])
+    cache.save
+
+    same_identity = described_class.new(dir, embedding_identity: identity_a)
+    different_identity = described_class.new(dir, embedding_identity: identity_b)
+    expect(same_identity.lookup("/post/", "hash1")).not_to be_nil
+    expect(different_identity.lookup("/post/", "hash1")).to be_nil
+  end
+
+  it "writes cache entries atomically" do
+    cache.store("/post/", "hash1", [0.1, 0.2])
+    cache.save
+
+    expect(File.exist?(cache.path)).to be(true)
+    expect(Dir.glob("#{cache.path}.tmp.*")).to be_empty
+    expect(JSON.parse(File.read(cache.path))).to have_key("/post/")
   end
 
   it "stores entries without embeddings" do
@@ -68,5 +90,20 @@ RSpec.describe Jekyll::ClientSearch::IndexCache do
     File.write(File.join(dir, described_class::CACHE_FILE), "{ invalid json")
     cache = described_class.new(dir)
     expect(cache.lookup("/post/", "hash1")).to be_nil
+  end
+
+  it "handles a cache file containing valid JSON that is not a Hash" do
+    File.write(File.join(dir, described_class::CACHE_FILE), "[1, 2, 3]")
+    cache = described_class.new(dir)
+    expect(cache.lookup("/post/", "hash1")).to be_nil
+  end
+
+  it "cleans up the temporary file when File.rename fails" do
+    cache.store("/post/", "hash1", [0.1])
+    allow(File).to receive(:rename).and_raise(Errno::ENOENT, "mocked rename failure")
+
+    expect { cache.save }.to raise_error(Errno::ENOENT)
+    # The temp file should have been cleaned up by the ensure block
+    expect(Dir.glob("#{cache.path}.tmp.*")).to be_empty
   end
 end

@@ -3,8 +3,9 @@ title: "Depth of field"
 categories: ["optics"]
 tags: ["photography", "lens", "optics", "focus"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Depth_of_field"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1367839726"
 download_date: "2026-08-22"
+wikipedia_oldid: "1367839726"
 license: "CC BY-SA 3.0"
 ---
 

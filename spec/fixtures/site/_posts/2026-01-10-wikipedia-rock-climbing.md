@@ -3,8 +3,9 @@ title: "Rock climbing"
 categories: ["sports"]
 tags: ["climbing", "rock", "adventure", "gear"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Rock_climbing"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1362345384"
 download_date: "2026-08-22"
+wikipedia_oldid: "1362345384"
 license: "CC BY-SA 3.0"
 ---
 

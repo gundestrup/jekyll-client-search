@@ -3,8 +3,9 @@ title: "Digital single-lens reflex camera"
 categories: ["technology"]
 tags: ["photography", "camera", "digital", "technology"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Digital_single-lens_reflex_camera"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1370353361"
 download_date: "2026-08-22"
+wikipedia_oldid: "1370353361"
 license: "CC BY-SA 3.0"
 ---
 

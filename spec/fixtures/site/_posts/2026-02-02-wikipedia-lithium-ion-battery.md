@@ -3,8 +3,9 @@ title: "Lithium-ion battery"
 categories: ["technology"]
 tags: ["technology", "battery", "electronics", "cold"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Lithium-ion_battery"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1370482719"
 download_date: "2026-08-22"
+wikipedia_oldid: "1370482719"
 license: "CC BY-SA 3.0"
 ---
 

@@ -5,5 +5,9 @@
 /node_modules/
 /.jekyll-client-search-cache.json
 /spec/fixtures/site/_site/
-/spec/fixtures/site/_site/search-index-semantic.json
-/benchmarks/results.json
+/benchmarks/semantic-benchmark.json
+
+# arXiv fixture posts are NOT committed due to mixed/restrictive licenses.
+# Developers must run `ruby spec/fixtures/download_arxiv.rb` to generate them.
+# See README.developer.md for details.
+/spec/fixtures/site/_posts/*-arxiv-*.md

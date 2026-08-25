@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ page.title }}</title>
+</head>
+<body>
+  <article>
+    <h1>{{ page.title }}</h1>
+    {{ content }}
+  </article>
+
+  {% if page.tags and page.tags.size > 0 %}
+  <div class="tags">
+    {% for tag in page.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+  </div>
+  {% endif %}
+
+  {% related_articles %}
+</body>
+</html>

@@ -1,0 +1,54 @@
+---
+# Reference post layout with related articles.
+#
+# Copy this file into your site's _layouts/ directory and adapt it:
+#   cp $(bundle show jekyll-client-search)/assets/layouts/post-with-related.html _layouts/
+#
+# Then use it in front matter:
+#   layout: post-with-related
+#
+# This is a minimal starting point. Most sites already have a post layout
+# they like — in that case, just add the {% related_articles %} tag or
+# {% include related-articles.html %} to your existing layout instead.
+---
+<!doctype html>
+<html lang="{{ page.lang | default: site.lang | default: 'en' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title | default: site.title }}</title>
+</head>
+<body>
+  <header>
+    <a href="{{ '/' | relative_url }}">{{ site.title }}</a>
+  </header>
+
+  <main>
+    <article>
+      <h1>{{ page.title }}</h1>
+      {% if page.date %}
+      <p class="post-date">
+        Published: {{ page.date | date: '%b %-d, %Y' }}
+        {% if page.author %} by {{ page.author }}{% endif %}
+      </p>
+      {% endif %}
+
+      {{ content }}
+
+      {% if page.tags and page.tags.size > 0 %}
+      <div class="tags">
+        {% for tag in page.tags %}
+          <span class="tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </article>
+
+    {% related_articles %}
+  </main>
+
+  <footer>
+    <p>&copy; {{ site.time | date: '%Y' }} {{ site.title }}</p>
+  </footer>
+</body>
+</html>

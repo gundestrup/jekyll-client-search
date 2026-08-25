@@ -1,0 +1,205 @@
+{
+  "history": [
+    {
+      "timestamp": "2026-08-24T20:55:28Z",
+      "ruby_version": "3.4.10",
+      "ollama_model": "embeddinggemma:300m",
+      "metrics": {
+        "build_time_without_llm_ms": 2002,
+        "build_time_with_llm_ms": 33082,
+        "index_size_without_llm_bytes": 1949054,
+        "index_size_with_llm_bytes": 2711053,
+        "document_count": 80,
+        "embedding_dimensions": 768,
+        "cache_size_bytes": 1205173
+      }
+    },
+    {
+      "timestamp": "2026-08-24T21:33:28Z",
+      "ruby_version": "3.4.10",
+      "ollama_model": "embeddinggemma:300m",
+      "metrics": {
+        "build_time_without_llm_ms": 2059,
+        "build_time_with_llm_ms": 32642,
+        "warm_build_time_with_llm_ms": 1969,
+        "incremental_build_time_with_llm_ms": 2337,
+        "index_size_without_llm_bytes": 1949054,
+        "index_size_with_llm_bytes": 2711053,
+        "document_count": 80,
+        "embedding_dimensions": 768,
+        "cache_size_bytes": 1218213,
+        "search": {
+          "iterations": 100,
+          "queries": 5,
+          "metrics": {
+            "minisearch": {
+              "avg_query_ms": 0.021,
+              "queries_per_second": 46743,
+              "result_count": 56
+            },
+            "elasticlunr": {
+              "avg_query_ms": 0.039,
+              "queries_per_second": 25797.6,
+              "result_count": 89
+            }
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2026-08-24T21:38:40Z",
+      "ruby_version": "3.4.10",
+      "ollama_model": "embeddinggemma:300m",
+      "metrics": {
+        "build_time_without_llm_ms": 2044,
+        "build_time_with_llm_ms": 30934,
+        "warm_build_time_with_llm_ms": 1912,
+        "incremental_build_time_with_llm_ms": 2297,
+        "index_size_without_llm_bytes": 1949054,
+        "index_size_with_llm_bytes": 2711053,
+        "document_count": 80,
+        "embedding_dimensions": 768,
+        "cache_size_bytes": 1218213,
+        "query_embedding_avg_ms": 58.942,
+        "search": {
+          "iterations": 100,
+          "queries": 5,
+          "metrics": {
+            "minisearch": {
+              "avg_query_ms": 0.023,
+              "queries_per_second": 42900,
+              "result_count": 56
+            },
+            "elasticlunr": {
+              "avg_query_ms": 0.053,
+              "queries_per_second": 18823.6,
+              "result_count": 89
+            },
+            "semantic": {
+              "avg_query_ms": 0.066,
+              "queries_per_second": 15052.1,
+              "result_count": 24
+            }
+          }
+        }
+      }
+    },
+    {
+      "benchmark_schema": 2,
+      "timestamp": "2026-08-25T06:23:51Z",
+      "ruby_version": "3.4.10",
+      "ollama_model": "embeddinggemma:300m",
+      "metrics": {
+        "build_time_without_llm_ms": 3334,
+        "build_time_with_llm_ms": 786305,
+        "warm_build_time_with_llm_ms": 4378,
+        "incremental_build_time_with_llm_ms": 5862,
+        "index_size_without_llm_bytes": 1949054,
+        "index_size_with_llm_bytes": 2711053,
+        "document_count": 80,
+        "embedding_dimensions": 768,
+        "cache_size_bytes": 1218213,
+        "query_embedding_avg_ms": 78.07,
+        "search": {
+          "iterations": 100,
+          "queries": 5,
+          "metrics": {
+            "minisearch": {
+              "avg_query_ms": 0.038,
+              "queries_per_second": 26015.8,
+              "result_count": 29
+            },
+            "elasticlunr": {
+              "avg_query_ms": 0.06,
+              "queries_per_second": 16670.1,
+              "result_count": 32
+            },
+            "semantic": {
+              "avg_query_ms": 0.111,
+              "queries_per_second": 8977,
+              "result_count": 24
+            }
+          }
+        }
+      }
+    },
+    {
+      "benchmark_schema": 3,
+      "timestamp": "2026-08-25T06:56:00Z",
+      "ruby_version": "3.4.10",
+      "ollama_model": "embeddinggemma:300m",
+      "metrics": {
+        "build_time_without_llm_ms": 1525,
+        "build_time_with_llm_ms": 111395,
+        "warm_build_time_with_llm_ms": 2042,
+        "incremental_build_time_with_llm_ms": 4114,
+        "index_size_without_llm_bytes": 1983027,
+        "index_size_with_llm_bytes": 2745053,
+        "document_count": 80,
+        "embedding_dimensions": 768,
+        "cache_size_bytes": 1218240,
+        "query_embedding_avg_ms": 87.259,
+        "search": {
+          "iterations": 100,
+          "queries": 5,
+          "metrics": {
+            "minisearch": {
+              "avg_query_ms": 0.045,
+              "queries_per_second": 22394,
+              "result_count": 29
+            },
+            "elasticlunr": {
+              "avg_query_ms": 0.071,
+              "queries_per_second": 13991.6,
+              "result_count": 33
+            },
+            "semantic": {
+              "avg_query_ms": 0.138,
+              "queries_per_second": 7245.8,
+              "result_count": 24
+            }
+          }
+        }
+      }
+    }
+  ],
+  "latest": {
+    "benchmark_schema": 3,
+    "timestamp": "2026-08-25T06:56:00Z",
+    "ruby_version": "3.4.10",
+    "ollama_model": "embeddinggemma:300m",
+    "metrics": {
+      "build_time_without_llm_ms": 1525,
+      "build_time_with_llm_ms": 111395,
+      "warm_build_time_with_llm_ms": 2042,
+      "incremental_build_time_with_llm_ms": 4114,
+      "index_size_without_llm_bytes": 1983027,
+      "index_size_with_llm_bytes": 2745053,
+      "document_count": 80,
+      "embedding_dimensions": 768,
+      "cache_size_bytes": 1218240,
+      "query_embedding_avg_ms": 87.259,
+      "search": {
+        "iterations": 100,
+        "queries": 5,
+        "metrics": {
+          "minisearch": {
+            "avg_query_ms": 0.045,
+            "queries_per_second": 22394,
+            "result_count": 29
+          },
+          "elasticlunr": {
+            "avg_query_ms": 0.071,
+            "queries_per_second": 13991.6,
+            "result_count": 33
+          },
+          "semantic": {
+            "avg_query_ms": 0.138,
+            "queries_per_second": 7245.8,
+            "result_count": 24
+          }
+        }
+      }
+    }
+  }
+}

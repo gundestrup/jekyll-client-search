@@ -3,8 +3,9 @@ title: "Glacier"
 categories: ["geography"]
 tags: ["ice", "cold", "arctic", "nature"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Glacier"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1368841986"
 download_date: "2026-08-22"
+wikipedia_oldid: "1368841986"
 license: "CC BY-SA 3.0"
 ---
 

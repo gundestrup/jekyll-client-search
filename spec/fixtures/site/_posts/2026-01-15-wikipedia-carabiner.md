@@ -3,8 +3,9 @@ title: "Carabiner"
 categories: ["climbing"]
 tags: ["climbing", "gear", "safety", "metal"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Carabiner"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1369215468"
 download_date: "2026-08-22"
+wikipedia_oldid: "1369215468"
 license: "CC BY-SA 3.0"
 ---
 

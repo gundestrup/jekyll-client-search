@@ -3,8 +3,9 @@ title: "Aurora"
 categories: ["astronomy"]
 tags: ["arctic", "light", "sky", "nature"]
 source: "Wikipedia — The Free Encyclopedia"
-source_url: "https://en.wikipedia.org/wiki/Aurora"
+source_url: "https://en.wikipedia.org/w/index.php?oldid=1370558459"
 download_date: "2026-08-22"
+wikipedia_oldid: "1370558459"
 license: "CC BY-SA 3.0"
 ---
 
