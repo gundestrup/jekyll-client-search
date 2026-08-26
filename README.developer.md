@@ -20,6 +20,50 @@ Both test suites pass with only the committed Wikipedia fixtures and the
 committed baseline JSON artifacts. No network access or external services
 are required for the default test run.
 
+## Quality checks and git hooks
+
+The project mirrors the jekyll-documents precheck setup: a `quality` rake
+task runs all checks, a `quick` task runs the fast subset, and an optional
+pre-commit hook enforces the quick checks before every commit.
+
+### Rake tasks
+
+| Task | What it runs |
+| --- | --- |
+| `rake` (default) | `rake quality` — all checks below |
+| `rake quality` | rubocop + reek + bundler-audit + rspec + npm test |
+| `rake quick` | rubocop + rspec (fast pre-commit subset) |
+| `rake rubocop` | RuboCop style check |
+| `rake rubocop_fix` | RuboCop auto-fix |
+| `rake reek` | Reek code smell check (`.reek.yml` config) |
+| `rake bundler_audit` | `bundle-audit check --update` security scan |
+| `rake spec` | RSpec test suite |
+| `rake npm_test` | JavaScript test suite (`npm test`) |
+| `rake ci` | rspec + rubocop + syntax checks + npm test + gem build |
+
+### Pre-commit hook
+
+Git hooks are not committed to the repository. Install the pre-commit hook
+locally after cloning:
+
+```bash
+bin/install-hooks.sh
+```
+
+This installs a `.git/hooks/pre-commit` script that runs `rake quick`
+(rubocop + rspec) before each commit. Skip it with `git commit --no-verify`
+when needed.
+
+### CI checks
+
+The [CI workflow](.github/workflows/ci.yml) runs on every push and pull
+request across Ruby 3.2/3.3/3.4 and Node 22/24:
+
+- `bundle exec rake ci` (rspec, rubocop, syntax checks, npm test, gem build)
+- `bundle exec reek --config .reek.yml lib/`
+- `bundle exec bundle-audit check --update` (Ruby dependency security)
+- `npm audit --audit-level=high` (JavaScript dependency security)
+
 ## Build-time related articles
 
 The optional related-analysis pass writes `search-relations.json` separately
@@ -336,7 +380,9 @@ a published GitHub Release:
    mismatch).
 4. Runs `bundle exec rake ci` (RSpec, RuboCop, syntax checks, `npm test`,
    and `gem build`).
-5. Publishes the built gem to RubyGems.org using trusted publishing
+5. Uploads the built `.gem` file to the GitHub Release as a downloadable
+   asset (`softprops/action-gh-release@v2`).
+6. Publishes the built gem to RubyGems.org using trusted publishing
    (`rubygems/release-gem@v1` with OIDC).
 
 The workflow runs in the `rubygems` environment, which must match the

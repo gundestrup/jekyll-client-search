@@ -5,7 +5,7 @@ on:
     types: [published]
 
 permissions:
-  contents: read
+  contents: write
   packages: write
   id-token: write
 
@@ -38,6 +38,11 @@ jobs:
 
       - name: Verify and build gem
         run: bundle exec rake ci
+
+      - name: Upload gem to GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: jekyll-client-search-*.gem
 
       - name: Publish to RubyGems using trusted publishing
         uses: rubygems/release-gem@v1

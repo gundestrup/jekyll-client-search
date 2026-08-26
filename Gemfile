@@ -9,6 +9,7 @@ group :development, :test do
   gem "bundler-audit", "~> 0.9"
   gem "ollama-ruby", "~> 1.23"
   gem "rake", "~> 13.2"
+  gem "reek", "~> 6.5"
   gem "rspec", "~> 3.13"
 end
 

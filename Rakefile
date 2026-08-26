@@ -71,3 +71,44 @@ task :ci do
   sh "npm test"
   sh "gem build #{GEMSPEC_FILE}"
 end
+
+# Default task: run all quality checks (most common use case)
+task default: :quality
+
+desc "Run all quality checks (style, smells, security, tests)"
+task quality: %i[rubocop reek bundler_audit spec npm_test]
+
+desc "Run quick checks (style + tests only)"
+task quick: %i[rubocop spec] do
+  puts "✅ Quick checks passed"
+end
+
+desc "Check code style with RuboCop"
+task :rubocop do
+  sh "bundle exec rubocop"
+end
+
+desc "Auto-fix RuboCop issues"
+task :rubocop_fix do
+  sh "bundle exec rubocop -a"
+end
+
+desc "Check code smells with Reek"
+task :reek do
+  sh "bundle exec reek --config .reek.yml lib/"
+end
+
+desc "Run security audit"
+task :bundler_audit do
+  sh "bundle exec bundler-audit check --update"
+end
+
+desc "Run JavaScript tests"
+task :npm_test do
+  sh "npm test"
+end
+
+desc "Run Ruby tests"
+task :spec do
+  sh "bundle exec rspec"
+end
