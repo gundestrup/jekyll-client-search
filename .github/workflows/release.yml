@@ -1,12 +1,12 @@
 name: Release gem
 
 on:
-  push:
-    tags:
-      - "v*"
+  release:
+    types: [published]
 
 permissions:
-  contents: write
+  contents: read
+  packages: write
   id-token: write
 
 jobs:
@@ -16,9 +16,7 @@ jobs:
     environment: rubygems
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
+        uses: actions/checkout@v6
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -36,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: Verify tag matches gem version
-        run: test "v$(bundle exec rake version:show)" = "$GITHUB_REF_NAME"
+        run: test "v$(bundle exec rake version:show)" = "${GITHUB_REF_NAME}"
 
       - name: Verify and build gem
         run: bundle exec rake ci
