@@ -251,28 +251,46 @@ the changelog.
    git status
    ```
 
-2. **Run the full test suite locally**:
+2. **Ensure all 80 fixture posts are present** (needed for Ollama
+   integration tests and baseline regeneration):
+
+   ```bash
+   ruby spec/fixtures/download_arxiv.rb
+   ```
+
+   Requires `pdftotext` (`brew install poppler` on macOS). Skip if the
+   arXiv posts are already present and unchanged.
+
+3. **Run the full test suite locally**, including Ollama integration tests:
 
    ```bash
    bundle exec rspec
+   OLLAMA_INTEGRATION=1 bundle exec rspec spec/ollama_integration_spec.rb
+   OLLAMA_INTEGRATION=1 bundle exec rspec spec/llm_injection_spec.rb
    bundle exec rubocop
    npm test
    npm run lint
    gem build jekyll-client-search.gemspec
    ```
 
-3. **Bump the version** (see above) and update the `## Unreleased` or new
+   The Ollama integration tests require a running [Ollama](https://ollama.ai/)
+   server with the `embeddinggemma:300m` model pulled (`ollama pull
+   embeddinggemma:300m`). Do not publish a release until the Ollama
+   integration tests pass locally — they are skipped by default and will
+   not block CI, so they must be run manually before each release.
+
+4. **Bump the version** (see above) and update the `## Unreleased` or new
    `## X.Y.Z — YYYY-MM-DD` section at the top of
    [`CHANGELOG.md`](CHANGELOG.md) with a user-facing summary of changes.
 
-4. **Commit the version bump and changelog**:
+5. **Commit the version bump and changelog**:
 
    ```bash
    git add lib/jekyll/client_search/version.rb CHANGELOG.md
    git commit -m "Release X.Y.Z: <short summary>"
    ```
 
-5. **Tag the release** with an annotated tag:
+6. **Tag the release** with an annotated tag:
 
    ```bash
    git tag -a vX.Y.Z -m "Release X.Y.Z
@@ -280,14 +298,14 @@ the changelog.
    <one-line summary of notable changes>"
    ```
 
-6. **Push `main` and the tag** to GitHub:
+7. **Push `main` and the tag** to GitHub:
 
    ```bash
    git push origin main
    git push origin vX.Y.Z
    ```
 
-7. **Create the GitHub Release** — this triggers the publish workflow:
+8. **Create the GitHub Release** — this triggers the publish workflow:
 
    ```bash
    gh release create vX.Y.Z --title "Release X.Y.Z" --notes "<changelog notes>"
@@ -296,14 +314,14 @@ the changelog.
    Or paste the relevant `CHANGELOG.md` section into the release notes via
    the GitHub UI.
 
-8. **Watch the workflow** and verify the gem appears on RubyGems:
+9. **Watch the workflow** and verify the gem appears on RubyGems:
 
    ```bash
    gh run watch --workflow=release.yml
    gem list jekyll-client-search --remote --exact
    ```
 
-9. **Verify the integration site** builds cleanly against the published
+10. **Verify the integration site** builds cleanly against the published
    gem (update the path dependency to the released version in
    `../gundestrup.dk` and run `bundle exec jekyll build`).
 
