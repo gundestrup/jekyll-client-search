@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+- Simplified release workflow to tag-push trigger (`push: tags: v*`) — no manual `gh release create` needed
+- Switched to RubyGems trusted publishing (`rubygems/release-gem@v1` with OIDC)
+- Centralized version in `version.rb` as single source of truth — removed `version` field from `package.json`
+- Added `rake version:bump` and `rake version:check_changelog` tasks
+- Added CHANGELOG gate to release workflow (fails if entry missing for the version)
+- Added `npm audit` and `npm outdated` (non-blocking) to CI
+- Replaced pre-commit hook with rubocop-only (fast); added pre-push hook (rubocop + rspec)
+- Dropped reek from quality stack (KISS — marginal value on a small gem)
+- Aligned AGENTS.md to the open convention; added CLAUDE.md and .windsurfrules pointer files
+
 ## 0.1.0 — 2026-08-25
 
 - Add a pluggable search engine architecture with a base runtime and adapters.
