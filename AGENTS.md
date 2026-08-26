@@ -1,4 +1,6 @@
-# AI Assistant Guide — jekyll-client-search
+# AGENTS.md — jekyll-client-search
+
+> **Single source of truth for all coding agents working on this project.**
 
 See [README.md](README.md) for user-facing configuration and usage docs.
 See [README.developer.md](README.developer.md) for fixture setup and
