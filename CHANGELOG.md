@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+- Allow whitespace in script/style end tags in `DocumentBuilder#clean` (`</script\s*>` instead of `</script>`) — CodeQL: bad HTML filtering regexp
+- Fix polynomial ReDoS in `SearchTag` and `RelatedTag` syntax regexes — strip markup before matching, remove leading/trailing `\s*` patterns that caused O(n²) backtracking (CodeQL: polynomial regex on uncontrolled data)
+
 ### Changed
 - Simplified release workflow to tag-push trigger (`push: tags: v*`) — no manual `gh release create` needed
 - Switched to RubyGems trusted publishing (`rubygems/release-gem@v1` with OIDC)
