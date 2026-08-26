@@ -22,37 +22,44 @@ are required for the default test run.
 
 ## Quality checks and git hooks
 
-The project mirrors the jekyll-documents precheck setup: a `quality` rake
-task runs all checks, a `quick` task runs the fast subset, and an optional
-pre-commit hook enforces the quick checks before every commit.
+The project uses a focused quality stack: RuboCop (style), bundler-audit
+(security), RSpec (Ruby tests), and `npm test` (JavaScript tests). This
+covers the actionable ground without the maintenance burden of additional
+code-smell tools on a small focused gem.
 
 ### Rake tasks
 
 | Task | What it runs |
 | --- | --- |
 | `rake` (default) | `rake quality` — all checks below |
-| `rake quality` | rubocop + reek + bundler-audit + rspec + npm test |
-| `rake quick` | rubocop + rspec (fast pre-commit subset) |
+| `rake quality` | rubocop + bundler-audit + rspec + npm test |
+| `rake quick` | rubocop + rspec (fast pre-push subset) |
 | `rake rubocop` | RuboCop style check |
 | `rake rubocop_fix` | RuboCop auto-fix |
-| `rake reek` | Reek code smell check (`.reek.yml` config) |
 | `rake bundler_audit` | `bundle-audit check --update` security scan |
 | `rake spec` | RSpec test suite |
 | `rake npm_test` | JavaScript test suite (`npm test`) |
 | `rake ci` | rspec + rubocop + syntax checks + npm test + gem build |
 
-### Pre-commit hook
+### Git hooks
 
-Git hooks are not committed to the repository. Install the pre-commit hook
-locally after cloning:
+Git hooks are not committed to the repository. Install them locally after
+cloning:
 
 ```bash
 bin/install-hooks.sh
 ```
 
-This installs a `.git/hooks/pre-commit` script that runs `rake quick`
-(rubocop + rspec) before each commit. Skip it with `git commit --no-verify`
-when needed.
+This installs two hooks:
+
+| Hook | What it runs | When |
+| --- | --- | --- |
+| `pre-commit` | `rubocop` only (~2s) | Before each commit |
+| `pre-push` | `rubocop + rspec` (~15s) | Before each push |
+
+The pre-commit hook is intentionally fast (style only) to avoid bypassing
+with `--no-verify`. The full test suite runs on pre-push and in CI. Skip
+either with `git commit --no-verify` or `git push --no-verify`.
 
 ### CI checks
 
@@ -60,7 +67,6 @@ The [CI workflow](.github/workflows/ci.yml) runs on every push and pull
 request across Ruby 3.2/3.3/3.4 and Node 22/24:
 
 - `bundle exec rake ci` (rspec, rubocop, syntax checks, npm test, gem build)
-- `bundle exec reek --config .reek.yml lib/`
 - `bundle exec bundle-audit check --update` (Ruby dependency security)
 - `npm audit --audit-level=high` (JavaScript dependency security)
 
@@ -265,7 +271,7 @@ the first release:
 3. Enter:
    - **Repository**: `gundestrup/jekyll-client-search`
    - **Workflow filename**: `release.yml`
-   - **Environment**: `rubygems`
+   - **Environment**: `release`
 
 If the gem has never been published before, rubygems.org may require a
 one-time manual `gem push` with an API key to create the gem name before
@@ -275,8 +281,9 @@ use trusted publishing automatically.
 ### Version bumping
 
 The version lives in [`lib/jekyll/client_search/version.rb`](lib/jekyll/client_search/version.rb)
-and follows [Semantic Versioning](https://semver.org/). Use the rake task
-to bump it:
+and follows [Semantic Versioning](https://semver.org/). The gemspec reads
+from this file — it is the single source of truth. Use the rake task to
+bump it:
 
 ```bash
 bundle exec rake "version:bump[patch]"   # 0.1.0 -> 0.1.1  (bug fixes)
@@ -284,8 +291,10 @@ bundle exec rake "version:bump[minor]"   # 0.1.0 -> 0.2.0  (new features, backwa
 bundle exec rake "version:bump[major]"   # 0.1.0 -> 1.0.0  (incompatible API changes)
 ```
 
-The rake task only edits `version.rb`; it does not commit, tag, or update
-the changelog.
+The rake task updates both `version.rb` (the source of truth) and
+`package.json` (kept in sync to avoid drift) in one command. It does not
+commit, tag, or update the changelog — those are manual steps in the
+release checklist below.
 
 ### Release checklist
 
@@ -330,7 +339,7 @@ the changelog.
 5. **Commit the version bump and changelog**:
 
    ```bash
-   git add lib/jekyll/client_search/version.rb CHANGELOG.md
+   git add lib/jekyll/client_search/version.rb package.json CHANGELOG.md
    git commit -m "Release X.Y.Z: <short summary>"
    ```
 
@@ -342,49 +351,43 @@ the changelog.
    <one-line summary of notable changes>"
    ```
 
-7. **Push `main` and the tag** to GitHub:
+7. **Push `main` and the tag** to GitHub — pushing the tag triggers the
+   release workflow automatically:
 
    ```bash
    git push origin main
    git push origin vX.Y.Z
    ```
 
-8. **Create the GitHub Release** — this triggers the publish workflow:
+   No manual `gh release create` is needed. The workflow builds the gem,
+   attaches it to a GitHub release, and publishes to RubyGems.
 
-   ```bash
-   gh release create vX.Y.Z --title "Release X.Y.Z" --notes "<changelog notes>"
-   ```
-
-   Or paste the relevant `CHANGELOG.md` section into the release notes via
-   the GitHub UI.
-
-9. **Watch the workflow** and verify the gem appears on RubyGems:
+8. **Watch the workflow** and verify the gem appears on RubyGems:
 
    ```bash
    gh run watch --workflow=release.yml
    gem list jekyll-client-search --remote --exact
    ```
 
-10. **Verify the integration site** builds cleanly against the published
+9. **Verify the integration site** builds cleanly against the published
    gem (update the path dependency to the released version in
    `../gundestrup.dk` and run `bundle exec jekyll build`).
 
 ### What the release workflow does
 
 The [`release.yml`](.github/workflows/release.yml) workflow, triggered by
-a published GitHub Release:
+pushing a `v*` tag:
 
-1. Checks out the repository at the release tag.
-2. Sets up Ruby 3.4.10 and Node.js 22.
-3. Verifies the tag name matches `v<gem version>` (fails the build on
-   mismatch).
-4. Runs `bundle exec rake ci` (RSpec, RuboCop, syntax checks, `npm test`,
-   and `gem build`).
-5. Uploads the built `.gem` file to the GitHub Release as a downloadable
+1. Checks out the repository at the release tag (`persist-credentials: false`).
+2. Sets up Ruby 3.4.10.
+3. Verifies the tag name matches `v<gem version>` (fails on mismatch).
+4. Builds the gem (`gem build`).
+5. Creates a GitHub Release and attaches the `.gem` file as a downloadable
    asset (`softprops/action-gh-release@v2`).
-6. Publishes the built gem to RubyGems.org using trusted publishing
+6. Publishes the gem to RubyGems.org using trusted publishing
    (`rubygems/release-gem@v1` with OIDC).
 
-The workflow runs in the `rubygems` environment, which must match the
-environment name configured on the trusted publisher in step 1 of the
-prerequisites.
+CI already validates tests on every push — the release workflow does not
+re-run the test suite. It only builds and publishes. The workflow runs in
+the `release` environment, which must match the environment name
+configured on the trusted publisher.

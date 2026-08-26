@@ -5,6 +5,7 @@ require "rake"
 require_relative "lib/jekyll/client_search/tasks"
 
 VERSION_FILE = File.expand_path("lib/jekyll/client_search/version.rb", __dir__)
+PACKAGE_FILE = File.expand_path("package.json", __dir__)
 GEMSPEC_FILE = File.expand_path("jekyll-client-search.gemspec", __dir__)
 
 namespace :version do
@@ -25,10 +26,18 @@ namespace :version do
     ((index + 1)...segments.length).each { |position| segments[position] = 0 }
     next_version = segments.join(".")
 
+    # Update version.rb (source of truth — gemspec reads from here)
     content = File.read(VERSION_FILE)
     updated = content.sub(/VERSION = "[^"]+"/, "VERSION = \"#{next_version}\"")
     File.write(VERSION_FILE, updated)
+
+    # Update package.json (kept in sync — not used by runtime, but avoids drift)
+    pkg = File.read(PACKAGE_FILE)
+    pkg_updated = pkg.sub(/"version": "[^"]+"/, "\"version\": \"#{next_version}\"")
+    File.write(PACKAGE_FILE, pkg_updated)
+
     puts "Bumped #{current} -> #{next_version}"
+    puts "Updated: #{VERSION_FILE}, #{PACKAGE_FILE}"
     puts "Update CHANGELOG.md before committing or releasing."
   end
 end
@@ -75,8 +84,8 @@ end
 # Default task: run all quality checks (most common use case)
 task default: :quality
 
-desc "Run all quality checks (style, smells, security, tests)"
-task quality: %i[rubocop reek bundler_audit spec npm_test]
+desc "Run all quality checks (style, security, tests)"
+task quality: %i[rubocop bundler_audit spec npm_test]
 
 desc "Run quick checks (style + tests only)"
 task quick: %i[rubocop spec] do
@@ -91,11 +100,6 @@ end
 desc "Auto-fix RuboCop issues"
 task :rubocop_fix do
   sh "bundle exec rubocop -a"
-end
-
-desc "Check code smells with Reek"
-task :reek do
-  sh "bundle exec reek --config .reek.yml lib/"
 end
 
 desc "Run security audit"
