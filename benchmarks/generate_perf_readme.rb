@@ -84,6 +84,8 @@ end
 history = results["history"] || []
 baseline = history.find { |entry| entry["benchmark_schema"] == 3 } || history.first
 latest = results["latest"] || history.last
+# Variables are used in the ERB template via binding below.
+_ = [baseline, latest]
 
 def history_section(history, baseline)
   history.each_with_index.map do |entry, i|
