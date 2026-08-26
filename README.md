@@ -27,6 +27,7 @@ and vector similarity.
 - [The search form](#the-search-form)
 - [Rake tasks](#rake-tasks)
 - [Configuration reference](#configuration-reference)
+- [Indexing custom collections](#indexing-custom-collections)
 - [Architecture](#architecture)
 - [Embeddings and incremental indexing](#embeddings-and-incremental-indexing)
 - [Related articles reference](#related-articles-reference)
@@ -342,6 +343,47 @@ Each document in the index contains:
   "tags": ["greenland"]
 }
 ```
+
+## Indexing custom collections
+
+By default only `posts` are indexed. Add any Jekyll collection to the
+`collections` list to include it in the search index:
+
+```yaml
+client_search:
+  collections:
+    - posts
+    - documents
+```
+
+Each document in the index contains `id`, `title`, `url`, `excerpt`,
+`content`, `categories`, `tags`, and normalized date fields. Collections
+from other plugins work as long as their documents expose these fields.
+
+### Integration with jekyll-documents
+
+[jekyll-documents](https://github.com/gundestrup/jekyll-documents) turns
+files in `assets/documents/` into a browsable `documents` collection with
+titles, categories, and searchable content baked in at build time. To
+include uploaded documents in search results alongside posts:
+
+```yaml
+# _config.yml
+plugins:
+  - jekyll-documents
+  - jekyll-client-search
+
+client_search:
+  collections:
+    - posts
+    - documents
+  related:
+    enabled: true
+```
+
+No additional configuration is needed — `jekyll-documents` bakes
+`categories` (plural array) and searchable `content` into each document
+so the `DocumentBuilder` can index them directly.
 
 ## Architecture
 
