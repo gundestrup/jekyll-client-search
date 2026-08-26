@@ -29,6 +29,7 @@ Metrics/BlockLength:
   Exclude:
     - "spec/**/*"
     - "*.gemspec"
+    - "Rakefile"
 
 Metrics/MethodLength:
   Max: 20

@@ -282,8 +282,9 @@ use trusted publishing automatically.
 
 The version lives in [`lib/jekyll/client_search/version.rb`](lib/jekyll/client_search/version.rb)
 and follows [Semantic Versioning](https://semver.org/). The gemspec reads
-from this file — it is the single source of truth. Use the rake task to
-bump it:
+from this file — it is the **single source of truth**. No other file
+stores the version (`package.json` is `private: true` and has no version
+field). Use the rake task to bump it:
 
 ```bash
 bundle exec rake "version:bump[patch]"   # 0.1.0 -> 0.1.1  (bug fixes)
@@ -291,10 +292,17 @@ bundle exec rake "version:bump[minor]"   # 0.1.0 -> 0.2.0  (new features, backwa
 bundle exec rake "version:bump[major]"   # 0.1.0 -> 1.0.0  (incompatible API changes)
 ```
 
-The rake task updates both `version.rb` (the source of truth) and
-`package.json` (kept in sync to avoid drift) in one command. It does not
-commit, tag, or update the changelog — those are manual steps in the
-release checklist below.
+The rake task only edits `version.rb`. It does not commit, tag, or update
+the changelog — those are manual steps in the release checklist below.
+
+You can verify that the CHANGELOG has an entry for the current version:
+
+```bash
+bundle exec rake version:check_changelog
+```
+
+This check also runs in the release workflow — the publish will fail if
+`CHANGELOG.md` has no `## X.Y.Z` entry matching the version being released.
 
 ### Release checklist
 
@@ -339,7 +347,7 @@ release checklist below.
 5. **Commit the version bump and changelog**:
 
    ```bash
-   git add lib/jekyll/client_search/version.rb package.json CHANGELOG.md
+   git add lib/jekyll/client_search/version.rb CHANGELOG.md
    git commit -m "Release X.Y.Z: <short summary>"
    ```
 
@@ -381,10 +389,12 @@ pushing a `v*` tag:
 1. Checks out the repository at the release tag (`persist-credentials: false`).
 2. Sets up Ruby 3.4.10.
 3. Verifies the tag name matches `v<gem version>` (fails on mismatch).
-4. Builds the gem (`gem build`).
-5. Creates a GitHub Release and attaches the `.gem` file as a downloadable
+4. Verifies `CHANGELOG.md` has a `## X.Y.Z` entry for the version
+   (`rake version:check_changelog` — fails if missing).
+5. Builds the gem (`gem build`).
+6. Creates a GitHub Release and attaches the `.gem` file as a downloadable
    asset (`softprops/action-gh-release@v2`).
-6. Publishes the gem to RubyGems.org using trusted publishing
+7. Publishes the gem to RubyGems.org using trusted publishing
    (`rubygems/release-gem@v1` with OIDC).
 
 CI already validates tests on every push — the release workflow does not

@@ -29,6 +29,9 @@ jobs:
       - name: Verify tag matches gem version
         run: test "v$(bundle exec rake version:show)" = "${GITHUB_REF_NAME}"
 
+      - name: Verify CHANGELOG has an entry for this version
+        run: bundle exec rake version:check_changelog
+
       - name: Build gem
         run: gem build jekyll-client-search.gemspec
 

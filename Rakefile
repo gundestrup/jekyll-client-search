@@ -5,7 +5,7 @@ require "rake"
 require_relative "lib/jekyll/client_search/tasks"
 
 VERSION_FILE = File.expand_path("lib/jekyll/client_search/version.rb", __dir__)
-PACKAGE_FILE = File.expand_path("package.json", __dir__)
+CHANGELOG_FILE = File.expand_path("CHANGELOG.md", __dir__)
 GEMSPEC_FILE = File.expand_path("jekyll-client-search.gemspec", __dir__)
 
 namespace :version do
@@ -26,19 +26,23 @@ namespace :version do
     ((index + 1)...segments.length).each { |position| segments[position] = 0 }
     next_version = segments.join(".")
 
-    # Update version.rb (source of truth — gemspec reads from here)
     content = File.read(VERSION_FILE)
     updated = content.sub(/VERSION = "[^"]+"/, "VERSION = \"#{next_version}\"")
     File.write(VERSION_FILE, updated)
 
-    # Update package.json (kept in sync — not used by runtime, but avoids drift)
-    pkg = File.read(PACKAGE_FILE)
-    pkg_updated = pkg.sub(/"version": "[^"]+"/, "\"version\": \"#{next_version}\"")
-    File.write(PACKAGE_FILE, pkg_updated)
-
     puts "Bumped #{current} -> #{next_version}"
-    puts "Updated: #{VERSION_FILE}, #{PACKAGE_FILE}"
-    puts "Update CHANGELOG.md before committing or releasing."
+    puts "Updated: #{VERSION_FILE}"
+    puts "Add a '## #{next_version} — YYYY-MM-DD' entry to CHANGELOG.md before committing."
+  end
+
+  desc "Verify CHANGELOG.md has an entry for the current version"
+  task :check_changelog do
+    version = File.read(VERSION_FILE)[/VERSION = "([^"]+)"/, 1]
+    changelog = File.read(CHANGELOG_FILE)
+    unless changelog.match?(/^## #{Regexp.escape(version)}\b/)
+      abort "CHANGELOG.md has no '## #{version}' entry. Add one before releasing."
+    end
+    puts "✅ CHANGELOG.md has an entry for version #{version}"
   end
 end
 

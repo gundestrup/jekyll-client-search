@@ -1,6 +1,5 @@
 {
   "name": "jekyll-client-search",
-  "version": "0.1.0",
   "private": true,
   "description": "Browser runtime tests for the jekyll-client-search gem",
   "scripts": {
