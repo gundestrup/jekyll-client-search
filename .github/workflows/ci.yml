@@ -41,5 +41,9 @@ jobs:
       - name: Audit JavaScript dependencies
         run: npm audit --audit-level=high
 
+      - name: Check for outdated npm packages
+        run: npm outdated || true
+        continue-on-error: true
+
       - name: Run checks
         run: bundle exec rake ci

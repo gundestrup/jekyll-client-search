@@ -69,6 +69,7 @@ request across Ruby 3.2/3.3/3.4 and Node 22/24:
 - `bundle exec rake ci` (rspec, rubocop, syntax checks, npm test, gem build)
 - `bundle exec bundle-audit check --update` (Ruby dependency security)
 - `npm audit --audit-level=high` (JavaScript dependency security)
+- `npm outdated` (non-blocking — warns about outdated npm packages)
 
 ## Build-time related articles
 
