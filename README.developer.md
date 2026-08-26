@@ -202,3 +202,125 @@ bundle exec rspec --tag ollama_integration
 The CI pipeline runs `bundle exec rspec` and `npm test` without arXiv
 fixtures or Ollama. The committed baseline JSON and semantic embeddings
 ensure all tests pass in CI without external dependencies.
+
+## Releasing
+
+Releases are published to RubyGems.org via the
+[`release.yml`](.github/workflows/release.yml) GitHub Actions workflow,
+which triggers automatically when a GitHub Release is published. The
+workflow uses RubyGems trusted publishing (OIDC) — no API key is stored
+in the repository.
+
+### Prerequisites (one-time setup)
+
+Trusted publishing must be configured on rubygems.org for the gem before
+the first release:
+
+1. Log into <https://rubygems.org> and open the gem's page.
+2. Go to **Settings → Trusted Publishers → Add trusted publisher**.
+3. Enter:
+   - **Repository**: `gundestrup/jekyll-client-search`
+   - **Workflow filename**: `release.yml`
+   - **Environment**: `rubygems`
+
+If the gem has never been published before, rubygems.org may require a
+one-time manual `gem push` with an API key to create the gem name before
+a trusted publisher can be attached. After that, all subsequent releases
+use trusted publishing automatically.
+
+### Version bumping
+
+The version lives in [`lib/jekyll/client_search/version.rb`](lib/jekyll/client_search/version.rb)
+and follows [Semantic Versioning](https://semver.org/). Use the rake task
+to bump it:
+
+```bash
+bundle exec rake "version:bump[patch]"   # 0.1.0 -> 0.1.1  (bug fixes)
+bundle exec rake "version:bump[minor]"   # 0.1.0 -> 0.2.0  (new features, backwards compatible)
+bundle exec rake "version:bump[major]"   # 0.1.0 -> 1.0.0  (incompatible API changes)
+```
+
+The rake task only edits `version.rb`; it does not commit, tag, or update
+the changelog.
+
+### Release checklist
+
+1. **Ensure the working tree is clean** and on `main`:
+
+   ```bash
+   git status
+   ```
+
+2. **Run the full test suite locally**:
+
+   ```bash
+   bundle exec rspec
+   bundle exec rubocop
+   npm test
+   npm run lint
+   gem build jekyll-client-search.gemspec
+   ```
+
+3. **Bump the version** (see above) and update the `## Unreleased` or new
+   `## X.Y.Z — YYYY-MM-DD` section at the top of
+   [`CHANGELOG.md`](CHANGELOG.md) with a user-facing summary of changes.
+
+4. **Commit the version bump and changelog**:
+
+   ```bash
+   git add lib/jekyll/client_search/version.rb CHANGELOG.md
+   git commit -m "Release X.Y.Z: <short summary>"
+   ```
+
+5. **Tag the release** with an annotated tag:
+
+   ```bash
+   git tag -a vX.Y.Z -m "Release X.Y.Z
+
+   <one-line summary of notable changes>"
+   ```
+
+6. **Push `main` and the tag** to GitHub:
+
+   ```bash
+   git push origin main
+   git push origin vX.Y.Z
+   ```
+
+7. **Create the GitHub Release** — this triggers the publish workflow:
+
+   ```bash
+   gh release create vX.Y.Z --title "Release X.Y.Z" --notes "<changelog notes>"
+   ```
+
+   Or paste the relevant `CHANGELOG.md` section into the release notes via
+   the GitHub UI.
+
+8. **Watch the workflow** and verify the gem appears on RubyGems:
+
+   ```bash
+   gh run watch --workflow=release.yml
+   gem list jekyll-client-search --remote --exact
+   ```
+
+9. **Verify the integration site** builds cleanly against the published
+   gem (update the path dependency to the released version in
+   `../gundestrup.dk` and run `bundle exec jekyll build`).
+
+### What the release workflow does
+
+The [`release.yml`](.github/workflows/release.yml) workflow, triggered by
+a published GitHub Release:
+
+1. Checks out the repository at the release tag.
+2. Sets up Ruby 3.4.10 and Node.js 22.
+3. Verifies the tag name matches `v<gem version>` (fails the build on
+   mismatch).
+4. Runs `bundle exec rake ci` (RSpec, RuboCop, syntax checks, `npm test`,
+   and `gem build`).
+5. Publishes the built gem to RubyGems.org using trusted publishing
+   (`rubygems/release-gem@v1` with OIDC).
+
+The workflow runs in the `rubygems` environment, which must match the
+environment name configured on the trusted publisher in step 1 of the
+prerequisites.
