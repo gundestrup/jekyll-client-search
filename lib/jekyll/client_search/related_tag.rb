@@ -12,11 +12,11 @@ module Jekyll
     # When +related.enabled+ is false the tag renders nothing, so it is safe
     # to leave in a layout even when the feature is off.
     class RelatedTag < Liquid::Tag
-      SYNTAX = /\A\s*(sort:(\w+))?\s*(no_scripts)?\s*\z/
+      SYNTAX = /\A(sort:(\w+))?\s*(no_scripts)?\z/
 
       def initialize(tag_name, markup, tokens)
         super
-        @markup = markup.to_s
+        @markup = markup.to_s.strip
         unless (match = @markup.match(SYNTAX))
           raise Liquid::SyntaxError,
                 "related_articles: invalid syntax. Use {% related_articles %}, " \

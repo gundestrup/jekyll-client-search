@@ -12,11 +12,11 @@ module Jekyll
     #
     # When client_search is disabled the tag renders nothing.
     class SearchTag < Liquid::Tag
-      SYNTAX = /\A\s*(scripts_only|no_scripts)?\s*\z/
+      SYNTAX = /\A(scripts_only|no_scripts)?\z/
 
       def initialize(tag_name, markup, tokens)
         super
-        @markup = markup.to_s
+        @markup = markup.to_s.strip
         unless (match = @markup.match(SYNTAX))
           raise Liquid::SyntaxError,
                 "search_form: invalid syntax. Use {% search_form %}, " \
