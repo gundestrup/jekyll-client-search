@@ -90,19 +90,23 @@ module Jekyll
       end
 
       def collection_documents(site, configuration, builder)
+        fields = configuration.passthrough_fields
         configuration.collections.flat_map do |label|
           collection = label == "posts" ? site.posts : site.collections[label]
           next [] unless collection
 
-          collection.docs.filter_map { |document| builder.from_document(document) }
+          collection.docs.filter_map do |document|
+            builder.from_document(document, source: label, passthrough_fields: fields)
+          end
         end
       end
 
       def page_documents(site, builder, configuration)
+        fields = configuration.passthrough_fields
         site.pages
             .reject { |page| page.url == "/#{configuration.output}" }
             .select { |page| page.data["title"] }
-            .filter_map { |page| builder.from_document(page) }
+            .filter_map { |page| builder.from_document(page, source: "pages", passthrough_fields: fields) }
       end
 
       def add_runtime_asset(site, configuration)

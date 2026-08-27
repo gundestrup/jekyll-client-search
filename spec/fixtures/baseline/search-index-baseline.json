@@ -15,7 +15,8 @@
       "nature"
     ],
     "date": "2026-01-01T00:00:00+01:00",
-    "date_timestamp": 1767222000
+    "date_timestamp": 1767222000,
+    "source": "posts"
   },
   {
     "id": "/geography/2026/01/02/wikipedia-iceberg.html",
@@ -33,7 +34,8 @@
       "ocean"
     ],
     "date": "2026-01-02T00:00:00+01:00",
-    "date_timestamp": 1767308400
+    "date_timestamp": 1767308400,
+    "source": "posts"
   },
   {
     "id": "/oceanography/2026/01/03/wikipedia-sea-ice.html",
@@ -51,7 +53,8 @@
       "ocean"
     ],
     "date": "2026-01-03T00:00:00+01:00",
-    "date_timestamp": 1767394800
+    "date_timestamp": 1767394800,
+    "source": "posts"
   },
   {
     "id": "/geography/2026/01/04/wikipedia-permafrost.html",
@@ -69,7 +72,8 @@
       "climate"
     ],
     "date": "2026-01-04T00:00:00+01:00",
-    "date_timestamp": 1767481200
+    "date_timestamp": 1767481200,
+    "source": "posts"
   },
   {
     "id": "/ecology/2026/01/05/wikipedia-tundra.html",
@@ -87,7 +91,8 @@
       "climate"
     ],
     "date": "2026-01-05T00:00:00+01:00",
-    "date_timestamp": 1767567600
+    "date_timestamp": 1767567600,
+    "source": "posts"
   },
   {
     "id": "/geography/2026/01/06/wikipedia-arctic-circle.html",
@@ -104,7 +109,8 @@
       "geography"
     ],
     "date": "2026-01-06T00:00:00+01:00",
-    "date_timestamp": 1767654000
+    "date_timestamp": 1767654000,
+    "source": "posts"
   },
   {
     "id": "/climatology/2026/01/07/wikipedia-polar-climate.html",
@@ -122,7 +128,8 @@
       "weather"
     ],
     "date": "2026-01-07T00:00:00+01:00",
-    "date_timestamp": 1767740400
+    "date_timestamp": 1767740400,
+    "source": "posts"
   },
   {
     "id": "/astronomy/2026/01/08/wikipedia-aurora.html",
@@ -140,7 +147,8 @@
       "nature"
     ],
     "date": "2026-01-08T00:00:00+01:00",
-    "date_timestamp": 1767826800
+    "date_timestamp": 1767826800,
+    "source": "posts"
   },
   {
     "id": "/sports/2026/01/09/wikipedia-mountaineering.html",
@@ -158,7 +166,8 @@
       "cold"
     ],
     "date": "2026-01-09T00:00:00+01:00",
-    "date_timestamp": 1767913200
+    "date_timestamp": 1767913200,
+    "source": "posts"
   },
   {
     "id": "/sports/2026/01/10/wikipedia-rock-climbing.html",
@@ -176,7 +185,8 @@
       "gear"
     ],
     "date": "2026-01-10T00:00:00+01:00",
-    "date_timestamp": 1767999600
+    "date_timestamp": 1767999600,
+    "source": "posts"
   },
   {
     "id": "/sports/2026/01/11/wikipedia-ice-climbing.html",
@@ -195,7 +205,8 @@
       "gear"
     ],
     "date": "2026-01-11T00:00:00+01:00",
-    "date_timestamp": 1768086000
+    "date_timestamp": 1768086000,
+    "source": "posts"
   },
   {
     "id": "/geography/2026/01/12/wikipedia-mountain.html",
@@ -212,7 +223,8 @@
       "geography"
     ],
     "date": "2026-01-12T00:00:00+01:00",
-    "date_timestamp": 1768172400
+    "date_timestamp": 1768172400,
+    "source": "posts"
   },
   {
     "id": "/medicine/2026/01/13/wikipedia-altitude-sickness.html",
@@ -229,7 +241,8 @@
       "altitude"
     ],
     "date": "2026-01-13T00:00:00+01:00",
-    "date_timestamp": 1768258800
+    "date_timestamp": 1768258800,
+    "source": "posts"
   },
   {
     "id": "/climatology/2026/01/14/wikipedia-alpine-climate.html",
@@ -247,7 +260,8 @@
       "weather"
     ],
     "date": "2026-01-14T00:00:00+01:00",
-    "date_timestamp": 1768345200
+    "date_timestamp": 1768345200,
+    "source": "posts"
   },
   {
     "id": "/climbing/2026/01/15/wikipedia-carabiner.html",
@@ -265,7 +279,8 @@
       "metal"
     ],
     "date": "2026-01-15T00:00:00+01:00",
-    "date_timestamp": 1768431600
+    "date_timestamp": 1768431600,
+    "source": "posts"
   },
   {
     "id": "/climbing/2026/01/16/wikipedia-belay-device.html",
@@ -283,7 +298,8 @@
       "rope"
     ],
     "date": "2026-01-16T00:00:00+01:00",
-    "date_timestamp": 1768518000
+    "date_timestamp": 1768518000,
+    "source": "posts"
   },
   {
     "id": "/arts/2026/01/17/wikipedia-photography.html",
@@ -301,7 +317,8 @@
       "image"
     ],
     "date": "2026-01-17T00:00:00+01:00",
-    "date_timestamp": 1768604400
+    "date_timestamp": 1768604400,
+    "source": "posts"
   },
   {
     "id": "/technology/2026/01/18/wikipedia-digital-photography.html",
@@ -319,7 +336,8 @@
       "technology"
     ],
     "date": "2026-01-18T00:00:00+01:00",
-    "date_timestamp": 1768690800
+    "date_timestamp": 1768690800,
+    "source": "posts"
   },
   {
     "id": "/optics/2026/01/19/wikipedia-camera-lens.html",
@@ -337,7 +355,8 @@
       "camera"
     ],
     "date": "2026-01-19T00:00:00+01:00",
-    "date_timestamp": 1768777200
+    "date_timestamp": 1768777200,
+    "source": "posts"
   },
   {
     "id": "/technology/2026/01/20/wikipedia-image-sensor.html",
@@ -355,7 +374,8 @@
       "camera"
     ],
     "date": "2026-01-20T00:00:00+01:00",
-    "date_timestamp": 1768863600
+    "date_timestamp": 1768863600,
+    "source": "posts"
   },
   {
     "id": "/astronomy/2026/01/21/wikipedia-astrophotography.html",
@@ -373,7 +393,8 @@
       "light"
     ],
     "date": "2026-01-21T00:00:00+01:00",
-    "date_timestamp": 1768950000
+    "date_timestamp": 1768950000,
+    "source": "posts"
   },
   {
     "id": "/arts/2026/01/22/wikipedia-landscape-photography.html",
@@ -391,7 +412,8 @@
       "light"
     ],
     "date": "2026-01-22T00:00:00+01:00",
-    "date_timestamp": 1769036400
+    "date_timestamp": 1769036400,
+    "source": "posts"
   },
   {
     "id": "/optics/2026/01/23/wikipedia-aperture.html",
@@ -409,7 +431,8 @@
       "light"
     ],
     "date": "2026-01-23T00:00:00+01:00",
-    "date_timestamp": 1769122800
+    "date_timestamp": 1769122800,
+    "source": "posts"
   },
   {
     "id": "/optics/2026/01/24/wikipedia-depth-of-field.html",
@@ -427,7 +450,8 @@
       "focus"
     ],
     "date": "2026-01-24T00:00:00+01:00",
-    "date_timestamp": 1769209200
+    "date_timestamp": 1769209200,
+    "source": "posts"
   },
   {
     "id": "/food/2026/01/25/wikipedia-italian-cuisine.html",
@@ -445,7 +469,8 @@
       "family"
     ],
     "date": "2026-01-25T00:00:00+01:00",
-    "date_timestamp": 1769295600
+    "date_timestamp": 1769295600,
+    "source": "posts"
   },
   {
     "id": "/food/2026/01/26/wikipedia-french-cuisine.html",
@@ -463,7 +488,8 @@
       "technique"
     ],
     "date": "2026-01-26T00:00:00+01:00",
-    "date_timestamp": 1769382000
+    "date_timestamp": 1769382000,
+    "source": "posts"
   },
   {
     "id": "/food/2026/01/27/wikipedia-japanese-cuisine.html",
@@ -481,7 +507,8 @@
       "technique"
     ],
     "date": "2026-01-27T00:00:00+01:00",
-    "date_timestamp": 1769468400
+    "date_timestamp": 1769468400,
+    "source": "posts"
   },
   {
     "id": "/food/2026/01/28/wikipedia-bread.html",
@@ -500,7 +527,8 @@
       "family"
     ],
     "date": "2026-01-28T00:00:00+01:00",
-    "date_timestamp": 1769554800
+    "date_timestamp": 1769554800,
+    "source": "posts"
   },
   {
     "id": "/food/2026/01/29/wikipedia-fermentation-in-food-processing.html",
@@ -518,7 +546,8 @@
       "technique"
     ],
     "date": "2026-01-29T00:00:00+01:00",
-    "date_timestamp": 1769641200
+    "date_timestamp": 1769641200,
+    "source": "posts"
   },
   {
     "id": "/food/2026/01/30/wikipedia-chocolate.html",
@@ -536,7 +565,8 @@
       "sweet"
     ],
     "date": "2026-01-30T00:00:00+01:00",
-    "date_timestamp": 1769727600
+    "date_timestamp": 1769727600,
+    "source": "posts"
   },
   {
     "id": "/food/2026/01/31/wikipedia-pasta.html",
@@ -554,7 +584,8 @@
       "pasta"
     ],
     "date": "2026-01-31T00:00:00+01:00",
-    "date_timestamp": 1769814000
+    "date_timestamp": 1769814000,
+    "source": "posts"
   },
   {
     "id": "/information-retrieval/2026/02/01/arxiv-2608-23419v1.html",
@@ -572,7 +603,8 @@
       "query"
     ],
     "date": "2026-02-01T00:00:00+01:00",
-    "date_timestamp": 1769900400
+    "date_timestamp": 1769900400,
+    "source": "posts"
   },
   {
     "id": "/food/2026/02/01/wikipedia-sourdough.html",
@@ -590,7 +622,8 @@
       "fermentation"
     ],
     "date": "2026-02-01T00:00:00+01:00",
-    "date_timestamp": 1769900400
+    "date_timestamp": 1769900400,
+    "source": "posts"
   },
   {
     "id": "/information-retrieval/2026/02/02/arxiv-2608-23400v1.html",
@@ -608,7 +641,8 @@
       "query"
     ],
     "date": "2026-02-02T00:00:00+01:00",
-    "date_timestamp": 1769986800
+    "date_timestamp": 1769986800,
+    "source": "posts"
   },
   {
     "id": "/technology/2026/02/02/wikipedia-lithium-ion-battery.html",
@@ -626,7 +660,8 @@
       "cold"
     ],
     "date": "2026-02-02T00:00:00+01:00",
-    "date_timestamp": 1769986800
+    "date_timestamp": 1769986800,
+    "source": "posts"
   },
   {
     "id": "/information-retrieval/2026/02/03/arxiv-2608-23392v1.html",
@@ -644,7 +679,8 @@
       "query"
     ],
     "date": "2026-02-03T00:00:00+01:00",
-    "date_timestamp": 1770073200
+    "date_timestamp": 1770073200,
+    "source": "posts"
   },
   {
     "id": "/technology/2026/02/03/wikipedia-solar-panel.html",
@@ -662,7 +698,8 @@
       "electronics"
     ],
     "date": "2026-02-03T00:00:00+01:00",
-    "date_timestamp": 1770073200
+    "date_timestamp": 1770073200,
+    "source": "posts"
   },
   {
     "id": "/information-retrieval/2026/02/04/arxiv-2608-23356v1.html",
@@ -680,7 +717,8 @@
       "query"
     ],
     "date": "2026-02-04T00:00:00+01:00",
-    "date_timestamp": 1770159600
+    "date_timestamp": 1770159600,
+    "source": "posts"
   },
   {
     "id": "/technology/2026/02/04/wikipedia-global-positioning-system.html",
@@ -698,7 +736,8 @@
       "navigation"
     ],
     "date": "2026-02-04T00:00:00+01:00",
-    "date_timestamp": 1770159600
+    "date_timestamp": 1770159600,
+    "source": "posts"
   },
   {
     "id": "/information-retrieval/2026/02/05/arxiv-2608-23338v1.html",
@@ -716,7 +755,8 @@
       "query"
     ],
     "date": "2026-02-05T00:00:00+01:00",
-    "date_timestamp": 1770246000
+    "date_timestamp": 1770246000,
+    "source": "posts"
   },
   {
     "id": "/technology/2026/02/05/wikipedia-satellite-phone.html",
@@ -734,7 +774,8 @@
       "gear"
     ],
     "date": "2026-02-05T00:00:00+01:00",
-    "date_timestamp": 1770246000
+    "date_timestamp": 1770246000,
+    "source": "posts"
   },
   {
     "id": "/information-retrieval/2026/02/06/arxiv-2608-23252v1.html",
@@ -752,7 +793,8 @@
       "query"
     ],
     "date": "2026-02-06T00:00:00+01:00",
-    "date_timestamp": 1770332400
+    "date_timestamp": 1770332400,
+    "source": "posts"
   },
   {
     "id": "/technology/2026/02/06/wikipedia-extreme-cold-weather-clothing.html",
@@ -770,7 +812,8 @@
       "technology"
     ],
     "date": "2026-02-06T00:00:00+01:00",
-    "date_timestamp": 1770332400
+    "date_timestamp": 1770332400,
+    "source": "posts"
   },
   {
     "id": "/information-retrieval/2026/02/07/arxiv-2608-23241v1.html",
@@ -788,7 +831,8 @@
       "query"
     ],
     "date": "2026-02-07T00:00:00+01:00",
-    "date_timestamp": 1770418800
+    "date_timestamp": 1770418800,
+    "source": "posts"
   },
   {
     "id": "/technology/2026/02/07/wikipedia-digital-single-lens-reflex-camera.html",
@@ -806,7 +850,8 @@
       "technology"
     ],
     "date": "2026-02-07T00:00:00+01:00",
-    "date_timestamp": 1770418800
+    "date_timestamp": 1770418800,
+    "source": "posts"
   },
   {
     "id": "/information-retrieval/2026/02/08/arxiv-2608-23221v1.html",
@@ -824,7 +869,8 @@
       "query"
     ],
     "date": "2026-02-08T00:00:00+01:00",
-    "date_timestamp": 1770505200
+    "date_timestamp": 1770505200,
+    "source": "posts"
   },
   {
     "id": "/technology/2026/02/08/wikipedia-mirrorless-camera.html",
@@ -842,7 +888,8 @@
       "technology"
     ],
     "date": "2026-02-08T00:00:00+01:00",
-    "date_timestamp": 1770505200
+    "date_timestamp": 1770505200,
+    "source": "posts"
   },
   {
     "id": "/natural-language-processing/2026/02/09/arxiv-2608-23566v1.html",
@@ -860,7 +907,8 @@
       "model"
     ],
     "date": "2026-02-09T00:00:00+01:00",
-    "date_timestamp": 1770591600
+    "date_timestamp": 1770591600,
+    "source": "posts"
   },
   {
     "id": "/photography/2026/02/09/wikipedia-tripod.html",
@@ -878,7 +926,8 @@
       "support"
     ],
     "date": "2026-02-09T00:00:00+01:00",
-    "date_timestamp": 1770591600
+    "date_timestamp": 1770591600,
+    "source": "posts"
   },
   {
     "id": "/natural-language-processing/2026/02/10/arxiv-2608-23564v1.html",
@@ -896,7 +945,8 @@
       "model"
     ],
     "date": "2026-02-10T00:00:00+01:00",
-    "date_timestamp": 1770678000
+    "date_timestamp": 1770678000,
+    "source": "posts"
   },
   {
     "id": "/natural-language-processing/2026/02/11/arxiv-2608-23552v1.html",
@@ -914,7 +964,8 @@
       "model"
     ],
     "date": "2026-02-11T00:00:00+01:00",
-    "date_timestamp": 1770764400
+    "date_timestamp": 1770764400,
+    "source": "posts"
   },
   {
     "id": "/natural-language-processing/2026/02/12/arxiv-2608-23551v1.html",
@@ -932,7 +983,8 @@
       "model"
     ],
     "date": "2026-02-12T00:00:00+01:00",
-    "date_timestamp": 1770850800
+    "date_timestamp": 1770850800,
+    "source": "posts"
   },
   {
     "id": "/natural-language-processing/2026/02/13/arxiv-2608-23507v1.html",
@@ -950,7 +1002,8 @@
       "model"
     ],
     "date": "2026-02-13T00:00:00+01:00",
-    "date_timestamp": 1770937200
+    "date_timestamp": 1770937200,
+    "source": "posts"
   },
   {
     "id": "/natural-language-processing/2026/02/14/arxiv-2608-23497v1.html",
@@ -968,7 +1021,8 @@
       "model"
     ],
     "date": "2026-02-14T00:00:00+01:00",
-    "date_timestamp": 1771023600
+    "date_timestamp": 1771023600,
+    "source": "posts"
   },
   {
     "id": "/natural-language-processing/2026/02/15/arxiv-2608-23476v1.html",
@@ -986,7 +1040,8 @@
       "model"
     ],
     "date": "2026-02-15T00:00:00+01:00",
-    "date_timestamp": 1771110000
+    "date_timestamp": 1771110000,
+    "source": "posts"
   },
   {
     "id": "/natural-language-processing/2026/02/16/arxiv-2608-23474v1.html",
@@ -1004,7 +1059,8 @@
       "model"
     ],
     "date": "2026-02-16T00:00:00+01:00",
-    "date_timestamp": 1771196400
+    "date_timestamp": 1771196400,
+    "source": "posts"
   },
   {
     "id": "/computer-vision/2026/02/17/arxiv-2608-23563v1.html",
@@ -1022,7 +1078,8 @@
       "neural"
     ],
     "date": "2026-02-17T00:00:00+01:00",
-    "date_timestamp": 1771282800
+    "date_timestamp": 1771282800,
+    "source": "posts"
   },
   {
     "id": "/computer-vision/2026/02/18/arxiv-2608-23549v1.html",
@@ -1040,7 +1097,8 @@
       "neural"
     ],
     "date": "2026-02-18T00:00:00+01:00",
-    "date_timestamp": 1771369200
+    "date_timestamp": 1771369200,
+    "source": "posts"
   },
   {
     "id": "/computer-vision/2026/02/19/arxiv-2608-23531v1.html",
@@ -1058,7 +1116,8 @@
       "neural"
     ],
     "date": "2026-02-19T00:00:00+01:00",
-    "date_timestamp": 1771455600
+    "date_timestamp": 1771455600,
+    "source": "posts"
   },
   {
     "id": "/computer-vision/2026/02/20/arxiv-2608-23518v1.html",
@@ -1076,7 +1135,8 @@
       "neural"
     ],
     "date": "2026-02-20T00:00:00+01:00",
-    "date_timestamp": 1771542000
+    "date_timestamp": 1771542000,
+    "source": "posts"
   },
   {
     "id": "/computer-vision/2026/02/21/arxiv-2608-23503v1.html",
@@ -1094,7 +1154,8 @@
       "neural"
     ],
     "date": "2026-02-21T00:00:00+01:00",
-    "date_timestamp": 1771628400
+    "date_timestamp": 1771628400,
+    "source": "posts"
   },
   {
     "id": "/computer-vision/2026/02/22/arxiv-2608-23499v1.html",
@@ -1112,7 +1173,8 @@
       "neural"
     ],
     "date": "2026-02-22T00:00:00+01:00",
-    "date_timestamp": 1771714800
+    "date_timestamp": 1771714800,
+    "source": "posts"
   },
   {
     "id": "/computer-vision/2026/02/23/arxiv-2608-23486v1.html",
@@ -1130,7 +1192,8 @@
       "neural"
     ],
     "date": "2026-02-23T00:00:00+01:00",
-    "date_timestamp": 1771801200
+    "date_timestamp": 1771801200,
+    "source": "posts"
   },
   {
     "id": "/computer-vision/2026/02/24/arxiv-2608-23479v1.html",
@@ -1148,7 +1211,8 @@
       "neural"
     ],
     "date": "2026-02-24T00:00:00+01:00",
-    "date_timestamp": 1771887600
+    "date_timestamp": 1771887600,
+    "source": "posts"
   },
   {
     "id": "/recommendation-systems/2026/02/25/arxiv-2608-23214v1.html",
@@ -1166,7 +1230,8 @@
       "user"
     ],
     "date": "2026-02-25T00:00:00+01:00",
-    "date_timestamp": 1771974000
+    "date_timestamp": 1771974000,
+    "source": "posts"
   },
   {
     "id": "/recommendation-systems/2026/02/26/arxiv-2608-23176v1.html",
@@ -1184,7 +1249,8 @@
       "user"
     ],
     "date": "2026-02-26T00:00:00+01:00",
-    "date_timestamp": 1772060400
+    "date_timestamp": 1772060400,
+    "source": "posts"
   },
   {
     "id": "/recommendation-systems/2026/02/27/arxiv-2608-23154v1.html",
@@ -1202,7 +1268,8 @@
       "user"
     ],
     "date": "2026-02-27T00:00:00+01:00",
-    "date_timestamp": 1772146800
+    "date_timestamp": 1772146800,
+    "source": "posts"
   },
   {
     "id": "/recommendation-systems/2026/02/28/arxiv-2608-23131v1.html",
@@ -1220,7 +1287,8 @@
       "user"
     ],
     "date": "2026-02-28T00:00:00+01:00",
-    "date_timestamp": 1772233200
+    "date_timestamp": 1772233200,
+    "source": "posts"
   },
   {
     "id": "/recommendation-systems/2026/03/01/arxiv-2608-23102v1.html",
@@ -1238,7 +1306,8 @@
       "user"
     ],
     "date": "2026-03-01T00:00:00+01:00",
-    "date_timestamp": 1772319600
+    "date_timestamp": 1772319600,
+    "source": "posts"
   },
   {
     "id": "/recommendation-systems/2026/03/02/arxiv-2608-23065v1.html",
@@ -1256,7 +1325,8 @@
       "user"
     ],
     "date": "2026-03-02T00:00:00+01:00",
-    "date_timestamp": 1772406000
+    "date_timestamp": 1772406000,
+    "source": "posts"
   },
   {
     "id": "/recommendation-systems/2026/03/03/arxiv-2608-22980v1.html",
@@ -1274,7 +1344,8 @@
       "user"
     ],
     "date": "2026-03-03T00:00:00+01:00",
-    "date_timestamp": 1772492400
+    "date_timestamp": 1772492400,
+    "source": "posts"
   },
   {
     "id": "/recommendation-systems/2026/03/04/arxiv-2608-22973v1.html",
@@ -1292,7 +1363,8 @@
       "user"
     ],
     "date": "2026-03-04T00:00:00+01:00",
-    "date_timestamp": 1772578800
+    "date_timestamp": 1772578800,
+    "source": "posts"
   },
   {
     "id": "/knowledge-graphs/2026/03/05/arxiv-2608-23565v1.html",
@@ -1310,7 +1382,8 @@
       "embedding"
     ],
     "date": "2026-03-05T00:00:00+01:00",
-    "date_timestamp": 1772665200
+    "date_timestamp": 1772665200,
+    "source": "posts"
   },
   {
     "id": "/knowledge-graphs/2026/03/06/arxiv-2608-23562v1.html",
@@ -1328,7 +1401,8 @@
       "embedding"
     ],
     "date": "2026-03-06T00:00:00+01:00",
-    "date_timestamp": 1772751600
+    "date_timestamp": 1772751600,
+    "source": "posts"
   },
   {
     "id": "/knowledge-graphs/2026/03/07/arxiv-2608-23543v1.html",
@@ -1346,7 +1420,8 @@
       "embedding"
     ],
     "date": "2026-03-07T00:00:00+01:00",
-    "date_timestamp": 1772838000
+    "date_timestamp": 1772838000,
+    "source": "posts"
   },
   {
     "id": "/knowledge-graphs/2026/03/08/arxiv-2608-23541v1.html",
@@ -1364,7 +1439,8 @@
       "embedding"
     ],
     "date": "2026-03-08T00:00:00+01:00",
-    "date_timestamp": 1772924400
+    "date_timestamp": 1772924400,
+    "source": "posts"
   },
   {
     "id": "/knowledge-graphs/2026/03/09/arxiv-2608-23536v1.html",
@@ -1382,7 +1458,8 @@
       "embedding"
     ],
     "date": "2026-03-09T00:00:00+01:00",
-    "date_timestamp": 1773010800
+    "date_timestamp": 1773010800,
+    "source": "posts"
   },
   {
     "id": "/knowledge-graphs/2026/03/10/arxiv-2608-23526v1.html",
@@ -1400,7 +1477,8 @@
       "embedding"
     ],
     "date": "2026-03-10T00:00:00+01:00",
-    "date_timestamp": 1773097200
+    "date_timestamp": 1773097200,
+    "source": "posts"
   },
   {
     "id": "/knowledge-graphs/2026/03/11/arxiv-2608-23525v1.html",
@@ -1418,7 +1496,8 @@
       "embedding"
     ],
     "date": "2026-03-11T00:00:00+01:00",
-    "date_timestamp": 1773183600
+    "date_timestamp": 1773183600,
+    "source": "posts"
   },
   {
     "id": "/knowledge-graphs/2026/03/12/arxiv-2608-23524v1.html",
@@ -1436,6 +1515,7 @@
       "embedding"
     ],
     "date": "2026-03-12T00:00:00+01:00",
-    "date_timestamp": 1773270000
+    "date_timestamp": 1773270000,
+    "source": "posts"
   }
 ]

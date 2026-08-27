@@ -58,6 +58,12 @@
                 return;
             }
 
+            var coreFields = [
+                "id", "title", "url", "excerpt", "content",
+                "categories", "tags", "categoriesText", "tagsText",
+                "date", "date_timestamp", "embedding"
+            ];
+
             function normalize(entry) {
                 var id = entry.id || entry.url;
                 if (!id) {
@@ -78,9 +84,20 @@
                     categoriesText: categories.join(" "),
                     tagsText: tags.join(" ")
                 };
+                if (entry.source) {
+                    normalized.source = entry.source;
+                }
                 if (Array.isArray(entry.embedding) && entry.embedding.length > 0) {
                     normalized.embedding = entry.embedding;
                 }
+                Object.keys(entry).forEach(function (key) {
+                    if (coreFields.indexOf(key) === -1 && key !== "source" && !(key in normalized)) {
+                        var value = entry[key];
+                        if (value !== null && value !== undefined && value !== "") {
+                            normalized[key] = value;
+                        }
+                    }
+                });
                 return normalized;
             }
 
@@ -143,15 +160,50 @@
                 var url = safeUrl(entry.url);
 
                 article.className = "box client-search-result";
+                if (entry.source) {
+                    article.dataset.source = entry.source;
+                }
+                if (entry.categories.length) {
+                    article.dataset.categories = entry.categories.join(" ");
+                }
+                if (entry.tags.length) {
+                    article.dataset.tags = entry.tags.join(" ");
+                }
+                Object.keys(entry).forEach(function (key) {
+                    if (coreFields.indexOf(key) !== -1 || key === "source") {
+                        return;
+                    }
+                    var value = entry[key];
+                    if (typeof value === "string" || typeof value === "number") {
+                        article.dataset[toCamelCase(key)] = String(value);
+                    }
+                });
                 heading.className = "title is-4";
                 titleLink.href = url;
                 titleLink.textContent = entry.title;
+                heading.appendChild(titleLink);
+                var iconField = options.iconField;
+                if (iconField && entry[iconField]) {
+                    var icon = document.createElement("img");
+                    icon.className = "client-search-result-icon";
+                    icon.src = safeUrl(entry[iconField]);
+                    icon.alt = entry.file_type || entry.source || "";
+                    icon.loading = "lazy";
+                    icon.style.width = "1em";
+                    icon.style.height = "1em";
+                    icon.style.verticalAlign = "middle";
+                    icon.style.marginRight = "0.3em";
+                    heading.insertBefore(icon, titleLink);
+                }
                 excerpt.textContent = entry.excerpt;
                 readMore.href = url;
                 readMore.textContent = "Read more";
-                heading.appendChild(titleLink);
                 article.append(heading, excerpt, readMore);
                 return article;
+            }
+
+            function toCamelCase(key) {
+                return key.replace(/_([a-z])/g, function (_, char) { return char.toUpperCase(); });
             }
 
             function sortMatches(matches) {

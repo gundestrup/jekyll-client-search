@@ -216,6 +216,89 @@ client_search:
 For manual `<script>` setup (engine-specific HTML), see
 [Browser usage reference](#browser-usage-reference).
 
+### Customizing search results with CSS
+
+Each search result is rendered as an `<article>` with data attributes that
+expose the document's metadata for CSS-based styling:
+
+| Attribute | Value | Source |
+| --- | --- | --- |
+| `data-source` | Collection label (`posts`, `pages`, `documents`, …) | Generator (always present) |
+| `data-categories` | Space-separated categories | Front matter |
+| `data-tags` | Space-separated tags | Front matter |
+| `data-*` | Any passthrough field (e.g. `data-file-type`, `data-icon-set`) | Config-driven |
+
+**Passthrough fields:** External plugins can expose their data in search
+results by listing field names in `passthrough_fields`. Each listed field is
+forwarded from the document's front matter / data into the search index and
+rendered as a `data-*` attribute on the result `<article>` (field names are
+converted from `snake_case` to `data-kebab-case`).
+
+**Field renaming:** Entries can be strings (same name) or hashes (rename
+`{source => target}`) for integration with other search conventions:
+
+```yaml
+client_search:
+  passthrough_fields:
+    - file_type: doctype      # index as "doctype" instead of "file_type"
+    - icon_url: thumbnail     # index as "thumbnail" instead of "icon_url"
+    - icon_set                # stays as "icon_set"
+  icon_field: thumbnail       # must match the target name
+```
+
+**Auto-injection:** When jekyll-documents is installed and `documents` is
+in the search collections, `file_type`, `icon_url`, and `icon_set` are
+auto-injected into `passthrough_fields` — no manual config needed.
+
+**Icon rendering:** When the configured `icon_field` (default: `"icon_url"`)
+is present in a result, an `<img class="client-search-result-icon">` is
+rendered before the title. Set `icon_field: null` to disable.
+
+**Default icon sizing:** Icons are sized to `1em` (matching the heading's
+font size) with `vertical-align: middle` and a small right margin — they
+auto-scale with the text. The inline styles are self-contained (no CSS
+dependency), so they work with any framework (Bulma, Bootstrap, Tailwind).
+
+Override with CSS:
+
+```css
+/* Make icons larger */
+.client-search-result-icon { width: 1.5em; height: 1.5em; }
+
+/* Fixed pixel sizes (if jekyll-documents' documents.css is included) */
+.client-search-result-icon.icon-x2 { width: 32px; height: 32px; }
+
+/* Theme-aware sizing using jekyll-documents' icon_set */
+.client-search-result[data-icon-set="color"] .client-search-result-icon { width: 1.5em; }
+.client-search-result[data-icon-set="ultra-minimal"] .client-search-result-icon { width: 1em; }
+```
+
+**CSS examples:**
+
+```css
+/* Show a different border color for posts vs pages */
+.client-search-result[data-source="posts"]  { border-left: 3px solid #3273dc; }
+.client-search-result[data-source="pages"]  { border-left: 3px solid #48c774; }
+
+/* Add a badge showing the file type via CSS (no icon_url needed) */
+.client-search-result[data-file-type="pdf"]::before {
+  content: "PDF";
+  background: #ff0000;
+  color: white;
+  padding: 0 0.3em;
+  font-size: 0.7em;
+  margin-right: 0.3em;
+}
+
+/* Show categories as tags */
+.client-search-result[data-categories~="travel"] .title::after {
+  content: " ✈";
+}
+```
+
+This enables per-source icons, file-type badges, category indicators, and
+tag-based styling — all through CSS, with no JavaScript changes needed.
+
 ## Rake tasks
 
 The gem ships reference layouts and includes that you can copy into your

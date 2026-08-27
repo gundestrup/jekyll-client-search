@@ -48,7 +48,8 @@ RSpec.describe Jekyll::ClientSearch::Generator, :unit do
           "title" => "Example article",
           "content" => include("Searchable content appears here."),
           "categories" => ["family"],
-          "tags" => ["example"]
+          "tags" => ["example"],
+          "source" => "posts"
         )
       )
       runtime_files = site.static_files.select do |file|
@@ -85,8 +86,91 @@ RSpec.describe Jekyll::ClientSearch::Generator, :unit do
       described_class.new.generate(site)
 
       expect(generated_documents(site)).to include(
-        hash_including("title" => "About", "content" => "About this site")
+        hash_including("title" => "About", "content" => "About this site", "source" => "pages")
       )
+    end
+  end
+
+  it "forwards configured passthrough fields from document front matter" do
+    Dir.mktmpdir("client-search-passthrough") do |source|
+      FileUtils.mkdir_p(File.join(source, "_posts"))
+      File.write(File.join(source, "_posts", "2026-01-01-report.md"), <<~MARKDOWN)
+        ---
+        title: Report
+        file_type: pdf
+        icon_url: "/icons/pdf.svg"
+        icon_set: color
+        ---
+        Content here.
+      MARKDOWN
+      site = build_site(source, "client_search" => {
+                          "passthrough_fields" => %w[file_type icon_url icon_set]
+                        })
+
+      described_class.new.generate(site)
+
+      expect(generated_documents(site).first).to include(
+        "source" => "posts",
+        "file_type" => "pdf",
+        "icon_url" => "/icons/pdf.svg",
+        "icon_set" => "color"
+      )
+    end
+  end
+
+  it "renames passthrough fields when hash entries are used" do
+    Dir.mktmpdir("client-search-rename") do |source|
+      FileUtils.mkdir_p(File.join(source, "_posts"))
+      File.write(File.join(source, "_posts", "2026-01-01-report.md"), <<~MARKDOWN)
+        ---
+        title: Report
+        file_type: pdf
+        icon_url: "/icons/pdf.svg"
+        ---
+        Content here.
+      MARKDOWN
+      site = build_site(source, "client_search" => {
+                          "passthrough_fields" => [{ "file_type" => "doctype" },
+                                                   { "icon_url" => "thumbnail" }]
+                        })
+
+      described_class.new.generate(site)
+
+      doc = generated_documents(site).first
+      expect(doc).to include("doctype" => "pdf", "thumbnail" => "/icons/pdf.svg")
+      expect(doc).not_to have_key("file_type")
+      expect(doc).not_to have_key("icon_url")
+    end
+  end
+
+  it "includes iconField in runtime config when icon_field is configured and passthrough includes it" do
+    Dir.mktmpdir("client-search-icon-field") do |source|
+      write_post(source)
+      site = build_site(source, "client_search" => {
+                          "passthrough_fields" => %w[icon_url],
+                          "icon_field" => "icon_url"
+                        })
+
+      described_class.new.generate(site)
+
+      config_page = site.pages.find { |p| p.url == "/assets/search-runtime-config.js" }
+      expect(config_page).not_to be_nil
+      expect(config_page.content).to include('"iconField":"icon_url"')
+    end
+  end
+
+  it "omits iconField from runtime config when icon_field is not in passthrough_fields" do
+    Dir.mktmpdir("client-search-no-icon") do |source|
+      write_post(source)
+      site = build_site(source, "client_search" => {
+                          "passthrough_fields" => %w[file_type],
+                          "icon_field" => "icon_url"
+                        })
+
+      described_class.new.generate(site)
+
+      config_page = site.pages.find { |p| p.url == "/assets/search-runtime-config.js" }
+      expect(config_page.content).not_to include("iconField")
     end
   end
 

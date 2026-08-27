@@ -34,6 +34,76 @@ RSpec.describe Jekyll::ClientSearch::DocumentBuilder, :unit do
     )
   end
 
+  it "includes the source label when provided" do
+    result = builder.from_document(document(data: { "title" => "Test" }), source: "posts")
+
+    expect(result["source"]).to eq("posts")
+  end
+
+  it "forwards configured passthrough fields from document data" do
+    result = builder.from_document(
+      document(data: { "title" => "Report", "file_type" => "pdf", "icon_url" => "/icons/pdf.svg",
+                       "icon_set" => "color" }),
+      source: "documents",
+      passthrough_fields: [%w[file_type file_type], %w[icon_url icon_url],
+                           %w[icon_set icon_set]]
+    )
+
+    expect(result).to include(
+      "source" => "documents",
+      "file_type" => "pdf",
+      "icon_url" => "/icons/pdf.svg",
+      "icon_set" => "color"
+    )
+  end
+
+  it "renames passthrough fields when source and target differ" do
+    result = builder.from_document(
+      document(data: { "title" => "Report", "file_type" => "pdf", "icon_url" => "/icons/pdf.svg" }),
+      passthrough_fields: [%w[file_type doctype], %w[icon_url thumbnail]]
+    )
+
+    expect(result).to include("doctype" => "pdf", "thumbnail" => "/icons/pdf.svg")
+    expect(result).not_to have_key("file_type")
+    expect(result).not_to have_key("icon_url")
+  end
+
+  it "omits passthrough fields when not configured" do
+    result = builder.from_document(
+      document(data: { "title" => "Report", "file_type" => "pdf", "icon_url" => "/icons/pdf.svg" }),
+      source: "documents"
+    )
+
+    expect(result["source"]).to eq("documents")
+    expect(result).not_to have_key("file_type")
+    expect(result).not_to have_key("icon_url")
+  end
+
+  it "skips passthrough fields that are absent or empty" do
+    result = builder.from_document(
+      document(data: { "title" => "Report", "file_type" => "", "icon_url" => nil }),
+      passthrough_fields: [%w[file_type file_type], %w[icon_url icon_url]]
+    )
+
+    expect(result).not_to have_key("file_type")
+    expect(result).not_to have_key("icon_url")
+  end
+
+  it "forwards arbitrary plugin-specific fields" do
+    result = builder.from_document(
+      document(data: { "title" => "Photo", "author" => "Jane", "license" => "CC-BY",
+                       "thumbnail" => "/img/photo.jpg" }),
+      passthrough_fields: [%w[author author], %w[license license],
+                           %w[thumbnail thumbnail]]
+    )
+
+    expect(result).to include(
+      "author" => "Jane",
+      "license" => "CC-BY",
+      "thumbnail" => "/img/photo.jpg"
+    )
+  end
+
   it "includes an ISO date and timestamp when a document has a date" do
     result = builder.from_document(document(date: Time.utc(2026, 1, 2, 3, 4, 5)))
 

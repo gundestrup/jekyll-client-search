@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.2.0 — 2026-08-27
+
+### Added
+- Generic `passthrough_fields` config option: external plugins declare which document `data` fields to forward into the search index (e.g. `file_type`, `icon_url`, `icon_set` from jekyll-documents)
+- Field renaming in `passthrough_fields`: entries can be strings (same name) or hashes (`{source => target}`) for integration with other search conventions
+- `icon_field` config option (default: `"icon_url"`): tells the browser runtime which field to render as an `<img>` icon before the result title; set to `null` to disable
+- Search index now includes `source` (collection label: `posts`, `pages`, etc.) — always present, set by the generator
+- Result `<article>` elements carry `data-source`, `data-categories`, `data-tags`, plus `data-*` for all passthrough fields (snake_case → data-kebab-case) for CSS-based result customization
+
 ### Fixed
 - Allow whitespace in script/style end tags in `DocumentBuilder#clean` (`</script\s*>` instead of `</script>`) — CodeQL: bad HTML filtering regexp
 - Fix polynomial ReDoS in `SearchTag` and `RelatedTag` syntax regexes — strip markup before matching, remove leading/trailing `\s*` patterns that caused O(n²) backtracking (CodeQL: polynomial regex on uncontrolled data)

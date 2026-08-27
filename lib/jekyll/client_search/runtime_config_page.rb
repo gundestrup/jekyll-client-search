@@ -12,6 +12,7 @@ module Jekyll
           "liveSearch" => configuration.live_search_config
         }
         defaults["relatedUrl"] = index_url(site, configuration.related_output) if configuration.related_enabled?
+        defaults["iconField"] = configuration.runtime_icon_field if configuration.runtime_icon_field
         json = JSON.generate(defaults)
         self.content = "window.clientSearchConfig = (function (generated, existing) {" \
                        "var liveSearch = Object.assign({}, generated.liveSearch, existing.liveSearch || {});" \

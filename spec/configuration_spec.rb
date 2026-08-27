@@ -18,6 +18,51 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
     expect(settings.collections).to eq(["posts"])
     expect(settings).not_to be_include_pages
     expect(settings).to be_copy_runtime
+    expect(settings.passthrough_fields).to eq([])
+    expect(settings.icon_field).to eq("icon_url")
+  end
+
+  it "accepts passthrough_fields and icon_field configuration" do
+    settings = configuration(
+      "passthrough_fields" => %w[file_type icon_url icon_set],
+      "icon_field" => "icon_url"
+    )
+    expect(settings.passthrough_fields).to eq([%w[file_type file_type],
+                                               %w[icon_url icon_url],
+                                               %w[icon_set icon_set]])
+    expect(settings.icon_field).to eq("icon_url")
+    expect(settings.runtime_icon_field).to eq("icon_url")
+  end
+
+  it "supports field renaming via hash entries in passthrough_fields" do
+    settings = configuration(
+      "passthrough_fields" => [{ "file_type" => "doctype" }, { "icon_url" => "thumbnail" }, "icon_set"]
+    )
+    expect(settings.passthrough_fields).to eq([%w[file_type doctype],
+                                               %w[icon_url thumbnail],
+                                               %w[icon_set icon_set]])
+  end
+
+  it "resolves runtime_icon_field using target names" do
+    settings = configuration(
+      "passthrough_fields" => [{ "icon_url" => "thumbnail" }],
+      "icon_field" => "thumbnail"
+    )
+    expect(settings.runtime_icon_field).to eq("thumbnail")
+  end
+
+  it "returns nil icon_field when disabled" do
+    settings = configuration("icon_field" => nil)
+    expect(settings.icon_field).to be_nil
+    expect(settings.runtime_icon_field).to be_nil
+  end
+
+  it "returns nil runtime_icon_field when icon_field is not in passthrough_fields" do
+    settings = configuration(
+      "passthrough_fields" => %w[file_type],
+      "icon_field" => "icon_url"
+    )
+    expect(settings.runtime_icon_field).to be_nil
   end
 
   it "accepts and normalizes site configuration overrides" do

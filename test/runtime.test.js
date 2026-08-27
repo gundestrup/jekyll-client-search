@@ -220,6 +220,96 @@ test("search results can be sorted newest-first by publication date", async func
     );
 });
 
+test("result articles carry data-source, data-categories, data-tags, and generic passthrough data attributes", async function () {
+    const suite = adapterSuites()[0];
+    const index = [
+        {
+            id: "/greenland/",
+            title: "Greenland",
+            url: "/greenland/",
+            excerpt: "A Greenland article",
+            content: "Ice and travel",
+            categories: ["travel"],
+            tags: ["ice"],
+            source: "posts",
+            file_type: "pdf",
+            icon_set: "color"
+        }
+    ];
+    const window = createWindow(suite, index, "greenland");
+    await settle();
+
+    var article = window.document.querySelector(".client-search-result");
+    assert.equal(article.dataset.source, "posts");
+    assert.equal(article.dataset.fileType, "pdf");
+    assert.equal(article.dataset.iconSet, "color");
+    assert.equal(article.dataset.categories, "travel");
+    assert.equal(article.dataset.tags, "ice");
+});
+
+test("result articles render an icon image when iconField is configured and the field is present", async function () {
+    const suite = adapterSuites()[0];
+    const index = [
+        {
+            id: "/report/",
+            title: "Report",
+            url: "/report/",
+            excerpt: "A report",
+            content: "report content",
+            categories: [],
+            tags: [],
+            source: "documents",
+            file_type: "pdf",
+            icon_url: "/icons/pdf.svg"
+        }
+    ];
+    const window = createWindow(suite, index, "report", { iconField: "icon_url" });
+    await settle();
+
+    var icon = window.document.querySelector(".client-search-result-icon");
+    assert.ok(icon, "an icon <img> should be rendered when iconField is configured and present");
+    assert.equal(icon.getAttribute("src"), "/icons/pdf.svg");
+    assert.equal(icon.getAttribute("alt"), "pdf");
+    assert.equal(icon.style.width, "1em");
+    assert.equal(icon.style.height, "1em");
+    var heading = window.document.querySelector(".client-search-result h2");
+    assert.equal(heading.firstChild, icon, "icon should be inside the heading, before the title link");
+});
+
+test("result articles do not render an icon when iconField is not configured", async function () {
+    const suite = adapterSuites()[0];
+    const index = [
+        {
+            id: "/report/",
+            title: "Report",
+            url: "/report/",
+            excerpt: "A report",
+            content: "report content",
+            categories: [],
+            tags: [],
+            source: "documents",
+            icon_url: "/icons/pdf.svg"
+        }
+    ];
+    const window = createWindow(suite, index, "report");
+    await settle();
+
+    assert.equal(window.document.querySelector(".client-search-result-icon"), null);
+});
+
+test("result articles omit data attributes for absent fields but still show categories and tags", async function () {
+    const suite = adapterSuites()[0];
+    const window = createWindow(suite, sampleIndex, "greenland");
+    await settle();
+
+    var article = window.document.querySelector(".client-search-result");
+    assert.equal(article.dataset.source, undefined);
+    assert.equal(article.dataset.fileType, undefined);
+    assert.equal(article.dataset.categories, "travel");
+    assert.equal(article.dataset.tags, "ice");
+    assert.equal(window.document.querySelector(".client-search-result-icon"), null);
+});
+
 test("live search enforces minimum characters without updating the URL when disabled", async function () {
     const suite = adapterSuites()[0];
     const window = createWindow(suite, sampleIndex, "", {

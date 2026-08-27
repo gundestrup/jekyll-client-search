@@ -184,11 +184,26 @@ client_search:
 
 The `engine` option selects `minisearch`, `elasticlunr`, or `semantic`.
 Configured collections are indexed as documents with `id`, `title`, `url`,
-`excerpt`, `content`, `categories`, `tags`, and normalized publication date
-fields. When `embedding.enabled` is true, vectors are generated at build time;
+`excerpt`, `content`, `categories`, `tags`, normalized publication date
+fields, and `source` (the collection label, e.g. `"posts"`, `"pages"`).
+The `passthrough_fields` config option lets external plugins (e.g.
+jekyll-documents) declare which document `data` fields to forward into the
+search index — entries can be strings (same name) or hashes (`{source =>
+target}`) for field renaming. The `icon_field` config option (default:
+`"icon_url"`) tells the browser runtime which field to render as an `<img>`
+icon. When `embedding.enabled` is true, vectors are generated at build time;
 they remain in the index for semantic search and can be omitted from lexical
 indexes after related analysis. When `related.enabled` is true, the generator
 writes a separate cutoff-based `search-relations.json` file.
+
+The browser runtime renders each result as an `<article>` with `data-source`,
+`data-categories`, `data-tags`, and `data-*` attributes for all passthrough
+fields (converted from `snake_case` to `data-kebab-case`), enabling CSS-based
+customization of search results (icons, badges, styling by source or file
+type). When the configured `icon_field` is present in a result, an
+`<img class="client-search-result-icon">` is rendered inside the heading,
+before the title link, sized to `1em` (line-height) with inline styles so it
+works with any CSS framework.
 
 ## Embeddings and incremental indexing
 

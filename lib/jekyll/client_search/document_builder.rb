@@ -5,11 +5,21 @@ module Jekyll
     # Normalizes Jekyll documents and pages into the flat hash shape that the
     # search index JSON emits.
     class DocumentBuilder
-      def from_document(document)
+      def from_document(document, source: nil, passthrough_fields: [])
         url = document.url.to_s
         return if url.empty?
 
         data = document.data
+        core_fields(document, data, url)
+          .compact
+          .merge("source" => source)
+          .merge(passthrough(data, passthrough_fields))
+          .compact
+      end
+
+      private
+
+      def core_fields(document, data, url)
         {
           "id" => url,
           "title" => clean(data["title"] || "Untitled"),
@@ -20,10 +30,18 @@ module Jekyll
           "tags" => normalize_list(data["tags"]),
           "date" => normalized_date(document),
           "date_timestamp" => normalized_timestamp(document)
-        }.compact
+        }
       end
 
-      private
+      def passthrough(data, fields)
+        fields.each_with_object({}) do |(source, target), result|
+          value = data[source]
+          next if value.nil?
+          next if value.is_a?(String) && value.empty?
+
+          result[target] = value
+        end
+      end
 
       def excerpt_for(document)
         document.excerpt if document.respond_to?(:excerpt)

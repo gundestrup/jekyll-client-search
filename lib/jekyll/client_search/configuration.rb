@@ -23,6 +23,8 @@ module Jekyll
         "collections" => ["posts"],
         "include_pages" => false,
         "copy_runtime" => true,
+        "passthrough_fields" => [],
+        "icon_field" => "icon_url",
         "embedding" => {
           "enabled" => false,
           "model" => "embeddinggemma:300m",
@@ -111,11 +113,7 @@ module Jekyll
       end
 
       def collections
-        Array(@values["collections"])
-          .compact
-          .map(&:to_s)
-          .reject(&:empty?)
-          .uniq
+        Array(@values["collections"]).compact.map(&:to_s).reject(&:empty?).uniq
       end
 
       def include_pages?
@@ -124,6 +122,31 @@ module Jekyll
 
       def copy_runtime?
         @values["copy_runtime"] != false
+      end
+
+      def passthrough_fields
+        Array(@values["passthrough_fields"]).compact.each_with_object([]) do |e, f|
+          e.is_a?(Hash) ? add_hash_fields(e, f) : add_string_field(e, f)
+        end.uniq
+      end
+
+      def add_hash_fields(hash, fields)
+        hash.each do |s, t|
+          fields << [s.to_s, t.to_s] unless s.to_s.empty? || t.to_s.empty?
+        end
+      end
+
+      def add_string_field(entry, fields)
+        fields << [entry.to_s, entry.to_s] unless entry.to_s.empty?
+      end
+
+      def icon_field
+        v = @values["icon_field"]
+        v.nil? || v == false ? nil : v.to_s
+      end
+
+      def runtime_icon_field
+        icon_field if passthrough_fields.map(&:last).include?(icon_field)
       end
 
       private
