@@ -25,6 +25,7 @@ and vector similarity.
   - [Related articles](#related-articles)
   - [Semantic search (embeddings)](#semantic-search-embeddings)
 - [The search form](#the-search-form)
+- [The search dropdown](#the-search-dropdown)
 - [Rake tasks](#rake-tasks)
 - [Configuration reference](#configuration-reference)
 - [Indexing custom collections](#indexing-custom-collections)
@@ -139,6 +140,23 @@ Then add one line to any post layout:
 {% related_articles %}
 ```
 
+By default, 5 related articles are shown. Override per-tag with `max:N`:
+
+```liquid
+{% related_articles max:3 %}
+{% related_articles sort:date max:10 %}
+```
+
+Or set the default in `_config.yml`:
+
+```yaml
+client_search:
+  related:
+    enabled: true
+    max_items: 5           # default: 5; null = no limit
+    minimum_similarity: 0.55
+```
+
 Without embeddings, relations are based on shared tags, categories, and
 hierarchical parent domains. With embeddings enabled, vector similarity
 above the cutoff is also included. See
@@ -215,6 +233,77 @@ client_search:
 
 For manual `<script>` setup (engine-specific HTML), see
 [Browser usage reference](#browser-usage-reference).
+
+## The search dropdown
+
+The `{% search_dropdown %}` Liquid tag renders a compact live-search
+dropdown suitable for navbars and headers. It is framework-agnostic —
+emits semantic HTML with data attributes, no CSS classes from Bulma,
+Bootstrap, Tailwind, or any other framework. Style it with your own CSS.
+
+```liquid
+{% search_dropdown %}
+```
+
+Tag modes:
+
+| Syntax | Effect |
+| --- | --- |
+| `{% search_dropdown %}` | Dropdown HTML + all scripts (default) |
+| `{% search_dropdown max:10 %}` | Show up to 10 items (default: 5) |
+| `{% search_dropdown scripts_only %}` | Just the scripts — use with custom HTML |
+| `{% search_dropdown no_scripts %}` | Just the dropdown HTML — load scripts yourself |
+
+**Behavior:**
+
+- User types → results appear in a dropdown list (live, debounced)
+- Enter with no item selected → redirect to `redirect_url` (default
+  `/search/`) with `?q=...` for full results on the search page
+- Arrow Up/Down → highlight items, Enter on highlighted → navigate
+- Click an item → navigate to that document's URL
+- Escape or click outside → close dropdown
+- Index is lazy-loaded on first keystroke (no cost on pages where the
+  visitor doesn't search)
+
+**Configuration:**
+
+```yaml
+client_search:
+  dropdown:
+    enabled: true          # default
+    max_items: 5           # default, tag param max:N overrides
+    min_chars: 2           # minimum query length before search fires
+    debounce_ms: 150       # debounce delay
+    redirect_url: /search/ # where Enter redirects for full results
+```
+
+**Icon support:** When `icon_field` is configured (default `icon_url`)
+and the search index includes that field (e.g. from jekyll-documents),
+an `<img>` icon is rendered before each result title. Set `icon_field:
+null` to disable.
+
+**CSS styling:** The dropdown emits no framework classes. Style with:
+
+```css
+.client-search-dropdown { position: relative; }
+.client-search-dropdown ul[role="listbox"] {
+  position: absolute; top: 100%; right: 0;
+  min-width: 300px; z-index: 30;
+  background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  list-style: none; margin: 0; padding: 0;
+}
+.client-search-dropdown li { padding: 0.5rem 1rem; }
+.client-search-dropdown li:hover,
+.client-search-dropdown li[aria-selected="true"] { background: #f5f5f5; }
+.client-search-dropdown li a { text-decoration: none; color: inherit; }
+
+/* Type-based styling via data attributes */
+.client-search-dropdown li[data-source="documents"] { border-left: 3px solid #48c774; }
+.client-search-dropdown li[data-file-type="pdf"]::before {
+  content: "PDF"; background: #ff0000; color: white;
+  padding: 0 0.3em; font-size: 0.7em; margin-right: 0.3em;
+}
+```
 
 ### Customizing search results with CSS
 
@@ -663,10 +752,16 @@ must return a DOM node (or `null` to skip the item):
 <script src="/assets/client-search-related.js"></script>
 <script>
   ClientSearchRelated.run({
-    renderItem: function (item, document) {
-      var li = document.createElement("li");
-      li.innerHTML = '<a href="' + item.url + '">' + item.title + "</a>" +
-        '<span class="score">' + (item.score * 100).toFixed(0) + "%</span>";
+    renderItem: function (item, dom) {
+      var li = dom.createElement("li");
+      var link = dom.createElement("a");
+      link.href = item.url;
+      link.textContent = item.title;
+      var score = dom.createElement("span");
+      score.className = "score";
+      score.textContent = (item.score * 100).toFixed(0) + "%";
+      li.appendChild(link);
+      li.appendChild(score);
       return li;
     }
   });

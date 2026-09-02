@@ -12,7 +12,7 @@ module Jekyll
         "include_parent_domains" => true,
         "semantic" => true,
         "minimum_similarity" => 0.55,
-        "max_items" => nil
+        "max_items" => 5
       }.freeze
 
       def initialize(config)

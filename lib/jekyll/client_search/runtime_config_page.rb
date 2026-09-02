@@ -13,10 +13,13 @@ module Jekyll
         }
         defaults["relatedUrl"] = index_url(site, configuration.related_output) if configuration.related_enabled?
         defaults["iconField"] = configuration.runtime_icon_field if configuration.runtime_icon_field
+        defaults["dropdown"] = configuration.dropdown_config if configuration.dropdown_enabled?
         json = JSON.generate(defaults)
         self.content = "window.clientSearchConfig = (function (generated, existing) {" \
                        "var liveSearch = Object.assign({}, generated.liveSearch, existing.liveSearch || {});" \
-                       "return Object.assign(generated, existing, { liveSearch: liveSearch });" \
+                       "var dropdown = Object.assign({}, generated.dropdown, existing.dropdown || {});" \
+                       "return Object.assign(generated, existing, " \
+                       "{ liveSearch: liveSearch, dropdown: dropdown });" \
                        "}(#{json}, window.clientSearchConfig || {}));\n"
       end
 

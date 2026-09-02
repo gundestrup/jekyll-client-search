@@ -39,17 +39,11 @@ module Jekyll
       }.freeze
 
       def initialize(site)
-        configured = site.config["client_search"]
-        configured = { "enabled" => false } if configured == false
-        configured ||= {}
-        unless configured.is_a?(Hash)
-          raise Jekyll::Errors::FatalException,
-                "client_search configuration must be a mapping or false"
-        end
-
+        configured = normalize_configured(site.config["client_search"])
         @values = DEFAULTS.merge(configured)
         @live_search = LiveSearchConfiguration.new(configured["live_search"] || {}, engine: engine)
         @related = RelatedConfiguration.new(configured["related"] || {})
+        @dropdown = DropdownConfiguration.new(configured["dropdown"] || {})
         merge_embedding_config(configured["embedding"])
         validate_engine!
         return unless embedding_enabled?
@@ -59,6 +53,15 @@ module Jekyll
       end
 
       private
+
+      def normalize_configured(value)
+        return { "enabled" => false } if value == false
+        return value if value.is_a?(Hash)
+        return {} if value.nil?
+
+        raise Jekyll::Errors::FatalException,
+              "client_search configuration must be a mapping or false"
+      end
 
       def merge_embedding_config(configured_embedding)
         embedding = configured_embedding || {}
@@ -105,6 +108,7 @@ module Jekyll
         assets = ["assets/client-search-base.js", "assets/adapters/#{engine}.js"]
         assets.concat(query_embedder_assets) if engine == "semantic" && embedding_enabled?
         assets << "assets/client-search-related.js" if related_enabled?
+        assets << "assets/client-search-dropdown.js" if dropdown_enabled?
         assets
       end
 

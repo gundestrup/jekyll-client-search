@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "cgi"
+
 module Jekyll
   module ClientSearch
     # Liquid tag that renders the search form, status/results containers,
@@ -28,7 +30,10 @@ module Jekyll
 
       def render(context)
         site = context.registers[:site]
-        config_hash = site&.config&.fetch("client_search", {})
+        return "" if site.nil?
+
+        config_hash = site.config.fetch("client_search", {})
+        return "" if config_hash == false
         return "" unless config_hash["enabled"] != false
 
         configuration = Configuration.new(site)
@@ -73,9 +78,15 @@ module Jekyll
         url = configuration.engine_url
         return nil unless url
 
-        attrs = ["src=\"#{url}\""]
-        attrs << "crossorigin=\"#{configuration.engine_crossorigin}\"" if configuration.engine_crossorigin
-        attrs << "integrity=\"#{configuration.engine_sri}\"" if configuration.engine_sri
+        attrs = ["src=\"#{CGI.escapeHTML(url)}\""]
+        if configuration.engine_crossorigin
+          crossorigin = CGI.escapeHTML(configuration.engine_crossorigin)
+          attrs << "crossorigin=\"#{crossorigin}\""
+        end
+        if configuration.engine_sri
+          integrity = CGI.escapeHTML(configuration.engine_sri)
+          attrs << "integrity=\"#{integrity}\""
+        end
         "<script #{attrs.join(' ')}></script>"
       end
 
@@ -84,7 +95,13 @@ module Jekyll
 
         scripts = ["<script src=\"#{prefix}/assets/search-embedder-config.js\"></script>"]
         embedder_asset = configuration.query_embedder_asset
+        # simplecov:disable branch
+        # Defensive guard: semantic_with_embedder? already excludes the "none"
+        # type, and both "transformers" and "ollama_api" always return an asset.
+        # This branch is unreachable with current embedder types but protects
+        # against future types that may have no script asset.
         scripts << "<script src=\"#{prefix}/#{embedder_asset}\"></script>" if embedder_asset
+        # simplecov:enable branch
         scripts
       end
 

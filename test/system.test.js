@@ -127,6 +127,9 @@ ENGINES.forEach(function (engine) {
         await settle();
         const titles = resultTitles(window);
         assert.ok(titles.length >= 1, "expected at least 1 result for 'embeddings retrieval'");
+        assert.ok(titles.some(function (t) {
+            return /embedding|retrieval|vector|semantic|model/i.test(t);
+        }), "should include a paper about embeddings/retrieval/vectors");
     });
 
     test(`[${engine.name}] system: cross-domain search finds food articles`, async function () {
@@ -155,10 +158,18 @@ ENGINES.forEach(function (engine) {
         assert.equal(titles.length, 0, "gibberish query should return no results");
     });
 
-    test(`[${engine.name}] edge: special-character query completes`, async function () {
+    test(`[${engine.name}] edge: special-character query completes without crashing`, async function () {
         const window = createWindow(engine, index, "glacier! @#$%^&*()");
         await settle();
-        assert.match(window.document.querySelector("#search-status").textContent, /^\d+ results?$/);
+        // The engine may or may not find results — the point is that
+        // special characters don't crash the search pipeline.
+        var status = window.document.querySelector("#search-status").textContent;
+        assert.match(status, /^\d+ results?$/, "status should be a valid result count");
+        // If results were found, they should be valid DOM nodes
+        var titles = resultTitles(window);
+        titles.forEach(function (t) {
+            assert.equal(typeof t, "string", "result title should be a string");
+        });
     });
 
     test(`[${engine.name}] edge: very long repeated query completes`, async function () {
@@ -172,6 +183,10 @@ ENGINES.forEach(function (engine) {
     test(`[${engine.name}] edge: non-ASCII query completes`, async function () {
         var window = createWindow(engine, index, "glaciér");
         await settle();
+        var titles = resultTitles(window);
+        // "glaciér" should either match "Glacier" via fuzzy/prefix or return 0
+        // results — either way the engine must not crash on non-ASCII input.
+        assert.ok(Array.isArray(titles), "non-ASCII query should return an array");
         assert.match(window.document.querySelector("#search-status").textContent, /^\d+ results?$/);
     });
 

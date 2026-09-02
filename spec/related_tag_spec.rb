@@ -46,12 +46,6 @@ RSpec.describe Jekyll::ClientSearch::RelatedTag, :unit do
     expect(html).to include('id="related-articles"')
   end
 
-  it "combines sort:date and no_scripts" do
-    html = render_tag("sort:date no_scripts", "client_search" => { "related" => { "enabled" => true } })
-    expect(html).to include('data-related-sort="date"')
-    expect(html).not_to include("<script")
-  end
-
   it "prefixes script URLs with baseurl when set" do
     html = render_tag("", "client_search" => { "related" => { "enabled" => true } },
                           "baseurl" => "/blog")
@@ -61,6 +55,38 @@ RSpec.describe Jekyll::ClientSearch::RelatedTag, :unit do
 
   it "raises Liquid::SyntaxError on invalid markup" do
     expect { render_tag("bogus:value") }.to raise_error(Liquid::SyntaxError)
+  end
+
+  it "sets data-related-max when max:3 is given" do
+    html = render_tag("max:3", "client_search" => { "related" => { "enabled" => true } })
+    expect(html).to include('data-related-max="3"')
+  end
+
+  it "combines sort:date, max:3, and no_scripts" do
+    html = render_tag("sort:date max:3 no_scripts", "client_search" => { "related" => { "enabled" => true } })
+    expect(html).to include('data-related-sort="date"')
+    expect(html).to include('data-related-max="3"')
+    expect(html).not_to include("<script")
+  end
+
+  it "uses config max_items when no tag param" do
+    html = render_tag("", "client_search" => { "related" => { "enabled" => true, "max_items" => 7 } })
+    expect(html).to include('data-related-max="7"')
+  end
+
+  it "defaults to 5 when no tag param and no config" do
+    html = render_tag("", "client_search" => { "related" => { "enabled" => true } })
+    expect(html).to include('data-related-max="5"')
+  end
+
+  it "raises Liquid::SyntaxError on invalid max value" do
+    expect { render_tag("max:abc") }.to raise_error(Liquid::SyntaxError)
+  end
+
+  it "renders nothing when site is nil" do
+    template = Liquid::Template.parse("{% related_articles %}")
+    html = template.render({}, registers: { site: nil })
+    expect(html).to eq("")
   end
 
   it "is registered as a safe Liquid tag" do

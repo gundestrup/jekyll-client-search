@@ -12,8 +12,9 @@ rbenv install 3.4.10       # if not already installed
 rbenv local 3.4.10
 bundle install
 npm ci
-bundle exec rspec          # Ruby tests (176 examples; 7 opt-in Ollama examples pending)
-npm test                   # JavaScript tests (130 tests)
+bundle exec rspec                          # Ruby tests (248 examples; 7 Ollama pending)
+OLLAMA_INTEGRATION=1 bundle exec rspec     # all tests including Ollama integration
+npm test                                   # JavaScript tests (134 tests)
 ```
 
 Both test suites pass with only the committed Wikipedia fixtures and the
@@ -113,14 +114,9 @@ content, self-exclusion, and score sorting.
 
 ### Related test files
 
-| File | Description |
-| --- | --- |
-| `spec/related_analyzer_spec.rb` | Unit tests for the relation analyzer |
-| `spec/related_tag_spec.rb` | Unit tests for the `{% related_articles %}` Liquid tag |
-| `spec/search_tag_spec.rb` | Unit tests for the `{% search_form %}` Liquid tag |
-| `spec/tasks_spec.rb` | Unit tests for the rake tasks (reference_files, install) |
-| `spec/system_spec.rb` | System tests building the fixture site with related and search_form |
-| `test/related.test.js` | JS tests for the related renderer (default, renderItem, filter, sort) |
+See the [Spec files](#spec-files) table for the full list. The key related
+test files are `spec/related_analyzer_spec.rb`, `spec/related_tag_spec.rb`,
+`spec/system_spec.rb`, and `test/related.test.js`.
 
 ## What is committed
 
@@ -247,6 +243,72 @@ bundle exec rspec --tag unit
 bundle exec rspec --tag system
 bundle exec rspec --tag ollama_integration
 ```
+
+## Coverage
+
+The project uses SimpleCov 1.1+ with branch coverage. The target is 100%
+branch coverage and ~99.6% line coverage. Three lines are intentionally
+excluded via `# simplecov:disable branch` for an unreachable defensive
+guard in `search_tag.rb` (the `if embedder_asset` check that can never be
+false with current embedder types — `semantic_with_embedder?` already
+filters out the `none` type, and both `transformers` and `ollama_api`
+always return an asset).
+
+The coverage report is generated at `coverage/index.html` after each RSpec
+run. Raw data is in `coverage/.resultset.json` (SimpleCov 1.0+ format with
+`lines` and `branches` keys per file).
+
+To check remaining uncovered lines and branches after a run:
+
+```bash
+python3 -c "
+import json
+with open('coverage/.resultset.json') as f:
+    data = json.load(f)
+for suite, info in data.items():
+    cov = info.get('coverage', {})
+    for file, lines in sorted(cov.items()):
+        if 'lib/jekyll' not in file: continue
+        short = file.split('/lib/')[-1]
+        line_data = lines.get('lines', []) if isinstance(lines, dict) else lines
+        uncovered = [i+1 for i, v in enumerate(line_data) if v == 0]
+        if uncovered:
+            print(f'{short}: lines {uncovered}')
+        branches = lines.get('branches', {}) if isinstance(lines, dict) else {}
+        for bk, bd in branches.items():
+            for sk, count in bd.items():
+                if count == 0:
+                    print(f'{short}: {sk} (count=0)')
+"
+```
+
+## Spec files
+
+| File | Description |
+| --- | --- |
+| `spec/configuration_spec.rb` | Site configuration, defaults, validation |
+| `spec/dropdown_configuration_spec.rb` | Dropdown config validation |
+| `spec/dropdown_tag_spec.rb` | `{% search_dropdown %}` Liquid tag |
+| `spec/search_tag_spec.rb` | `{% search_form %}` Liquid tag |
+| `spec/related_tag_spec.rb` | `{% related_articles %}` Liquid tag |
+| `spec/related_analyzer_spec.rb` | Build-time relation analysis |
+| `spec/related_configuration_spec.rb` | Related config validation |
+| `spec/generator_spec.rb` | Jekyll generator integration |
+| `spec/document_builder_spec.rb` | Normalized search documents |
+| `spec/search_index_page_spec.rb` | Generated JSON page |
+| `spec/index_cache_spec.rb` | Index cache |
+| `spec/embedding_cache_spec.rb` | Embedding cache |
+| `spec/runtime_assets_spec.rb` | Runtime asset copying |
+| `spec/runtime_config_page_spec.rb` | Runtime config page generation |
+| `spec/ollama_embedding_adapter_spec.rb` | Ollama adapter unit tests |
+| `spec/ollama_integration_spec.rb` | Ollama integration tests (pending) |
+| `spec/llm_injection_spec.rb` | LLM injection baseline tests (pending) |
+| `spec/tasks_spec.rb` | Rake tasks (reference_files, install) |
+| `spec/gemspec_spec.rb` | Gemspec metadata |
+| `spec/system_spec.rb` | End-to-end system tests |
+| `test/runtime.test.js` | JS unit tests parameterized over adapters |
+| `test/related.test.js` | JS tests for related renderer |
+| `test/system.test.js` | JS system tests using committed baseline index |
 
 ## CI
 

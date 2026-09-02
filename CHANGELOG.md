@@ -2,6 +2,38 @@
 
 ## Unreleased
 
+## 0.3.0 — 2026-09-02
+
+### Added
+- `{% search_dropdown %}` Liquid tag — compact live-search dropdown for navbars and headers with keyboard navigation (Arrow/Enter/Escape), lazy index loading, icon support, and framework-agnostic semantic HTML (no Bulma/Bootstrap/Tailwind classes)
+- `DropdownConfiguration` class with `enabled`, `max_items`, `min_chars`, `debounce_ms`, `redirect_url` options
+- `assets/client-search-dropdown.js` runtime (434 lines) — two-stage search (AND first, fuzzy OR fallback), shared index cache with the base runtime, multi-instance support via `[data-client-search-dropdown]` attributes, icon rendering from `icon_field`
+- `max:N` parameter on `{% related_articles %}` tag (e.g. `{% related_articles max:3 %}`, `{% related_articles sort:date max:10 %}`)
+- `max_items` config option for `related` section (default: 5)
+- Dropdown config included in generated `search-runtime-config.js`
+- `dropdown_enabled?` accessor and dropdown asset in `runtime_assets`
+- HTML-escaping (via `CGI.escapeHTML`) for `engine_url`, `engine_sri`, and `engine_crossorigin` attributes in `SearchTag` script output
+- Defensive guard with `simplecov:disable` annotation for unreachable `embedder_asset` nil branch in `SearchTag`
+- Ollama embedding adapter tests for empty/invalid responses and standard error handling
+- Related analyzer tests for semantic-only similarity matching
+- System test assertions for embeddings/retrieval content matching and non-ASCII query robustness
+
+### Changed
+- `related.max_items` default changed from `nil` (unlimited) to `5`
+- `Configuration#initialize` refactored — extracted `normalize_configured` helper for cleaner config validation
+- Runtime config page now merges `dropdown` config alongside `liveSearch`
+- `SearchTag` and `RelatedTag` now return empty string when `site` is nil or `client_search` is `false` (previously crashed on nil site)
+- Meta test (`test/meta.test.js`) converted from `forEach` to `for` loops to properly `await` settle in cross-engine comparison
+- System tests strengthened with content assertions and non-ASCII robustness checks
+- AGENTS.md restructured — split developer info to README.developer.md, added dropdown architecture entries
+- README.developer.md expanded with coverage documentation, spec file table, and SimpleCov branch coverage notes
+- README.md updated with dropdown section, related `max:N` docs, and CSS styling examples for dropdown
+
+### Fixed
+- `SearchTag#render` no longer raises on nil site (now returns empty string)
+- `RelatedTag#render` no longer raises on nil site or `client_search: false` config
+- Meta test race condition — `forEach` callback couldn't `await settle()`, causing flaky cross-engine comparisons; fixed by switching to `for` loops
+
 ## 0.2.0 — 2026-08-27
 
 ### Added

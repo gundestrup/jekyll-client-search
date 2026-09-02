@@ -100,6 +100,11 @@
         }
         sortItems(items, sortOrder);
 
+        var maxItems = options.maxItems || 0;
+        if (maxItems && maxItems > 0) {
+            items = items.slice(0, maxItems);
+        }
+
         container.replaceChildren();
         if (items.length === 0) {
             return;
@@ -138,12 +143,17 @@
                 relationsUrl: window.clientSearchConfig && window.clientSearchConfig.relatedUrl,
                 currentUrl: window.location.pathname,
                 sort: (window.clientSearchConfig && window.clientSearchConfig.relatedSort) || "relevance",
+                maxItems: 0,
                 renderItem: null,
                 filter: null
             }, options || {});
             var container = document.querySelector(options.container);
             if (!container || !options.relationsUrl) {
                 return Promise.resolve();
+            }
+
+            if (container.dataset.relatedMax) {
+                options.maxItems = parseInt(container.dataset.relatedMax, 10) || 0;
             }
 
             return fetch(options.relationsUrl, { headers: { Accept: "application/json" } })

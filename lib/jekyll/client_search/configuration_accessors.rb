@@ -28,10 +28,6 @@ module Jekyll
         @query_embedder.model
       end
 
-      def query_embedder_api_url
-        @query_embedder.api_url
-      end
-
       def query_embedder_asset
         @query_embedder.asset
       end
@@ -42,6 +38,18 @@ module Jekyll
 
       def query_embedder_config_json
         @query_embedder.to_json
+      end
+
+      def dropdown_enabled?
+        @dropdown.enabled?
+      end
+
+      def dropdown_max_items
+        @dropdown.max_items
+      end
+
+      def dropdown_config
+        @dropdown.to_h
       end
     end
   end

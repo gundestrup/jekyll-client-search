@@ -4,7 +4,7 @@
   "description": "Browser runtime tests for the jekyll-client-search gem",
   "scripts": {
     "lint": "eslint assets/ test/ eslint.config.js",
-    "test": "npm run lint && node --test test/runtime.test.js test/query-embedders.test.js test/related.test.js test/system.test.js test/gold-standard.test.js test/comparison.test.js test/meta.test.js"
+    "test": "npm run lint && node --test test/runtime.test.js test/dropdown.test.js test/query-embedders.test.js test/related.test.js test/system.test.js test/gold-standard.test.js test/comparison.test.js test/meta.test.js"
   },
   "repository": {
     "type": "git",

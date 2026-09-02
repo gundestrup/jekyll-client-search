@@ -335,16 +335,19 @@ test("[meta/cross-engine] exact-match queries produce same #1 across all engines
         return q.lexical.top1 === q.semantic.top1;
     });
 
-    exactMatchQueries.forEach(function (q) {
+    for (var qi = 0; qi < exactMatchQueries.length; qi++) {
+        var q = exactMatchQueries[qi];
         var allTop1 = [];
 
-        LEXICAL_ENGINES.forEach(function (engine) {
+        for (var ei = 0; ei < LEXICAL_ENGINES.length; ei++) {
+            var engine = LEXICAL_ENGINES[ei];
             var window = createLexicalWindow(engine, baselineIndex, q.query);
-            // Can't await in forEach, so we read synchronously after settle
+            await settle();
             allTop1.push({ engine: engine.name, titles: resultTitles(window) });
-        });
+        }
 
         var semWindow = createSemanticWindow(semanticData, q.query);
+        await settle();
         allTop1.push({ engine: "semantic", titles: resultTitles(semWindow) });
 
         // All engines should agree on #1 for exact-match queries
@@ -352,5 +355,5 @@ test("[meta/cross-engine] exact-match queries produce same #1 across all engines
         var allSame = top1Values.every(function (v) { return v === top1Values[0]; });
         assert.ok(allSame,
             `All engines should agree on #1 for "${q.query}" — got: ${JSON.stringify(allTop1.map(function (r) { return r.engine + ": " + r.titles[0]; }))}`);
-    });
+    }
 });

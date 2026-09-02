@@ -56,7 +56,8 @@ RSpec.describe Jekyll::ClientSearch::Generator, :unit do
         file.relative_path.to_s.delete_prefix("/").start_with?("assets/")
       end
       expect(runtime_files.map { |file| file.relative_path.to_s.delete_prefix("/") })
-        .to contain_exactly("assets/client-search-base.js", "assets/adapters/minisearch.js")
+        .to contain_exactly("assets/client-search-base.js", "assets/adapters/minisearch.js",
+                            "assets/client-search-dropdown.js")
     end
   end
 
@@ -174,6 +175,19 @@ RSpec.describe Jekyll::ClientSearch::Generator, :unit do
     end
   end
 
+  it "does not include dropdown config when dropdown is disabled" do
+    Dir.mktmpdir("client-search-no-dropdown") do |source|
+      write_post(source)
+      site = build_site(source, "client_search" => { "enabled" => true, "dropdown" => { "enabled" => false } })
+
+      described_class.new.generate(site)
+
+      config_page = site.pages.find { |p| p.url == "/assets/search-runtime-config.js" }
+      expect(config_page).not_to be_nil
+      expect(config_page.content).not_to include('"dropdown"')
+    end
+  end
+
   it "generates a separate relation JSON page from shared metadata" do
     Dir.mktmpdir("client-search-related") do |source|
       write_post(source, name: "one", title: "One")
@@ -277,7 +291,8 @@ RSpec.describe Jekyll::ClientSearch::Generator, :unit do
 
       expect(site.pages.map(&:url)).to include("/search-index.json")
       expect(site.static_files.map { |file| file.relative_path.to_s.delete_prefix("/") })
-        .to contain_exactly("assets/client-search-base.js", "assets/adapters/elasticlunr.js")
+        .to contain_exactly("assets/client-search-base.js", "assets/adapters/elasticlunr.js",
+                            "assets/client-search-dropdown.js")
     end
   end
 
@@ -289,7 +304,8 @@ RSpec.describe Jekyll::ClientSearch::Generator, :unit do
       described_class.new.generate(site)
 
       expect(site.static_files.map { |file| file.relative_path.to_s.delete_prefix("/") })
-        .to contain_exactly("assets/client-search-base.js", "assets/adapters/minisearch.js")
+        .to contain_exactly("assets/client-search-base.js", "assets/adapters/minisearch.js",
+                            "assets/client-search-dropdown.js")
     end
   end
 

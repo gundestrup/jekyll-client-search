@@ -31,7 +31,7 @@ RSpec.describe Jekyll::ClientSearch::OllamaEmbeddingAdapter, :unit do
     )
   end
 
-  it "rejects an empty or invalid embedding response" do
+  it "rejects an empty embedding response and warns" do
     response = Ollama::Response.new("embeddings" => [[]])
     client = instance_double(Ollama::Client, embed: response)
     allow(adapter).to receive(:client).and_return(client)
@@ -51,7 +51,17 @@ RSpec.describe Jekyll::ClientSearch::OllamaEmbeddingAdapter, :unit do
     expect(Jekyll.logger).to have_received(:warn).with("ClientSearch:", /empty or invalid/)
   end
 
-  it "raises a clear error when ollama-ruby is not installed" do
+  it "returns nil when the response has an empty embeddings array" do
+    response = Ollama::Response.new("embeddings" => [])
+    client = instance_double(Ollama::Client, embed: response)
+    allow(adapter).to receive(:client).and_return(client)
+    allow(Jekyll.logger).to receive(:warn)
+
+    expect(adapter.embed("test text")).to be_nil
+    expect(Jekyll.logger).to have_received(:warn).with("ClientSearch:", /empty or invalid/)
+  end
+
+  it "raises FatalException when ollama-ruby is not installed" do
     adapter = described_class.new(model: "test", base_url: "http://localhost:1")
     allow(adapter).to receive(:client).and_raise(LoadError, "cannot load such file -- ollama")
 
@@ -64,9 +74,17 @@ RSpec.describe Jekyll::ClientSearch::OllamaEmbeddingAdapter, :unit do
     allow(adapter).to receive(:client).and_raise(Errno::ECONNREFUSED, "Connection refused")
     allow(Jekyll.logger).to receive(:warn)
 
-    result = adapter.embed("test text")
+    expect(adapter.embed("test text")).to be_nil
+    expect(Jekyll.logger).to have_received(:warn).with("ClientSearch:", /embedding failed/)
+  end
 
-    expect(result).to be_nil
-    expect(Jekyll.logger).to have_received(:warn).with("ClientSearch:", anything)
+  it "returns nil and warns on standard error" do
+    client = instance_double(Ollama::Client)
+    allow(client).to receive(:embed).and_raise(StandardError, "boom")
+    allow(adapter).to receive(:client).and_return(client)
+    allow(Jekyll.logger).to receive(:warn)
+
+    expect(adapter.embed("test text")).to be_nil
+    expect(Jekyll.logger).to have_received(:warn).with("ClientSearch:", /embedding failed for text: boom/)
   end
 end

@@ -2,10 +2,10 @@
 
 require "spec_helper"
 
-RSpec.describe Jekyll::ClientSearch::SearchTag, :unit do
+RSpec.describe Jekyll::ClientSearch::DropdownTag, :unit do
   def render_tag(markup, config = {})
     site = instance_double(Jekyll::Site, config: config)
-    template = Liquid::Template.parse("{% search_form #{markup} %}")
+    template = Liquid::Template.parse("{% search_dropdown #{markup} %}")
     template.render({}, registers: { site: site })
   end
 
@@ -17,26 +17,21 @@ RSpec.describe Jekyll::ClientSearch::SearchTag, :unit do
     { "client_search" => { "enabled" => true, "engine" => "elasticlunr" } }
   end
 
-  let(:semantic_config) do
-    {
-      "client_search" => {
-        "enabled" => true,
-        "engine" => "semantic",
-        "embedding" => { "enabled" => true, "query_embedder" => { "type" => "transformers" } }
-      }
-    }
-  end
-
-  it "renders form + scripts for minisearch with default CDN URL" do
+  it "renders dropdown HTML + scripts for minisearch with default CDN URL" do
     html = render_tag("", minisearch_config)
-    expect(html).to include('id="search-form"')
-    expect(html).to include('id="search-query"')
-    expect(html).to include('id="search-status"')
-    expect(html).to include('id="search-results"')
+    expect(html).to include("data-client-search-dropdown")
+    expect(html).to include("cs-dropdown-input")
+    expect(html).to include("cs-dropdown-results")
+    expect(html).to include('data-max-items="5"')
     expect(html).to include("minisearch@7.2.0/dist/umd/index.min.js")
     expect(html).to include("search-runtime-config.js")
-    expect(html).to include("client-search-base.js")
+    expect(html).to include("client-search-dropdown.js")
     expect(html).to include("adapters/minisearch.js")
+  end
+
+  it "renders with max:10 override" do
+    html = render_tag("max:10", minisearch_config)
+    expect(html).to include('data-max-items="10"')
   end
 
   it "renders different CDN URL and adapter for elasticlunr" do
@@ -46,39 +41,36 @@ RSpec.describe Jekyll::ClientSearch::SearchTag, :unit do
     expect(html).not_to include("minisearch")
   end
 
-  it "renders embedder config and query embedder for semantic engine" do
-    html = render_tag("", semantic_config)
-    expect(html).to include("search-embedder-config.js")
-    expect(html).to include("query-embedders/transformers.js")
-    expect(html).to include("adapters/semantic.js")
-    # Semantic has no external engine library
-    expect(html).not_to include("cdn.jsdelivr.net/npm/minisearch")
-    expect(html).not_to include("cdn.jsdelivr.net/npm/elasticlunr")
-  end
-
   it "renders nothing when client_search is disabled" do
     html = render_tag("", "client_search" => { "enabled" => false })
     expect(html.strip).to eq("")
   end
 
+  it "renders nothing when dropdown is disabled" do
+    config = { "client_search" => { "enabled" => true, "engine" => "minisearch",
+                                    "dropdown" => { "enabled" => false } } }
+    html = render_tag("", config)
+    expect(html.strip).to eq("")
+  end
+
   it "renders with defaults when client_search config is absent" do
     html = render_tag("")
-    expect(html).to include('id="search-form"')
+    expect(html).to include("data-client-search-dropdown")
     expect(html).to include("adapters/minisearch.js")
   end
 
   it "renders only form HTML with no_scripts mode" do
     html = render_tag("no_scripts", minisearch_config)
-    expect(html).to include('id="search-form"')
-    expect(html).to include('id="search-results"')
+    expect(html).to include("data-client-search-dropdown")
+    expect(html).to include("cs-dropdown-results")
     expect(html).not_to include("<script")
   end
 
   it "renders only scripts with scripts_only mode" do
     html = render_tag("scripts_only", minisearch_config)
     expect(html).to include("<script")
-    expect(html).not_to include('id="search-form"')
-    expect(html).not_to include('id="search-results"')
+    expect(html).not_to include("data-client-search-dropdown")
+    expect(html).not_to include("cs-dropdown-results")
   end
 
   it "uses engine_url from config when provided" do
@@ -116,7 +108,7 @@ RSpec.describe Jekyll::ClientSearch::SearchTag, :unit do
     }
     html = render_tag("", config)
     expect(html).to include('src="/blog/assets/search-runtime-config.js"')
-    expect(html).to include('src="/blog/assets/client-search-base.js"')
+    expect(html).to include('src="/blog/assets/client-search-dropdown.js"')
   end
 
   it "raises Liquid::SyntaxError on invalid markup" do
@@ -124,35 +116,27 @@ RSpec.describe Jekyll::ClientSearch::SearchTag, :unit do
   end
 
   it "renders nothing when site is nil" do
-    template = Liquid::Template.parse("{% search_form %}")
+    template = Liquid::Template.parse("{% search_dropdown %}")
     html = template.render({}, registers: { site: nil })
     expect(html).to eq("")
   end
 
   it "renders without engine CDN script for semantic engine" do
-    html = render_tag("", semantic_config)
-    expect(html).not_to include("cdn.jsdelivr.net")
-    expect(html).to include("search-runtime-config.js")
-    expect(html).to include("client-search-base.js")
-    expect(html).to include("adapters/semantic.js")
-  end
-
-  it "renders without query embedder script for none type" do
     config = {
       "client_search" => {
         "enabled" => true,
         "engine" => "semantic",
-        "embedding" => { "enabled" => true, "query_embedder" => { "type" => "none" } }
+        "embedding" => { "enabled" => true, "query_embedder" => { "type" => "transformers" } }
       }
     }
     html = render_tag("", config)
-    expect(html).to include("client-search-base.js")
+    expect(html).not_to include("cdn.jsdelivr.net")
+    expect(html).to include("search-runtime-config.js")
+    expect(html).to include("client-search-dropdown.js")
     expect(html).to include("adapters/semantic.js")
-    expect(html).not_to include("query-embedders/")
-    expect(html).not_to include("search-embedder-config.js")
   end
 
   it "is registered as a safe Liquid tag" do
-    expect(Liquid::Template.tags["search_form"]).to eq(described_class)
+    expect(Liquid::Template.tags["search_dropdown"]).to eq(described_class)
   end
 end

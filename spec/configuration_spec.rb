@@ -13,7 +13,8 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
 
     expect(settings).to be_enabled
     expect(settings.engine).to eq("minisearch")
-    expect(settings.runtime_assets).to eq(["assets/client-search-base.js", "assets/adapters/minisearch.js"])
+    expect(settings.runtime_assets).to eq(["assets/client-search-base.js", "assets/adapters/minisearch.js",
+                                           "assets/client-search-dropdown.js"])
     expect(settings.output).to eq("search-index.json")
     expect(settings.collections).to eq(["posts"])
     expect(settings).not_to be_include_pages
@@ -75,7 +76,8 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
     )
 
     expect(settings.engine).to eq("elasticlunr")
-    expect(settings.runtime_assets).to eq(["assets/client-search-base.js", "assets/adapters/elasticlunr.js"])
+    expect(settings.runtime_assets).to eq(["assets/client-search-base.js", "assets/adapters/elasticlunr.js",
+                                           "assets/client-search-dropdown.js"])
     expect(settings.output).to eq("custom/index.json")
     expect(settings.collections).to eq(%w[posts categories])
     expect(settings).to be_include_pages
@@ -92,7 +94,8 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
   it "accepts the semantic engine" do
     settings = configuration("engine" => "semantic")
     expect(settings.engine).to eq("semantic")
-    expect(settings.runtime_assets).to eq(["assets/client-search-base.js", "assets/adapters/semantic.js"])
+    expect(settings.runtime_assets).to eq(["assets/client-search-base.js", "assets/adapters/semantic.js",
+                                           "assets/client-search-dropdown.js"])
   end
 
   it "enables live search by default for lexical engines" do
@@ -118,7 +121,7 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
     expect(configuration.related_enabled?).to be(false)
     expect(configuration.related_output).to eq("search-relations.json")
     expect(configuration.related_configuration.minimum_similarity).to eq(0.55)
-    expect(configuration.related_configuration.max_items).to be_nil
+    expect(configuration.related_configuration.max_items).to eq(5)
   end
 
   it "accepts related analysis configuration" do
@@ -306,14 +309,16 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
 
   it "derives the Ollama API URL from base_url by default" do
     settings = configuration("embedding" => { "enabled" => true, "base_url" => "http://gpu-box:11434" })
-    expect(settings.query_embedder_api_url).to eq("http://gpu-box:11434/api/embed")
+    config = JSON.parse(settings.query_embedder_config_json)
+    expect(config["apiUrl"]).to eq("http://gpu-box:11434/api/embed")
   end
 
   it "allows overriding the query embedder API URL" do
     settings = configuration(
       "embedding" => { "enabled" => true, "query_embedder" => { "api_url" => "https://api.example.com/embed" } }
     )
-    expect(settings.query_embedder_api_url).to eq("https://api.example.com/embed")
+    config = JSON.parse(settings.query_embedder_config_json)
+    expect(config["apiUrl"]).to eq("https://api.example.com/embed")
   end
 
   it "supports ollama_api query embedder type" do
@@ -408,5 +413,32 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
     expect(config["timeoutMs"]).to eq(300_000)
     expect(config["retryAttempts"]).to eq(1)
     expect(config["maxTokens"]).to eq(512)
+  end
+
+  it "includes related runtime when related is enabled but dropdown is disabled" do
+    settings = configuration(
+      "related" => { "enabled" => true },
+      "dropdown" => { "enabled" => false }
+    )
+    expect(settings.runtime_assets).to include("assets/client-search-related.js")
+    expect(settings.runtime_assets).not_to include("assets/client-search-dropdown.js")
+  end
+
+  it "filters out invalid passthrough entries but keeps valid ones" do
+    settings = configuration(
+      "passthrough_fields" => [
+        "valid_field",
+        { "source_key" => "target_key" },
+        { "key" => "" },
+        { "" => "target" },
+        "",
+        "another_valid"
+      ]
+    )
+    expect(settings.passthrough_fields).to eq(
+      [%w[valid_field valid_field],
+       %w[source_key target_key],
+       %w[another_valid another_valid]]
+    )
   end
 end

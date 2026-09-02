@@ -7,12 +7,14 @@ module Jekyll
     #
     #   {% related_articles %}
     #   {% related_articles sort:date %}
+    #   {% related_articles max:3 %}
+    #   {% related_articles sort:date max:3 %}
     #   {% related_articles no_scripts %}
     #
     # When +related.enabled+ is false the tag renders nothing, so it is safe
     # to leave in a layout even when the feature is off.
     class RelatedTag < Liquid::Tag
-      SYNTAX = /\A(sort:(\w+))?\s*(no_scripts)?\z/
+      SYNTAX = /\A(sort:(\w+))?\s*(max:(\d+))?\s*(no_scripts)?\z/
 
       def initialize(tag_name, markup, tokens)
         super
@@ -20,22 +22,30 @@ module Jekyll
         unless (match = @markup.match(SYNTAX))
           raise Liquid::SyntaxError,
                 "related_articles: invalid syntax. Use {% related_articles %}, " \
-                "{% related_articles sort:date %}, or {% related_articles no_scripts %}"
+                "{% related_articles sort:date %}, {% related_articles max:3 %}, " \
+                "or {% related_articles no_scripts %}"
         end
 
         @sort = match[2] if match[2]
-        @include_scripts = match[3].nil?
+        @max_items = match[4].to_i if match[4]
+        raise Liquid::SyntaxError, "related_articles: max must be greater than zero" if @max_items && @max_items < 1
+
+        @include_scripts = match[5].nil?
       end
 
       def render(context)
         site = context.registers[:site]
-        config = site&.config&.fetch("client_search", {})
+        return "" if site.nil?
+
+        config = site.config.fetch("client_search", {})
+        return "" if config == false
         return "" unless related_enabled?(config)
 
         asset_prefix = asset_prefix(site)
         sort_attr = @sort ? " data-related-sort=\"#{@sort}\"" : ""
+        max_attr = resolve_max_attr(config)
         scripts = build_scripts(asset_prefix)
-        build_html(sort_attr, scripts)
+        build_html(sort_attr, max_attr, scripts)
       end
 
       private
@@ -57,7 +67,19 @@ module Jekyll
           "<script src=\"#{prefix}/assets/client-search-related.js\"></script>"
       end
 
-      def build_html(sort_attr, scripts)
+      def resolve_max_attr(config)
+        related = config.fetch("related", {})
+        max = if @max_items
+                @max_items
+              elsif related.key?("max_items")
+                related["max_items"]
+              else
+                5
+              end
+        max.nil? ? "" : " data-related-max=\"#{max}\""
+      end
+
+      def build_html(sort_attr, max_attr, scripts)
         <<~HTML
           <section class="related-articles-section">
             <label for="related-sort">Sort related articles</label>
@@ -65,7 +87,7 @@ module Jekyll
               <option value="relevance">Most related</option>
               <option value="date">Newest</option>
             </select>
-            <div id="related-articles"#{sort_attr}></div>
+            <div id="related-articles"#{sort_attr}#{max_attr}></div>
           </section>#{scripts}
         HTML
       end
