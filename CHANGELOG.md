@@ -2,9 +2,18 @@
 
 ## Unreleased
 
+## 0.3.1 — 2026-09-09
+
 ### Fixed
 - Fix CodeQL `rb/bad-tag-filter` (high) in `DocumentBuilder#clean` — closing tag regex `</script\s*>` only matched whitespace before `>`, missing browser-accepted tags like `</script\t\n bar>`; changed to `</script[^>]*>` and `</style[^>]*>` to match any non-`>` content
 - Fix CodeQL `rb/polynomial-redos` (high) in `RelatedTag` — `\s*` patterns between optional groups in SYNTAX regex caused O(n²) backtracking on input with many spaces; replaced single regex with token-split parser that validates each token individually
+
+### Changed
+- Update `simplecov` 1.1.1 → 1.2.0
+- Update `google-protobuf` 4.36.0 → 4.36.1 (transitive)
+- Update `sass-embedded` 1.103.1 → 1.104.0 (transitive)
+- Update `eslint` 10.9.1 → 10.10.0 (dev)
+- Update `globals` 17.11.0 → 17.12.0 (dev)
 
 ## 0.3.0 — 2026-09-02
 
