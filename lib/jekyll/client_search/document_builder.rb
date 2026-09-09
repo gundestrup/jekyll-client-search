@@ -67,8 +67,8 @@ module Jekyll
 
       def clean(value)
         cleaned = value.to_s
-                       .gsub(%r{<script\b[^>]*>.*?</script\s*>}mi, " ")
-                       .gsub(%r{<style\b[^>]*>.*?</style\s*>}mi, " ")
+                       .gsub(%r{<script\b[^>]*>.*?</script[^>]*>}mi, " ")
+                       .gsub(%r{<style\b[^>]*>.*?</style[^>]*>}mi, " ")
                        .gsub(/\{%.*?%\}/m, " ")
                        .gsub(/\{\{.*?\}\}/m, " ")
                        .gsub(/!\[[^\]]*\]\([^)]*\)/, " ")

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+- Fix CodeQL `rb/bad-tag-filter` (high) in `DocumentBuilder#clean` — closing tag regex `</script\s*>` only matched whitespace before `>`, missing browser-accepted tags like `</script\t\n bar>`; changed to `</script[^>]*>` and `</style[^>]*>` to match any non-`>` content
+- Fix CodeQL `rb/polynomial-redos` (high) in `RelatedTag` — `\s*` patterns between optional groups in SYNTAX regex caused O(n²) backtracking on input with many spaces; replaced single regex with token-split parser that validates each token individually
+
 ## 0.3.0 — 2026-09-02
 
 ### Added

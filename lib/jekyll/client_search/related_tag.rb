@@ -14,23 +14,39 @@ module Jekyll
     # When +related.enabled+ is false the tag renders nothing, so it is safe
     # to leave in a layout even when the feature is off.
     class RelatedTag < Liquid::Tag
-      SYNTAX = /\A(sort:(\w+))?\s*(max:(\d+))?\s*(no_scripts)?\z/
+      TOKEN_SYNTAX = /\A(sort:\w+|max:\d+|no_scripts)\z/
 
       def initialize(tag_name, markup, tokens)
         super
         @markup = markup.to_s.strip
-        unless (match = @markup.match(SYNTAX))
-          raise Liquid::SyntaxError,
-                "related_articles: invalid syntax. Use {% related_articles %}, " \
-                "{% related_articles sort:date %}, {% related_articles max:3 %}, " \
-                "or {% related_articles no_scripts %}"
+        parse_tokens(@markup)
+      end
+
+      def parse_tokens(markup)
+        @sort = nil
+        @max_items = nil
+        @include_scripts = true
+        return if markup.empty?
+
+        markup.split(/\s+/).each { |token| apply_token(token) }
+      end
+
+      def apply_token(token)
+        raise Liquid::SyntaxError, syntax_error_msg unless token.match(TOKEN_SYNTAX)
+
+        case token
+        when /\Asort:(\w+)\z/ then @sort = Regexp.last_match(1)
+        when /\Amax:(\d+)\z/
+          @max_items = Regexp.last_match(1).to_i
+          raise Liquid::SyntaxError, "related_articles: max must be greater than zero" if @max_items < 1
+        when "no_scripts" then @include_scripts = false
         end
+      end
 
-        @sort = match[2] if match[2]
-        @max_items = match[4].to_i if match[4]
-        raise Liquid::SyntaxError, "related_articles: max must be greater than zero" if @max_items && @max_items < 1
-
-        @include_scripts = match[5].nil?
+      def syntax_error_msg
+        "related_articles: invalid syntax. Use {% related_articles %}, " \
+          "{% related_articles sort:date %}, {% related_articles max:3 %}, " \
+          "or {% related_articles no_scripts %}"
       end
 
       def render(context)
