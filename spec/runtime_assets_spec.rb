@@ -30,6 +30,9 @@ RSpec.describe "ClientSearch browser runtime assets", :unit do
     ]
     js_files.each do |rel|
       it "#{rel} has no syntax errors (node --check)" do
+        # False positive: array-form Open3.capture2 bypasses the shell, and
+        # rel comes from a hardcoded allowlist of repository asset paths.
+        # nosemgrep: ruby.lang.security.dangerous-exec.dangerous-exec
         _stdout, status = Open3.capture2("node", "--check", asset_path(rel))
         expect(status.success?).to be(true), "#{rel} has syntax errors"
       end

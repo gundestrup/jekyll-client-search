@@ -24,6 +24,8 @@ RSpec.describe Jekyll::ClientSearch::OllamaEmbeddingAdapter, :ollama_integration
       skip "arXiv fixture posts not found — run `ruby spec/fixtures/download_arxiv.rb` first (see README.developer.md)"
     end
 
+    # Acceptable risk: OLLAMA_BASE_URL is hardcoded to http://localhost:11434.
+    # nosemgrep: problem-based-packs.insecure-transport.ruby-stdlib.net-http-request.net-http-request
     uri = URI("#{OLLAMA_BASE_URL}/api/tags")
     response = Net::HTTP.get_response(uri)
     models = JSON.parse(response.body).fetch("models", []).map { |m| m["name"] }

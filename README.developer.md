@@ -31,10 +31,43 @@ maintenance burden of additional code-smell tools on a small focused gem.
 External automated code review services:
 - [CodeQL](https://codeql.github.com) — GitHub native security scanning
   (Ruby + JavaScript), runs on every push.
-- [Semgrep](https://semgrep.dev) — CI security scan with custom Ruby ReDoS
-  rules in `.semgrep.yml`, runs as a CI job and in the pre-commit hook.
+- [Semgrep](https://semgrep.dev) — CI security scan using the Semgrep Pro
+  engine with the organization's full policy (2,900+ rules). Runs as a CI
+  job (`semgrep ci`) and in the pre-commit hook (custom rules only). See
+  `.semgrep.yml` for local configuration and usage instructions.
 - [CodeFactor](https://www.codefactor.io/repository/github/gundestrup/jekyll-client-search) —
   automated code review (RuboCop, Brakeman, bundler-audit, duplication).
+- [Dependabot](https://docs.github.com/en/code-security/dependabot) — weekly
+  GitHub Actions version updates (SHA-pinned actions updated automatically).
+
+### Semgrep usage
+
+The project uses two Semgrep scanning modes:
+
+1. **Pre-commit hook** — runs `semgrep scan --config .semgrep.yml` with only
+   the custom ReDoS rules defined in `.semgrep.yml`. Fast (~3s).
+2. **CI job** — runs `semgrep ci` with the full organization policy from the
+   Semgrep AppSec Platform, including Pro engine rules. Findings are uploaded
+   to the dashboard for triage.
+
+Local commands:
+
+```bash
+semgrep scan --config .semgrep.yml --error lib/ assets/   # custom rules only
+semgrep ci --dry-run                                        # full org policy, no upload
+semgrep ci                                                   # full org policy, upload to dashboard
+```
+
+To suppress a false positive or acceptable risk, add an inline annotation
+with the full rule ID and a justification:
+
+```ruby
+# nosemgrep: problem-based-packs.insecure-transport.ruby-stdlib.net-http-request.net-http-request
+# Acceptable risk: local loopback Ollama test endpoint.
+```
+
+All GitHub Actions are pinned to full 40-character commit SHAs with version
+comments. Dependabot updates the SHAs and version comments automatically.
 
 ### Rake tasks
 

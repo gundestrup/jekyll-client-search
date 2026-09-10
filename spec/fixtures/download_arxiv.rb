@@ -47,9 +47,17 @@ QUERIES = [
 
 def fetch_arxiv_papers(cat, max_results)
   base_url = "https://export.arxiv.org/api/query"
-  params = "search_query=cat:#{cat}&start=0&max_results=#{max_results}&sortBy=submittedDate&sortOrder=descending"
+  params = URI.encode_www_form(
+    search_query: "cat:#{cat}",
+    start: 0,
+    max_results: max_results,
+    sortBy: "submittedDate",
+    sortOrder: "descending"
+  )
   uri = URI("#{base_url}?#{params}")
-  response = Net::HTTP.get_response(uri)
+  # False positive: base_url is a hardcoded HTTPS constant, cat and max_results
+  # come from the frozen QUERIES constant, not user input.
+  response = Net::HTTP.get_response(uri) # nosemgrep: ruby.rails.security.audit.avoid-tainted-http-request.avoid-tainted-http-request
   return [] unless response.is_a?(Net::HTTPSuccess)
 
   doc = REXML::Document.new(response.body)

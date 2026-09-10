@@ -202,6 +202,13 @@ regardless of engine.
 - Keep browser output HTML-escaped before inserting it into the DOM.
 - Never name local variables `document` in browser code — it shadows the
   global `document` object.
+- Pin all GitHub Actions to full 40-character commit SHAs with version
+  comments (e.g. `uses: actions/checkout@<sha> # v5.1.0`). Dependabot
+  updates SHAs and comments automatically.
+- Suppress Semgrep false positives with `# nosemgrep: full.rule.id` and a
+  justification comment. Do not exclude entire directories from scans.
+- Prefer `URI.encode_www_form` over manual query string construction.
+- Use array-form `Open3.capture2("cmd", "arg", path)` to bypass the shell.
 
 ## JavaScript dependency policy
 

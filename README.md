@@ -1151,11 +1151,20 @@ Additional automated code quality and security services:
 
 - [CodeQL](https://codeql.github.com) — GitHub native code scanning for
   security vulnerabilities (Ruby + JavaScript).
-- [Semgrep](https://semgrep.dev) — CI security scan with custom Ruby ReDoS
-  detection rules (`.semgrep.yml`).
+- [Semgrep](https://semgrep.dev) — CI security scan using the Semgrep Pro
+  engine with the organization's full policy (2,900+ rules). Custom ReDoS
+  detection rules are defined in `.semgrep.yml`. Findings are triaged on the
+  [Semgrep AppSec Platform](https://semgrep.dev) dashboard. False positives
+  and acceptable risks are annotated inline with `# nosemgrep: rule.id`.
 - [CodeFactor](https://www.codefactor.io/repository/github/gundestrup/jekyll-client-search) —
   automated code review with RuboCop, Brakeman, bundler-audit, and duplication
   checks.
+- [Dependabot](https://docs.github.com/en/code-security/dependabot) — weekly
+  checks for GitHub Actions version updates (SHA-pinned actions are kept
+  up to date automatically).
+
+All GitHub Actions are pinned to full 40-character commit SHAs with version
+comments to prevent supply-chain attacks via mutable tag repointing.
 
 Before enabling releases:
 

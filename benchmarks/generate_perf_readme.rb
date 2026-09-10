@@ -169,6 +169,7 @@ template = <<~ERB
   <%= history_section(history, baseline) %>
 ERB
 
-output = ERB.new(template, trim_mode: "-").result(binding)
+# False positive: template is a static heredoc literal, not user input.
+output = ERB.new(template, trim_mode: "-").result(binding) # nosemgrep: ruby.rails.security.audit.xss.manual-template-creation.manual-template-creation
 File.write(OUTPUT_PATH, output)
 puts "Generated #{OUTPUT_PATH}"

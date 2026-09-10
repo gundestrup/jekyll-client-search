@@ -171,6 +171,8 @@ RSpec.describe "LLM injection into baseline JSON", :system do
       arxiv_present = Dir.glob(File.join(fixture_site, "_posts", "*-arxiv-*.md")).any?
       skip "arXiv fixture posts not found — run download_arxiv.rb (see README.developer.md)" unless arxiv_present
 
+      # Acceptable risk: local loopback Ollama.
+      # nosemgrep: problem-based-packs.insecure-transport.ruby-stdlib.net-http-request.net-http-request
       uri = URI("http://localhost:11434/api/tags")
       response = Net::HTTP.get_response(uri)
       models = JSON.parse(response.body).fetch("models", []).map { |m| m["name"] }

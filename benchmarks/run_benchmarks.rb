@@ -118,7 +118,8 @@ def measure_build_with_llm
 
   require "net/http"
   begin
-    uri = URI("#{base_url}/api/tags")
+    # Acceptable risk: base_url is hardcoded to http://localhost:11434 (local Ollama).
+    uri = URI("#{base_url}/api/tags") # nosemgrep: problem-based-packs.insecure-transport.ruby-stdlib.net-http-request.net-http-request
     response = Net::HTTP.get_response(uri)
     models = JSON.parse(response.body).fetch("models", []).map { |m| m["name"] }
     return nil unless models.include?(model)

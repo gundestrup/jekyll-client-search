@@ -25,10 +25,17 @@ const fieldOptions = {
 const documents = JSON.parse(fs.readFileSync(baselinePath, "utf8")).map(function (entry) {
     var categories = Array.isArray(entry.categories) ? entry.categories : [];
     var tags = Array.isArray(entry.tags) ? entry.tags : [];
-    return Object.assign({}, entry, {
+    return {
+        id: entry.id,
+        title: entry.title,
+        url: entry.url,
+        excerpt: entry.excerpt,
+        content: entry.content,
+        categories: categories,
+        tags: tags,
         categoriesText: categories.join(" "),
         tagsText: tags.join(" ")
-    });
+    };
 });
 
 function measure(search) {

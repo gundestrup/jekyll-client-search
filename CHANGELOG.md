@@ -2,12 +2,24 @@
 
 ## Unreleased
 
+## 0.3.2 — 2026-09-10
+
 ### Added
-- Semgrep security scan in CI (`semgrep ci` job in `.github/workflows/ci.yml`) — runs on every push and pull request using the `SEMGREP_APP_TOKEN` secret
-- `.semgrep.yml` with custom Ruby ReDoS detection rule
+- Semgrep security scan in CI (`semgrep ci` job in `.github/workflows/ci.yml`) — runs on every push and pull request using the `SEMGREP_APP_TOKEN` secret and the Semgrep Pro engine with the organization's full policy (2,900+ rules)
+- `.semgrep.yml` with custom Ruby ReDoS detection rules and usage documentation
 - Semgrep step in pre-commit hook (`bin/install-hooks.sh`)
+- Dependabot configuration for GitHub Actions (`.github/dependabot.yml`) — weekly SHA-pinned action updates
 - CodeFactor and Semgrep badges in README.md
-- Documentation of CodeQL, Semgrep, and CodeFactor in README.md and README.developer.md
+- Documentation of CodeQL, Semgrep, CodeFactor, and Dependabot in README.md, README.developer.md, and AGENTS.md
+- Semgrep usage guide in README.developer.md (local commands, nosemgrep annotations, SHA pinning)
+
+### Fixed
+- Pin all GitHub Actions to full 40-character commit SHAs with version comments to prevent supply-chain attacks via mutable tag repointing (Semgrep: `github-actions-mutable-action-tag`)
+- Replace `Object.assign({}, entry, ...)` in benchmark with explicit field construction to avoid mass-assignment taint (Semgrep: `insecure-object-assign`)
+- Replace manual arXiv query string with `URI.encode_www_form` for correct URL encoding (Semgrep: `avoid-tainted-http-request`)
+
+### Changed
+- Add `nosemgrep` annotations with justifications for false positives (static ERB template, array-form `Open3.capture2`, fixed-host arXiv request) and acceptable risks (local loopback Ollama HTTP in tests and benchmarks)
 
 ## 0.3.1 — 2026-09-09
 
