@@ -13,7 +13,8 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
 
     expect(settings).to be_enabled
     expect(settings.engine).to eq("minisearch")
-    expect(settings.runtime_assets).to eq(["assets/client-search-base.js", "assets/adapters/minisearch.js",
+    expect(settings.runtime_assets).to eq(["assets/client-search-shared.js", "assets/client-search-base.js",
+                                           "assets/adapters/minisearch.js",
                                            "assets/client-search-dropdown.js"])
     expect(settings.output).to eq("search-index.json")
     expect(settings.collections).to eq(["posts"])
@@ -76,7 +77,8 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
     )
 
     expect(settings.engine).to eq("elasticlunr")
-    expect(settings.runtime_assets).to eq(["assets/client-search-base.js", "assets/adapters/elasticlunr.js",
+    expect(settings.runtime_assets).to eq(["assets/client-search-shared.js", "assets/client-search-base.js",
+                                           "assets/adapters/elasticlunr.js",
                                            "assets/client-search-dropdown.js"])
     expect(settings.output).to eq("custom/index.json")
     expect(settings.collections).to eq(%w[posts categories])
@@ -94,7 +96,8 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
   it "accepts the semantic engine" do
     settings = configuration("engine" => "semantic")
     expect(settings.engine).to eq("semantic")
-    expect(settings.runtime_assets).to eq(["assets/client-search-base.js", "assets/adapters/semantic.js",
+    expect(settings.runtime_assets).to eq(["assets/client-search-shared.js", "assets/client-search-base.js",
+                                           "assets/adapters/semantic.js",
                                            "assets/client-search-dropdown.js"])
   end
 

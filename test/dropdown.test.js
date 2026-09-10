@@ -7,6 +7,10 @@ const test = require("node:test");
 const MiniSearch = require("minisearch");
 const { JSDOM } = require("jsdom");
 
+const sharedSource = fs.readFileSync(
+    path.join(__dirname, "..", "assets", "client-search-shared.js"),
+    "utf8"
+);
 const dropdownSource = fs.readFileSync(
     path.join(__dirname, "..", "assets", "client-search-dropdown.js"),
     "utf8"
@@ -82,6 +86,7 @@ function createDropdownWindow(query, config) {
     };
 
     dom.window.eval(minisearchAdapter);
+    dom.window.eval(sharedSource);
     dom.window.eval(dropdownSource);
 
     // The dropdown runtime defers initAll to DOMContentLoaded when
@@ -183,6 +188,7 @@ test("[dropdown] truncates results to maxItems", async function () {
         return { ok: true, json: async function () { return broadIndex; } };
     };
     dom.window.eval(minisearchAdapter);
+    dom.window.eval(sharedSource);
     dom.window.eval(dropdownSource);
     dom.window.document.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
 
@@ -346,6 +352,7 @@ test("[dropdown] handles fetch error gracefully", async function () {
     };
 
     dom.window.eval(minisearchAdapter);
+    dom.window.eval(sharedSource);
     dom.window.eval(dropdownSource);
 
     if (dom.window.document.readyState === "loading") {

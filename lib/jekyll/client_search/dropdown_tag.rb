@@ -90,23 +90,29 @@ module Jekyll
 
       def build_scripts(configuration, prefix)
         scripts = []
-        engine = configuration.engine_url
-        if engine
-          attrs = ["src=\"#{CGI.escapeHTML(engine)}\""]
-          if configuration.engine_crossorigin
-            crossorigin = CGI.escapeHTML(configuration.engine_crossorigin)
-            attrs << "crossorigin=\"#{crossorigin}\""
-          end
-          if configuration.engine_sri
-            integrity = CGI.escapeHTML(configuration.engine_sri)
-            attrs << "integrity=\"#{integrity}\""
-          end
-          scripts << "<script #{attrs.join(' ')}></script>"
-        end
+        engine = engine_script(configuration)
+        scripts << engine if engine
         scripts << "<script src=\"#{prefix}/assets/search-runtime-config.js\"></script>"
+        scripts << "<script src=\"#{prefix}/assets/client-search-shared.js\"></script>"
         scripts << "<script src=\"#{prefix}/assets/client-search-dropdown.js\"></script>"
         scripts << "<script src=\"#{prefix}/assets/adapters/#{configuration.engine}.js\"></script>"
         scripts.map { |script| "  #{script}" }.join("\n")
+      end
+
+      def engine_script(configuration)
+        url = configuration.engine_url
+        return nil unless url
+
+        attrs = ["src=\"#{CGI.escapeHTML(url)}\""]
+        if configuration.engine_crossorigin
+          crossorigin = CGI.escapeHTML(configuration.engine_crossorigin)
+          attrs << "crossorigin=\"#{crossorigin}\""
+        end
+        if configuration.engine_sri
+          integrity = CGI.escapeHTML(configuration.engine_sri)
+          attrs << "integrity=\"#{integrity}\""
+        end
+        "<script #{attrs.join(' ')}></script>"
       end
     end
   end

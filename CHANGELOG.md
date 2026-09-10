@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.3.3 — 2026-09-11
+
+### Refactored
+- Extract duplicated `normalize` function from `client-search-base.js` and `client-search-dropdown.js` into new shared module `assets/client-search-shared.js` (exposes `window.ClientSearchShared.normalize` and `window.ClientSearchShared.coreFields`) — eliminates CodeFactor duplicate-code finding and ensures consistent normalization across both runtimes
+
 ## 0.3.2 — 2026-09-10
 
 ### Added

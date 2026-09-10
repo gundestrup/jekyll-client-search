@@ -35,6 +35,7 @@ RSpec.describe Jekyll::ClientSearch::SearchTag, :unit do
     expect(html).to include('id="search-results"')
     expect(html).to include("minisearch@7.2.0/dist/umd/index.min.js")
     expect(html).to include("search-runtime-config.js")
+    expect(html).to include("client-search-shared.js")
     expect(html).to include("client-search-base.js")
     expect(html).to include("adapters/minisearch.js")
   end

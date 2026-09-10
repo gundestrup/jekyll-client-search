@@ -18,6 +18,7 @@ RSpec.describe "ClientSearch browser runtime assets", :unit do
 
   describe "JavaScript syntax validation" do
     js_files = %w[
+      assets/client-search-shared.js
       assets/client-search-base.js
       assets/client-search-dropdown.js
       assets/client-search-related.js

@@ -69,6 +69,7 @@ module Jekyll
         scripts << engine if engine
         scripts << "<script src=\"#{prefix}/assets/search-runtime-config.js\"></script>"
         scripts.concat(embedder_scripts(configuration, prefix))
+        scripts << "<script src=\"#{prefix}/assets/client-search-shared.js\"></script>"
         scripts << "<script src=\"#{prefix}/assets/client-search-base.js\"></script>"
         scripts << "<script src=\"#{prefix}/assets/adapters/#{configuration.engine}.js\"></script>"
         scripts.map { |script| "  #{script}" }.join("\n")

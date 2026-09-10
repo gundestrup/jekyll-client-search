@@ -105,7 +105,7 @@ module Jekyll
       end
 
       def runtime_assets
-        assets = ["assets/client-search-base.js", "assets/adapters/#{engine}.js"]
+        assets = ["assets/client-search-shared.js", "assets/client-search-base.js", "assets/adapters/#{engine}.js"]
         assets.concat(query_embedder_assets) if engine == "semantic" && embedding_enabled?
         assets << "assets/client-search-related.js" if related_enabled?
         assets << "assets/client-search-dropdown.js" if dropdown_enabled?

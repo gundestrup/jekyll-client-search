@@ -9,6 +9,10 @@ const MiniSearch = require("minisearch");
 const { loadSemanticFixture } = require("./semantic-fixture");
 
 const BASELINE_PATH = path.join(__dirname, "..", "spec", "fixtures", "baseline", "search-index-baseline.json");
+const SHARED_SOURCE = fs.readFileSync(
+    path.join(__dirname, "..", "assets", "client-search-shared.js"),
+    "utf8"
+);
 const BASE_RUNTIME = fs.readFileSync(
     path.join(__dirname, "..", "assets", "client-search-base.js"),
     "utf8"
@@ -92,6 +96,7 @@ function createSemanticWindow(semanticData, query) {
     dom.window.fetch = async function () {
         return { ok: true, json: async function () { return documents; } };
     };
+    dom.window.eval(SHARED_SOURCE);
     dom.window.eval(BASE_RUNTIME);
     dom.window.eval(fs.readFileSync(path.join(ADAPTER_DIR, "semantic.js"), "utf8"));
     return dom.window;
@@ -111,6 +116,7 @@ function createLexicalWindow(query) {
     dom.window.fetch = async function () {
         return { ok: true, json: async function () { return index; } };
     };
+    dom.window.eval(SHARED_SOURCE);
     dom.window.eval(BASE_RUNTIME);
     dom.window.eval(fs.readFileSync(path.join(ADAPTER_DIR, "minisearch.js"), "utf8"));
     return dom.window;

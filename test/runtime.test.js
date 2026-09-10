@@ -8,6 +8,10 @@ const MiniSearch = require("minisearch");
 const elasticlunr = require("elasticlunr");
 const { JSDOM } = require("jsdom");
 
+const sharedSource = fs.readFileSync(
+    path.join(__dirname, "..", "assets", "client-search-shared.js"),
+    "utf8"
+);
 const baseRuntime = fs.readFileSync(
     path.join(__dirname, "..", "assets", "client-search-base.js"),
     "utf8"
@@ -90,6 +94,7 @@ function createWindow(suite, index, query = "greenland", clientConfig = null) {
     dom.window.fetch = async function () {
         return { ok: true, json: async function () { return effectiveIndex; } };
     };
+    dom.window.eval(sharedSource);
     dom.window.eval(baseRuntime);
     dom.window.eval(suite.adapterSource);
     return dom.window;
@@ -360,6 +365,7 @@ test("[semantic] cosine similarity ranks by relevance", async function () {
     dom.window.fetch = async function () {
         return { ok: true, json: async function () { return index; } };
     };
+    dom.window.eval(sharedSource);
     dom.window.eval(baseRuntime);
     dom.window.eval(semanticAdapterSource);
 
@@ -392,6 +398,7 @@ test("[semantic] buildIndex filters documents without embeddings", async functio
     dom.window.fetch = async function () {
         return { ok: true, json: async function () { return index; } };
     };
+    dom.window.eval(sharedSource);
     dom.window.eval(baseRuntime);
     dom.window.eval(semanticAdapterSource);
 
@@ -418,6 +425,7 @@ test("[semantic] returns empty results when no query embedder is available", asy
     dom.window.fetch = async function () {
         return { ok: true, json: async function () { return [{ id: "/a/", title: "A", url: "/a/", embedding: [1, 0] }]; } };
     };
+    dom.window.eval(sharedSource);
     dom.window.eval(baseRuntime);
     dom.window.eval(semanticAdapterSource);
 
@@ -582,6 +590,7 @@ test("base runtime displays query-embedder progress status", async function () {
     dom.window.fetch = async function () {
         return { ok: true, json: async function () { return [{ id: "/a/", title: "A", url: "/a/" }]; } };
     };
+    dom.window.eval(sharedSource);
     dom.window.eval(baseRuntime);
     dom.window.ClientSearch.run({
         available: function () { return true; },
@@ -624,6 +633,7 @@ test("base runtime reports async adapter failures as unavailable", async functio
             }
         };
     };
+    dom.window.eval(sharedSource);
     dom.window.eval(baseRuntime);
     dom.window.eval(semanticAdapterSource);
     await settle();
@@ -649,6 +659,7 @@ test("base runtime ignores stale async failures after a newer query", async func
     dom.window.fetch = async function () {
         return { ok: true, json: async function () { return index; } };
     };
+    dom.window.eval(sharedSource);
     dom.window.eval(baseRuntime);
     dom.window.ClientSearch.run({
         available: function () { return true; },
@@ -691,6 +702,7 @@ test("base runtime ignores stale async search results", async function () {
     dom.window.fetch = async function () {
         return { ok: true, json: async function () { return index; } };
     };
+    dom.window.eval(sharedSource);
     dom.window.eval(baseRuntime);
     dom.window.ClientSearchAdapters = {};
     dom.window.ClientSearchAdapters.test = {

@@ -235,19 +235,22 @@ RSpec.describe "ClientSearch system build", :system do
         expect(content).to include('id="search-status"')
         expect(content).to include('id="search-results"')
 
-        # Scripts in the right order: engine, config, base, adapter
+        # Scripts in the right order: engine, config, shared, base, adapter
         expect(content).to include("minisearch@7.2.0")
         expect(content).to include("search-runtime-config.js")
+        expect(content).to include("client-search-shared.js")
         expect(content).to include("client-search-base.js")
         expect(content).to include("adapters/minisearch.js")
 
-        # Verify script order: engine before config before base before adapter
+        # Verify script order: engine before config before shared before base before adapter
         engine_pos = content.index("minisearch@7.2.0")
         config_pos = content.index("search-runtime-config.js")
+        shared_pos = content.index("client-search-shared.js")
         base_pos = content.index("client-search-base.js")
         adapter_pos = content.index("adapters/minisearch.js")
         expect(engine_pos).to be < config_pos
-        expect(config_pos).to be < base_pos
+        expect(config_pos).to be < shared_pos
+        expect(shared_pos).to be < base_pos
         expect(base_pos).to be < adapter_pos
       end
     end

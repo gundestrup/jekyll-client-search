@@ -9,6 +9,10 @@ const MiniSearch = require("minisearch");
 const elasticlunr = require("elasticlunr");
 
 const BASELINE_PATH = path.join(__dirname, "..", "spec", "fixtures", "baseline", "search-index-baseline.json");
+const SHARED_SOURCE = fs.readFileSync(
+    path.join(__dirname, "..", "assets", "client-search-shared.js"),
+    "utf8"
+);
 const BASE_RUNTIME = fs.readFileSync(
     path.join(__dirname, "..", "assets", "client-search-base.js"),
     "utf8"
@@ -142,6 +146,7 @@ function createWindow(engine, index, query) {
     dom.window.fetch = async function () {
         return { ok: true, json: async function () { return index; } };
     };
+    dom.window.eval(SHARED_SOURCE);
     dom.window.eval(BASE_RUNTIME);
     dom.window.eval(engine.adapterSource);
     return dom.window;

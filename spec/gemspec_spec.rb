@@ -28,6 +28,7 @@ RSpec.describe "gem specification", :unit do
       "lib/jekyll/client_search/related_analyzer.rb",
       "lib/jekyll/client_search/related_page.rb",
       "lib/jekyll/client_search/query_embedder_configuration.rb",
+      "assets/client-search-shared.js",
       "assets/client-search-base.js",
       "assets/adapters/minisearch.js",
       "assets/adapters/elasticlunr.js",

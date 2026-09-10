@@ -41,39 +41,7 @@
         return key.replace(/_([a-z])/g, function (_, char) { return char.toUpperCase(); });
     }
 
-    function normalize(entry) {
-        var id = entry.id || entry.url;
-        if (!id) {
-            return null;
-        }
-        var categories = Array.isArray(entry.categories) ? entry.categories : [];
-        var tags = Array.isArray(entry.tags) ? entry.tags : [];
-        var normalized = {
-            id: id,
-            title: entry.title || "Untitled",
-            url: entry.url || "#",
-            excerpt: entry.excerpt || "",
-            content: entry.content || "",
-            date: entry.date || "",
-            date_timestamp: Number(entry.date_timestamp) || 0,
-            categories: categories,
-            tags: tags,
-            categoriesText: categories.join(" "),
-            tagsText: tags.join(" ")
-        };
-        if (entry.source) {
-            normalized.source = entry.source;
-        }
-        Object.keys(entry).forEach(function (key) {
-            if (!(key in normalized) && key !== "embedding") {
-                var value = entry[key];
-                if (value !== null && value !== undefined && value !== "") {
-                    normalized[key] = value;
-                }
-            }
-        });
-        return normalized;
-    }
+    var normalize = window.ClientSearchShared.normalize;
 
     function loadIndex(config) {
         if (sharedIndex && sharedDocuments) {
