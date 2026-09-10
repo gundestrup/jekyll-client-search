@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Added
+- Semgrep security scan in CI (`semgrep ci` job in `.github/workflows/ci.yml`) — runs on every push and pull request using the `SEMGREP_APP_TOKEN` secret
+- `.semgrep.yml` with custom Ruby ReDoS detection rule
+- Semgrep step in pre-commit hook (`bin/install-hooks.sh`)
+- CodeFactor and Semgrep badges in README.md
+- Documentation of CodeQL, Semgrep, and CodeFactor in README.md and README.developer.md
+
 ## 0.3.1 — 2026-09-09
 
 ### Fixed

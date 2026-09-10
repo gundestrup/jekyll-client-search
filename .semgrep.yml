@@ -1,0 +1,31 @@
+# Semgrep configuration for jekyll-client-search
+# https://semgrep.dev/docs/
+#
+# Run: semgrep scan --config .semgrep.yml --error lib/ assets/
+
+rules:
+  # Detect String#scan with unanchored polynomial regex (ReDoS).
+  # Excludes StringScanner#scan, which advances positionally and cannot backtrack.
+  - id: ruby-redos-string-scan
+    languages: [ruby]
+    severity: WARNING
+    message: "String#scan with unanchored polynomial regex may cause ReDoS"
+    patterns:
+      - pattern: $X.scan($REGEX)
+      - pattern-not-regex: 'scanner\.scan\('
+      - pattern-not: $X.scan("$LITERAL")
+    options:
+      symbolic_propagation: true
+    metavariable-analysis:
+      analyzer: redos
+      metavariable: $REGEX
+
+  # Detect RegExp with unanchored polynomial pattern (ReDoS) in JavaScript.
+  - id: js-redos-regex
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: "RegExp with unanchored polynomial pattern may cause ReDoS"
+    pattern: new RegExp($REGEX)
+    metavariable-analysis:
+      analyzer: redos
+      metavariable: $REGEX

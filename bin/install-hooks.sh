@@ -1,7 +1,7 @@
 #!/bin/bash
 # Install git hooks for jekyll-client-search
 #
-# pre-commit:  rubocop only (fast, ~2s)
+# pre-commit:  rubocop + semgrep (fast, ~5s)
 # pre-push:    rubocop + rspec (full quality gate before pushing)
 #
 # Usage: bin/install-hooks.sh
@@ -14,21 +14,28 @@ HOOKS_DIR="$REPO_ROOT/.git/hooks"
 
 mkdir -p "$HOOKS_DIR"
 
-# pre-commit: fast style check only
+# pre-commit: fast style + security check
 cat > "$HOOKS_DIR/pre-commit" << 'HOOK'
 #!/bin/bash
-# Pre-commit hook — fast style check only
+# Pre-commit hook — fast style + security check
 # Full tests run on pre-push and in CI
 
 echo "🔍 Running RuboCop..."
-if bundle exec rubocop --force-exclusion; then
-    echo "✅ Style checks passed"
-    exit 0
-else
+if ! bundle exec rubocop --force-exclusion; then
     echo "❌ Style checks failed"
     echo "Fix the issues or use 'git commit --no-verify' to skip"
     exit 1
 fi
+
+echo "🔍 Running Semgrep security scan..."
+if ! semgrep scan --config .semgrep.yml --error lib/ assets/ 2>&1; then
+    echo "❌ Semgrep scan failed"
+    echo "Fix the issues or use 'git commit --no-verify' to skip"
+    exit 1
+fi
+
+echo "✅ Style and security checks passed"
+exit 0
 HOOK
 chmod +x "$HOOKS_DIR/pre-commit"
 
@@ -56,7 +63,7 @@ HOOK
 chmod +x "$HOOKS_DIR/pre-push"
 
 echo "✅ Installed git hooks:"
-echo "   pre-commit:  rubocop only (fast, ~2s)"
+echo "   pre-commit:  rubocop + semgrep (fast, ~5s)"
 echo "   pre-push:    rubocop + rspec (full quality gate)"
 echo ""
 echo "   Skip with: git commit --no-verify  /  git push --no-verify"

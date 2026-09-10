@@ -8,6 +8,8 @@
 [![License: AGPL v3](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue.svg)](LICENSE)
 [![DeepWiki](https://img.shields.io/badge/DeepWiki-docs-7B68EE.svg)](https://deepwiki.com/gundestrup/jekyll-client-search)
 [![Coverage](https://img.shields.io/badge/coverage-100%25%20branches-brightgreen.svg)](#testing-strategy)
+[![Semgrep](https://img.shields.io/badge/semgrep-scanning-brightgreen.svg)](https://semgrep.dev)
+[![CodeFactor](https://www.codefactor.io/repository/github/gundestrup/jekyll-client-search/badge)](https://www.codefactor.io/repository/github/gundestrup/jekyll-client-search)
 
 A Jekyll plugin that generates a JSON document index for client-side search.
 Supports lexical search ([MiniSearch](https://lucaong.github.io/minisearch/),
@@ -1140,9 +1142,20 @@ bundle exec rake ci
 
 GitHub Actions are configured in `.github/workflows/`:
 
-- `ci.yml` runs the test and gem build checks on pushes and pull requests.
+- `ci.yml` runs the test and gem build checks on pushes and pull requests,
+  plus a Semgrep security scan job.
 - `release.yml` runs on `v*` tags or manual dispatch, verifies the gem, and
   publishes it using RubyGems trusted publishing.
+
+Additional automated code quality and security services:
+
+- [CodeQL](https://codeql.github.com) — GitHub native code scanning for
+  security vulnerabilities (Ruby + JavaScript).
+- [Semgrep](https://semgrep.dev) — CI security scan with custom Ruby ReDoS
+  detection rules (`.semgrep.yml`).
+- [CodeFactor](https://www.codefactor.io/repository/github/gundestrup/jekyll-client-search) —
+  automated code review with RuboCop, Brakeman, bundler-audit, and duplication
+  checks.
 
 Before enabling releases:
 

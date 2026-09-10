@@ -24,9 +24,17 @@ are required for the default test run.
 ## Quality checks and git hooks
 
 The project uses a focused quality stack: RuboCop (style), bundler-audit
-(security), RSpec (Ruby tests), and `npm test` (JavaScript tests). This
-covers the actionable ground without the maintenance burden of additional
-code-smell tools on a small focused gem.
+(security), RSpec (Ruby tests), `npm test` (JavaScript tests), and Semgrep
+(security scanning). This covers the actionable ground without the
+maintenance burden of additional code-smell tools on a small focused gem.
+
+External automated code review services:
+- [CodeQL](https://codeql.github.com) — GitHub native security scanning
+  (Ruby + JavaScript), runs on every push.
+- [Semgrep](https://semgrep.dev) — CI security scan with custom Ruby ReDoS
+  rules in `.semgrep.yml`, runs as a CI job and in the pre-commit hook.
+- [CodeFactor](https://www.codefactor.io/repository/github/gundestrup/jekyll-client-search) —
+  automated code review (RuboCop, Brakeman, bundler-audit, duplication).
 
 ### Rake tasks
 
@@ -55,12 +63,12 @@ This installs two hooks:
 
 | Hook | What it runs | When |
 | --- | --- | --- |
-| `pre-commit` | `rubocop` only (~2s) | Before each commit |
+| `pre-commit` | `rubocop + semgrep` (~5s) | Before each commit |
 | `pre-push` | `rubocop + rspec` (~15s) | Before each push |
 
-The pre-commit hook is intentionally fast (style only) to avoid bypassing
-with `--no-verify`. The full test suite runs on pre-push and in CI. Skip
-either with `git commit --no-verify` or `git push --no-verify`.
+The pre-commit hook is intentionally fast (style + security) to avoid
+bypassing with `--no-verify`. The full test suite runs on pre-push and in
+CI. Skip either with `git commit --no-verify` or `git push --no-verify`.
 
 ### CI checks
 
@@ -71,6 +79,7 @@ request across Ruby 3.2/3.3/3.4 and Node 22/24:
 - `bundle exec bundle-audit check --update` (Ruby dependency security)
 - `npm audit --audit-level=high` (JavaScript dependency security)
 - `npm outdated` (non-blocking — warns about outdated npm packages)
+- `semgrep ci` (security scan with custom rules from `.semgrep.yml`)
 
 ## Build-time related articles
 
