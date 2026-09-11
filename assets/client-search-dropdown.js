@@ -67,7 +67,7 @@
                 if (!Array.isArray(data)) {
                     throw new TypeError("Search index must be an array");
                 }
-                var documents = data.map(normalize).filter(Boolean);
+                var documents = data.map(function (entry) { return normalize(entry); }).filter(Boolean);
                 var adapter = window.ClientSearchAdapters &&
                     (window.ClientSearchAdapters[config.engine] ||
                      window.ClientSearchAdapters.minisearch);
@@ -177,7 +177,7 @@
         this.input = root.querySelector("[data-cs-dropdown-input]");
         this.results = root.querySelector("[data-cs-dropdown-results]");
         this.config = config;
-        this.maxItems = parseInt(this.results.dataset.maxItems, 10) || config.maxItems || 5;
+        this.maxItems = Number.parseInt(this.results.dataset.maxItems, 10) || config.maxItems || 5;
         this.selectedIndex = -1;
         this.currentItems = [];
         this.debounceTimer = null;

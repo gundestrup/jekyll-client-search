@@ -153,7 +153,7 @@
             }
 
             if (container.dataset.relatedMax) {
-                options.maxItems = parseInt(container.dataset.relatedMax, 10) || 0;
+                options.maxItems = Number.parseInt(container.dataset.relatedMax, 10) || 0;
             }
 
             return fetch(options.relationsUrl, { headers: { Accept: "application/json" } })

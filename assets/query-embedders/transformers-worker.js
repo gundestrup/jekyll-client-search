@@ -106,6 +106,9 @@ async function embed(query) {
 }
 
 self.addEventListener("message", function (event) {
+    if (event.origin !== self.location.origin) {
+        return;
+    }
     var message = event.data || {};
     activeConfig = activeConfig || message.config || {};
     latestRequestId = message.id;

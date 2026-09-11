@@ -10,6 +10,7 @@
 [![Coverage](https://img.shields.io/badge/coverage-100%25%20branches-brightgreen.svg)](#testing-strategy)
 [![Semgrep](https://img.shields.io/badge/semgrep-scanning-brightgreen.svg)](https://semgrep.dev)
 [![CodeFactor](https://www.codefactor.io/repository/github/gundestrup/jekyll-client-search/badge)](https://www.codefactor.io/repository/github/gundestrup/jekyll-client-search)
+[![SonarQube](https://sonarcloud.io/api/project_badges/measure?project=gundestrup_jekyll-client-search&metric=alert_status)](https://sonarcloud.io/project/overview?id=gundestrup_jekyll-client-search)
 
 A Jekyll plugin that generates a JSON document index for client-side search.
 Supports lexical search ([MiniSearch](https://lucaong.github.io/minisearch/),

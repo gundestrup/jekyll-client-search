@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 0.3.4 — 2026-09-11
+
+### Added
+- SonarQube Cloud badge in README.md (project key: `gundestrup_jekyll-client-search`)
+
+### Fixed
+- Verify `event.origin` in transformers-worker.js `message` listener to prevent cross-origin message injection (SonarQube: `javascript:S2819`, CRITICAL)
+- Add `--ignore-scripts` to `npm ci` in CI to prevent lifecycle script execution during dependency installation (SonarQube: `githubactions:S6505`)
+- Pin Semgrep to `1.176.0` with `--only-binary :all:` in CI to prevent setup script execution and lock resolved versions (SonarQube: `githubactions:S8541`, `githubactions:S8544`)
+- Wrap `normalize` and `resultElement` callbacks in anonymous functions in `.map()` calls to avoid passing unexpected iterator arguments (SonarQube: `javascript:S7727`)
+- Wrap `search` callback in anonymous function in `.forEach()` call in benchmark (SonarQube: `javascript:S7727`)
+- Replace `parseInt` with `Number.parseInt` in dropdown and related runtimes (SonarQube: `javascript:S7773`)
+
 ## 0.3.3 — 2026-09-11
 
 ### Refactored

@@ -39,7 +39,7 @@ const documents = JSON.parse(fs.readFileSync(baselinePath, "utf8")).map(function
 });
 
 function measure(search) {
-    queries.forEach(search);
+    queries.forEach(function (query) { search(query); });
     var start = performance.now();
     var resultCount = 0;
     for (var i = 0; i < iterations; i++) {

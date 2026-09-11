@@ -227,9 +227,11 @@ test("transformers worker coalesces queued queries and runs only the latest", as
 
     window.eval(TRANSFORMERS_WORKER_SOURCE);
     window.dispatchEvent(new window.MessageEvent("message", {
+        origin: "https://example.com",
         data: { id: 1, query: "first", config: { retryAttempts: 0 } }
     }));
     window.dispatchEvent(new window.MessageEvent("message", {
+        origin: "https://example.com",
         data: { id: 2, query: "second", config: { retryAttempts: 0 } }
     }));
     await new Promise(function (resolve) { setTimeout(resolve, 20); });

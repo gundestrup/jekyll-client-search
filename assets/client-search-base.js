@@ -66,7 +66,7 @@
                     throw new TypeError("Search index must be an array");
                 }
 
-                var documents = data.map(normalize).filter(Boolean);
+                var documents = data.map(function (entry) { return normalize(entry); }).filter(Boolean);
                 documentsById = new Map(documents.map(function (entry) {
                     return [entry.id, entry];
                 }));
@@ -232,7 +232,7 @@
                 }
                 results.replaceChildren.apply(
                     results,
-                    matches.map(resultElement).filter(Boolean)
+                    matches.map(function (match) { return resultElement(match); }).filter(Boolean)
                 );
             }
 
