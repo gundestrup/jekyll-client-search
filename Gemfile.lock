@@ -260,6 +260,9 @@ GEM
     sass-embedded (1.104.0-x86_64-linux-musl)
       google-protobuf (~> 4.31)
     simplecov (1.2.0)
+    simplecov-cobertura (4.0.0)
+      rexml
+      simplecov (~> 1.0)
     sync (0.5.0)
     term-ansicolor (1.11.3)
       tins (~> 1)
@@ -310,6 +313,7 @@ DEPENDENCIES
   rubocop (~> 1.90)
   rubocop-rspec (~> 3.10)
   simplecov (~> 1.1)
+  simplecov-cobertura (~> 4.0)
 
 CHECKSUMS
   addressable (2.9.0) sha256=7fdf6ac3660f7f4e867a0838be3f6cf722ace541dd97767fa42bc6cfa980c7af
@@ -426,6 +430,7 @@ CHECKSUMS
   sass-embedded (1.104.0-x86_64-linux-gnu) sha256=7aeaa07beff7db254836599f1524ac7b67216729613ebc57e3828b94345f0488
   sass-embedded (1.104.0-x86_64-linux-musl) sha256=bc14555f68aa7057e923d400726c1623bb603101eef6340962e4e80ee89e67ba
   simplecov (1.2.0) sha256=ea6acd05eece5a41990e2a5171c57d15700d329326c7666c85ee8c6a0dd0977e
+  simplecov-cobertura (4.0.0) sha256=e4fb3159b1ecea545b44f5452a8611305323e78ad23eae8aed35924d072e01ea
   sync (0.5.0) sha256=668356cc07c59ac7ed9ecf34fec3929831f179c07adb1f3e1c3b7a1609a638fd
   term-ansicolor (1.11.3) sha256=8c01ec3abd095eb94dca8aed5a127d36e594239eb525eb306259c9e930534603
   terminal-table (3.0.2) sha256=f951b6af5f3e00203fb290a669e0a85c5dd5b051b3b023392ccfd67ba5abae91

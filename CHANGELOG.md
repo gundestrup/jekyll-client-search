@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added
+- Codecov coverage reporting: CI uploads Cobertura XML (via `simplecov-cobertura`) from the Ruby 3.4 / Node 24 matrix job, with `codecov.yml` status checks (85% project/patch targets) and a README badge
+
 ## 0.3.4 — 2026-09-11
 
 ### Added

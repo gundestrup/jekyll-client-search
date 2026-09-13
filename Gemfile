@@ -17,6 +17,7 @@ gem "rubocop", "~> 1.90", group: :development
 gem "rubocop-rspec", "~> 3.10", group: :development
 
 gem "simplecov", "~> 1.1", group: :test
+gem "simplecov-cobertura", "~> 4.0", group: :test
 
 # rbs 4.2+, excon 1.7+, and parallel 2.1+ require Ruby >= 3.3.
 # Pin to keep Ruby 3.2 support (gemspec requires >= 3.2.0).
