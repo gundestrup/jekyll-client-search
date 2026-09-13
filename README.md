@@ -1,5 +1,8 @@
 # jekyll-client-search
 
+[![codecov](https://codecov.io/gh/gundestrup/jekyll-client-search/branch/main/graph/badge.svg)](https://codecov.io/gh/gundestrup/jekyll-client-search)
+
+
 ![jekyll-client-search logo](docs/assets/icon-256.png)
 
 [![CI](https://github.com/gundestrup/jekyll-client-search/actions/workflows/ci.yml/badge.svg)](https://github.com/gundestrup/jekyll-client-search/actions/workflows/ci.yml)
