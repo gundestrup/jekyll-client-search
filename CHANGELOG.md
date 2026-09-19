@@ -4,6 +4,22 @@
 
 ### Added
 - Codecov coverage reporting: CI uploads Cobertura XML (via `simplecov-cobertura`) from the Ruby 3.4 / Node 24 matrix job, with `codecov.yml` status checks (85% project/patch targets) and a README badge
+- `rake version:check_consistency` — two-axis drift check: doc floor
+  literals (`Ruby >= X.Y`, `TargetRubyVersion`) against the gemspec,
+  full `X.Y.Z` pins against `.ruby-version`. `rake version:pre_release`
+  runs it with `check_changelog`.
+
+### Changed
+- `release.yml` no longer hardcodes the Ruby pin — `setup-ruby` reads
+  `.ruby-version` (single source for dev/release; the 3.2 floor stays a
+  deliberate gemspec literal proven by the CI matrix).
+- `rbenv` instructions in README/README.developer.md now derive from
+  `.ruby-version` instead of restating the pin.
+- Git hooks moved to tracked `bin/hooks/` enabled via `core.hooksPath`
+  — `bin/install-hooks.sh` no longer generates copies into `.git/hooks`.
+- `spec/spec_helper.rb` autoloads `spec/support/**/*.rb`.
+- Removed stale literal counts from docs (test examples, Semgrep rule
+  counts) — numbers that change on their own aren't restated.
 
 ## 0.3.4 — 2026-09-11
 

@@ -5,7 +5,6 @@ require "fileutils"
 require "tmpdir"
 require "json"
 require "yaml"
-require_relative "support/mock_embedding_adapter"
 
 # Comprehensive tests for the embedding + cache system using a mock
 # embedding adapter (no real Ollama server needed). These tests verify:

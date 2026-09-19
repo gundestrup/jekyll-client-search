@@ -8,13 +8,12 @@ See [README.md](README.md) for user-facing configuration and usage docs.
 ## Quick start
 
 ```bash
-rbenv install 3.4.10       # if not already installed
-rbenv local 3.4.10
+rbenv install            # reads .ruby-version
 bundle install
 npm ci
-bundle exec rspec                          # Ruby tests (248 examples; 7 Ollama pending)
+bundle exec rspec                          # Ruby tests
 OLLAMA_INTEGRATION=1 bundle exec rspec     # all tests including Ollama integration
-npm test                                   # JavaScript tests (134 tests)
+npm test                                   # JavaScript tests
 ```
 
 Both test suites pass with only the committed Wikipedia fixtures and the
@@ -32,7 +31,7 @@ External automated code review services:
 - [CodeQL](https://codeql.github.com) — GitHub native security scanning
   (Ruby + JavaScript), runs on every push.
 - [Semgrep](https://semgrep.dev) — CI security scan using the Semgrep Pro
-  engine with the organization's full policy (2,900+ rules). Runs as a CI
+  engine with the organization's full policy ruleset. Runs as a CI
   job (`semgrep ci`) and in the pre-commit hook (custom rules only). See
   `.semgrep.yml` for local configuration and usage instructions.
 - [CodeFactor](https://www.codefactor.io/repository/github/gundestrup/jekyll-client-search) —
@@ -90,8 +89,9 @@ comments. Dependabot updates the SHAs and version comments automatically.
 
 ### Git hooks
 
-Git hooks are not committed to the repository. Install them locally after
-cloning:
+Hooks are tracked in `bin/hooks/`; `bin/install-hooks.sh` points git at
+them via `core.hooksPath` (no copying — tracked hooks can't drift from
+installed ones). Run once after cloning:
 
 ```bash
 bin/install-hooks.sh
@@ -499,7 +499,7 @@ The [`release.yml`](.github/workflows/release.yml) workflow, triggered by
 pushing a `v*` tag:
 
 1. Checks out the repository at the release tag (`persist-credentials: false`).
-2. Sets up Ruby 3.4.10.
+2. Sets up Ruby from `.ruby-version`.
 3. Verifies the tag name matches `v<gem version>` (fails on mismatch).
 4. Verifies `CHANGELOG.md` has a `## X.Y.Z` entry for the version
    (`rake version:check_changelog` — fails if missing).

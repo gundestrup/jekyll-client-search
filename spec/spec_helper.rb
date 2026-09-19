@@ -14,6 +14,8 @@ end
 require "bundler/setup"
 require "jekyll-client-search"
 
+Dir.glob(File.expand_path("support/**/*.rb", __dir__), sort: true).each { |f| require f }
+
 RSpec.configure do |config|
   config.example_status_persistence_file_path = ".rspec_status"
 end

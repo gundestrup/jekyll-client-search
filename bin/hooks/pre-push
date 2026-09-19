@@ -1,0 +1,18 @@
+#!/bin/bash
+# Pre-push hook — full quality gate before pushing
+# Reads stdin (list of refs being pushed) but ignores it
+
+echo "🔍 Running pre-push checks (rubocop + rspec)..."
+echo ""
+
+if bundle exec rake quick 2>&1 | grep -q "✅ Quick checks passed"; then
+    echo ""
+    echo "✅ Pre-push checks passed"
+    exit 0
+else
+    echo ""
+    echo "❌ Pre-push checks failed"
+    echo ""
+    echo "Fix the issues or use 'git push --no-verify' to skip"
+    exit 1
+fi

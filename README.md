@@ -1021,13 +1021,11 @@ later (`AGPL-3.0-or-later`). See [LICENSE](LICENSE).
 
 ## Development
 
-Development uses Ruby 3.4.10 through rbenv, while the gem supports Ruby 3.2
-and newer. The development version is stored in `.ruby-version`, and CI tests
-Ruby 3.2, 3.3, and 3.4.
+Development uses the Ruby version pinned in `.ruby-version` (via rbenv),
+while the gem supports Ruby 3.2 and newer. CI tests Ruby 3.2, 3.3, and 3.4.
 
 ```bash
-rbenv install 3.4.10       # if not already installed
-rbenv local 3.4.10
+rbenv install            # reads .ruby-version
 bundle install
 npm ci
 bundle exec rake ci
@@ -1157,7 +1155,7 @@ Additional automated code quality and security services:
 - [CodeQL](https://codeql.github.com) — GitHub native code scanning for
   security vulnerabilities (Ruby + JavaScript).
 - [Semgrep](https://semgrep.dev) — CI security scan using the Semgrep Pro
-  engine with the organization's full policy (2,900+ rules). Custom ReDoS
+  engine with the organization's full policy ruleset. Custom ReDoS
   detection rules are defined in `.semgrep.yml`. Findings are triaged on the
   [Semgrep AppSec Platform](https://semgrep.dev) dashboard. False positives
   and acceptable risks are annotated inline with `# nosemgrep: rule.id`.

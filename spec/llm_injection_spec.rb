@@ -5,7 +5,6 @@ require "json"
 require "tmpdir"
 require "net/http"
 require "uri"
-require_relative "support/mock_embedding_adapter"
 
 # LLM injection test — verifies that the baseline JSON (without embeddings)
 # can be enriched with LLM embeddings and produce a valid semantic search

@@ -1,69 +1,23 @@
 #!/bin/bash
-# Install git hooks for jekyll-client-search
+# Enable git hooks for jekyll-client-search
+#
+# Hooks live in bin/hooks/ as TRACKED files and git is pointed at them
+# via core.hooksPath — no copying, so installed hooks can't drift from
+# the committed ones. Run once after cloning.
 #
 # pre-commit:  rubocop + semgrep (fast, ~5s)
-# pre-push:    rubocop + rspec (full quality gate before pushing)
+# pre-push:    rake quick (rubocop + rspec)
 #
 # Usage: bin/install-hooks.sh
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-HOOKS_DIR="$REPO_ROOT/.git/hooks"
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
-mkdir -p "$HOOKS_DIR"
+git -C "$REPO_ROOT" config core.hooksPath bin/hooks
 
-# pre-commit: fast style + security check
-cat > "$HOOKS_DIR/pre-commit" << 'HOOK'
-#!/bin/bash
-# Pre-commit hook — fast style + security check
-# Full tests run on pre-push and in CI
-
-echo "🔍 Running RuboCop..."
-if ! bundle exec rubocop --force-exclusion; then
-    echo "❌ Style checks failed"
-    echo "Fix the issues or use 'git commit --no-verify' to skip"
-    exit 1
-fi
-
-echo "🔍 Running Semgrep security scan..."
-if ! semgrep scan --config .semgrep.yml --error lib/ assets/ 2>&1; then
-    echo "❌ Semgrep scan failed"
-    echo "Fix the issues or use 'git commit --no-verify' to skip"
-    exit 1
-fi
-
-echo "✅ Style and security checks passed"
-exit 0
-HOOK
-chmod +x "$HOOKS_DIR/pre-commit"
-
-# pre-push: full quality gate (rubocop + rspec)
-cat > "$HOOKS_DIR/pre-push" << 'HOOK'
-#!/bin/bash
-# Pre-push hook — full quality gate before pushing
-# Reads stdin (list of refs being pushed) but ignores it
-
-echo "🔍 Running pre-push checks (rubocop + rspec)..."
-echo ""
-
-if bundle exec rake quick 2>&1 | grep -q "✅ Quick checks passed"; then
-    echo ""
-    echo "✅ Pre-push checks passed"
-    exit 0
-else
-    echo ""
-    echo "❌ Pre-push checks failed"
-    echo ""
-    echo "Fix the issues or use 'git push --no-verify' to skip"
-    exit 1
-fi
-HOOK
-chmod +x "$HOOKS_DIR/pre-push"
-
-echo "✅ Installed git hooks:"
+echo "✅ Git hooks enabled (core.hooksPath=bin/hooks):"
 echo "   pre-commit:  rubocop + semgrep (fast, ~5s)"
-echo "   pre-push:    rubocop + rspec (full quality gate)"
+echo "   pre-push:    rake quick (rubocop + rspec)"
 echo ""
 echo "   Skip with: git commit --no-verify  /  git push --no-verify"

@@ -44,6 +44,68 @@ namespace :version do
     end
     puts "✅ CHANGELOG.md has an entry for version #{version}"
   end
+
+  desc "Verify version literals: docs match gemspec floor, pins match .ruby-version"
+  task :check_consistency do
+    # Two sources, two axes: the gemspec floor (consumer minimum, tested
+    # by the CI matrix) and .ruby-version (dev/release pin). They differ
+    # deliberately here — floor literals check against the gemspec,
+    # full X.Y.Z pins check against .ruby-version.
+    floor = File.read(GEMSPEC_FILE)[/required_ruby_version\s*=\s*">=\s*([\d.]+)"/, 1]
+    pin = File.read(".ruby-version").strip
+    # Normalize to major.minor — "3.2.0" floor and "3.2" literals are equal
+    floor_minor = floor.to_s[/\d+\.\d+/]
+    pin_minor = pin[/\d+\.\d+/]
+    abort "Could not read gemspec floor or .ruby-version pin" unless floor_minor && pin
+
+    problems = []
+
+    # Static config that can't derive: .rubocop.yml TargetRubyVersion (floor axis)
+    problems += File.read(".rubocop.yml").scan(/TargetRubyVersion:\s*([\d.]+)/).filter_map do |m|
+      ".rubocop.yml: TargetRubyVersion #{m[0]} != gemspec floor #{floor_minor}" if m[0] != floor_minor
+    end
+
+    # CHANGELOG and generated reports are historical — old entries cite
+    # old versions legitimately.
+    `git ls-files '*.md' '*.json' '*.yml'`.split
+                                          .grep_v(%r{CHANGELOG|test_logs/|README\.performance}).each do |file|
+      content = File.read(file)
+
+      # Floor literals: "Ruby >= X.Y", "Ruby X.Y+", badge "ruby-≥ X.Y"
+      content.scan(/Ruby\s*(?:>=\s*|≥\s*|%E2%89%A5%20)(\d+\.\d+)/i).each do |m|
+        problems << "#{file}: floor literal #{m[0]} != gemspec floor #{floor_minor}" if m[0] != floor_minor
+      end
+
+      # Bare "Ruby X.Y" is ambiguous — must match floor OR the pin's
+      # minor (a doc describing either axis is fine; anything else drifts)
+      content.scan(/Ruby\s+(\d+\.\d+)\b(?!\.)/i).each do |m|
+        next if [floor_minor, pin_minor].include?(m[0])
+
+        problems << "#{file}: 'Ruby #{m[0]}' matches neither floor #{floor_minor} nor pin #{pin_minor}"
+      end
+
+      # Full X.Y.Z pins on Ruby-ish lines must equal .ruby-version
+      content.scan(/^.*(?:ruby|rbenv).*$/i).each do |line|
+        line.scan(/\b(\d+\.\d+\.\d+)\b/).each do |m|
+          problems << "#{file}: pin literal #{m[0]} != .ruby-version #{pin}" if m[0] != pin
+        end
+      end
+    end
+
+    if problems.empty?
+      puts "✅ Version literals consistent (floor #{floor}, pin #{pin})"
+    else
+      problems.uniq.each { |problem| warn "❌ #{problem}" }
+      abort "Update the literal or its source — don't let docs drift."
+    end
+  end
+
+  desc "Pre-release gate: CHANGELOG entry + version consistency"
+  task pre_release: %i[check_changelog check_consistency] do
+    version = File.read(VERSION_FILE)[/VERSION = "([^"]+)"/, 1]
+    puts ""
+    puts "✅ Pre-release checks complete for version #{version}"
+  end
 end
 
 namespace :jekyll_client_search do
