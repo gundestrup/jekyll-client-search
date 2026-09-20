@@ -6,7 +6,7 @@
 ![jekyll-client-search logo](docs/assets/icon-256.png)
 
 [![CI](https://github.com/gundestrup/jekyll-client-search/actions/workflows/ci.yml/badge.svg)](https://github.com/gundestrup/jekyll-client-search/actions/workflows/ci.yml)
-[![Ruby](https://img.shields.io/badge/ruby-%E2%89%A5%203.2-red.svg)](https://www.ruby-lang.org/)
+[![Ruby](https://img.shields.io/badge/ruby-%E2%89%A5%203.3-red.svg)](https://www.ruby-lang.org/)
 [![Jekyll](https://img.shields.io/badge/jekyll-4.x-blue.svg)](https://jekyllrb.com/)
 [![License: AGPL v3](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue.svg)](LICENSE)
 [![DeepWiki](https://img.shields.io/badge/DeepWiki-docs-7B68EE.svg)](https://deepwiki.com/gundestrup/jekyll-client-search)
@@ -1022,7 +1022,7 @@ later (`AGPL-3.0-or-later`). See [LICENSE](LICENSE).
 ## Development
 
 Development uses the Ruby version pinned in `.ruby-version` (via rbenv),
-while the gem supports Ruby 3.2 and newer. CI tests Ruby 3.2, 3.3, and 3.4.
+while the gem supports Ruby 3.3 and newer. CI tests Ruby 3.3 and 3.4.
 
 ```bash
 rbenv install            # reads .ruby-version

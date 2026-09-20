@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
     "rubygems_mfa_required" => "true"
   }
 
-  spec.required_ruby_version = ">= 3.2.0"
+  spec.required_ruby_version = ">= 3.3.0"
   spec.files = Dir["lib/**/*", "assets/**/*", "README.md", "LICENSE", "CHANGELOG.md",
                    "docs/assets/icon.svg", "docs/assets/icon-256.png", "NOTICE", "README.developer.md"]
   spec.require_paths = ["lib"]

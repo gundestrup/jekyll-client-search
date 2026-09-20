@@ -12,8 +12,8 @@ RSpec.describe "gem specification", :unit do
   end
 
   it "requires the supported Ruby baseline" do
-    expect(specification.required_ruby_version).to be_satisfied_by(Gem::Version.new("3.2.0"))
-    expect(specification.required_ruby_version).not_to be_satisfied_by(Gem::Version.new("3.1.9"))
+    expect(specification.required_ruby_version).to be_satisfied_by(Gem::Version.new("3.3.0"))
+    expect(specification.required_ruby_version).not_to be_satisfied_by(Gem::Version.new("3.2.9"))
   end
 
   it "packages the generator, base runtime, adapters, cache, and embedding adapter" do
