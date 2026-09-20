@@ -12,7 +12,7 @@ group :development, :test do
   gem "rspec", "~> 3.13"
 end
 
-gem "rubocop", "~> 1.90", group: :development
+gem "rubocop", "~> 1.91", group: :development
 
 gem "rubocop-rspec", "~> 3.10", group: :development
 
