@@ -6,6 +6,7 @@
 ![jekyll-client-search logo](docs/assets/icon-256.png)
 
 [![CI](https://github.com/gundestrup/jekyll-client-search/actions/workflows/ci.yml/badge.svg)](https://github.com/gundestrup/jekyll-client-search/actions/workflows/ci.yml)
+[![Gem Version](https://img.shields.io/gem/v/jekyll-client-search)](https://rubygems.org/gems/jekyll-client-search)
 [![Ruby](https://img.shields.io/badge/ruby-%E2%89%A5%203.3-red.svg)](https://www.ruby-lang.org/)
 [![Jekyll](https://img.shields.io/badge/jekyll-4.x-blue.svg)](https://jekyllrb.com/)
 [![License: AGPL v3](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue.svg)](LICENSE)
