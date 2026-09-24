@@ -153,6 +153,7 @@ works with any CSS framework.
 ## Embeddings and incremental indexing
 
 When `embedding.enabled: true`:
+
 - The `OllamaEmbeddingAdapter` sends each prefixed document's text to a local
   Ollama server and receives a float vector.
 - The default query embedder runs the compatible ONNX model in the browser

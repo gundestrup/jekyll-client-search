@@ -608,14 +608,19 @@ Jekyll build time using a local [Ollama](https://ollama.ai/) server and the
 ### Setup
 
 1. Install [Ollama](https://ollama.ai/) and pull an embedding model:
+
    ```bash
    ollama pull embeddinggemma:300m
    ```
+
 2. Add `ollama-ruby` to your site's Gemfile (optional dependency):
+
    ```ruby
    gem "ollama-ruby", "~> 1.23"
    ```
+
 3. Enable embeddings in `_config.yml`:
+
    ```yaml
    client_search:
      engine: semantic

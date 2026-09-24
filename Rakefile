@@ -141,6 +141,7 @@ desc "Run the test suite and Ruby syntax checks"
 task :ci do
   sh "bundle exec rspec"
   sh "bundle exec rubocop"
+  sh "npm run lint:markdown"
   sh "bundle exec ruby -c lib/jekyll/client_search.rb"
   sh "bundle exec ruby -c lib/jekyll/client_search/generator.rb"
   sh "npm test"
@@ -150,8 +151,8 @@ end
 # Default task: run all quality checks (most common use case)
 task default: :quality
 
-desc "Run all quality checks (style, security, tests)"
-task quality: %i[rubocop bundler_audit spec npm_test]
+desc "Run all quality checks (style, docs, security, tests)"
+task quality: %i[rubocop markdownlint bundler_audit spec npm_test]
 
 desc "Run quick checks (style + tests only)"
 task quick: %i[rubocop spec] do
@@ -161,6 +162,11 @@ end
 desc "Check code style with RuboCop"
 task :rubocop do
   sh "bundle exec rubocop"
+end
+
+desc "Lint Markdown documentation"
+task :markdownlint do
+  sh "npm run lint:markdown"
 end
 
 desc "Auto-fix RuboCop issues"

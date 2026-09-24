@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+
 - Codecov coverage reporting: CI uploads Cobertura XML (via `simplecov-cobertura`) from the Ruby 3.4 / Node 24 matrix job, with `codecov.yml` status checks (85% project/patch targets) and a README badge
 - `rake version:check_consistency` — two-axis drift check: doc floor
   literals (`Ruby >= X.Y`, `TargetRubyVersion`) against the gemspec,
@@ -10,6 +11,7 @@
   runs it with `check_changelog`.
 
 ### Changed
+
 - `release.yml` no longer hardcodes the Ruby pin — `setup-ruby` reads
   `.ruby-version` (single source for dev/release; the 3.2 floor stays a
   deliberate gemspec literal proven by the CI matrix).
@@ -24,9 +26,11 @@
 ## 0.3.4 — 2026-09-11
 
 ### Added
+
 - SonarQube Cloud badge in README.md (project key: `gundestrup_jekyll-client-search`)
 
 ### Fixed
+
 - Verify `event.origin` in transformers-worker.js `message` listener to prevent cross-origin message injection (SonarQube: `javascript:S2819`, CRITICAL)
 - Add `--ignore-scripts` to `npm ci` in CI to prevent lifecycle script execution during dependency installation (SonarQube: `githubactions:S6505`)
 - Pin Semgrep to `1.176.0` with `--only-binary :all:` in CI to prevent setup script execution and lock resolved versions (SonarQube: `githubactions:S8541`, `githubactions:S8544`)
@@ -37,11 +41,13 @@
 ## 0.3.3 — 2026-09-11
 
 ### Refactored
+
 - Extract duplicated `normalize` function from `client-search-base.js` and `client-search-dropdown.js` into new shared module `assets/client-search-shared.js` (exposes `window.ClientSearchShared.normalize` and `window.ClientSearchShared.coreFields`) — eliminates CodeFactor duplicate-code finding and ensures consistent normalization across both runtimes
 
 ## 0.3.2 — 2026-09-10
 
 ### Added
+
 - Semgrep security scan in CI (`semgrep ci` job in `.github/workflows/ci.yml`) — runs on every push and pull request using the `SEMGREP_APP_TOKEN` secret and the Semgrep Pro engine with the organization's full policy (2,900+ rules)
 - `.semgrep.yml` with custom Ruby ReDoS detection rules and usage documentation
 - Semgrep step in pre-commit hook (`bin/install-hooks.sh`)
@@ -51,20 +57,24 @@
 - Semgrep usage guide in README.developer.md (local commands, nosemgrep annotations, SHA pinning)
 
 ### Fixed
+
 - Pin all GitHub Actions to full 40-character commit SHAs with version comments to prevent supply-chain attacks via mutable tag repointing (Semgrep: `github-actions-mutable-action-tag`)
 - Replace `Object.assign({}, entry, ...)` in benchmark with explicit field construction to avoid mass-assignment taint (Semgrep: `insecure-object-assign`)
 - Replace manual arXiv query string with `URI.encode_www_form` for correct URL encoding (Semgrep: `avoid-tainted-http-request`)
 
 ### Changed
+
 - Add `nosemgrep` annotations with justifications for false positives (static ERB template, array-form `Open3.capture2`, fixed-host arXiv request) and acceptable risks (local loopback Ollama HTTP in tests and benchmarks)
 
 ## 0.3.1 — 2026-09-09
 
 ### Fixed
+
 - Fix CodeQL `rb/bad-tag-filter` (high) in `DocumentBuilder#clean` — closing tag regex `</script\s*>` only matched whitespace before `>`, missing browser-accepted tags like `</script\t\n bar>`; changed to `</script[^>]*>` and `</style[^>]*>` to match any non-`>` content
 - Fix CodeQL `rb/polynomial-redos` (high) in `RelatedTag` — `\s*` patterns between optional groups in SYNTAX regex caused O(n²) backtracking on input with many spaces; replaced single regex with token-split parser that validates each token individually
 
 ### Changed
+
 - Update `simplecov` 1.1.1 → 1.2.0
 - Update `google-protobuf` 4.36.0 → 4.36.1 (transitive)
 - Update `sass-embedded` 1.103.1 → 1.104.0 (transitive)
@@ -74,6 +84,7 @@
 ## 0.3.0 — 2026-09-02
 
 ### Added
+
 - `{% search_dropdown %}` Liquid tag — compact live-search dropdown for navbars and headers with keyboard navigation (Arrow/Enter/Escape), lazy index loading, icon support, and framework-agnostic semantic HTML (no Bulma/Bootstrap/Tailwind classes)
 - `DropdownConfiguration` class with `enabled`, `max_items`, `min_chars`, `debounce_ms`, `redirect_url` options
 - `assets/client-search-dropdown.js` runtime (434 lines) — two-stage search (AND first, fuzzy OR fallback), shared index cache with the base runtime, multi-instance support via `[data-client-search-dropdown]` attributes, icon rendering from `icon_field`
@@ -88,6 +99,7 @@
 - System test assertions for embeddings/retrieval content matching and non-ASCII query robustness
 
 ### Changed
+
 - `related.max_items` default changed from `nil` (unlimited) to `5`
 - `Configuration#initialize` refactored — extracted `normalize_configured` helper for cleaner config validation
 - Runtime config page now merges `dropdown` config alongside `liveSearch`
@@ -99,6 +111,7 @@
 - README.md updated with dropdown section, related `max:N` docs, and CSS styling examples for dropdown
 
 ### Fixed
+
 - `SearchTag#render` no longer raises on nil site (now returns empty string)
 - `RelatedTag#render` no longer raises on nil site or `client_search: false` config
 - Meta test race condition — `forEach` callback couldn't `await settle()`, causing flaky cross-engine comparisons; fixed by switching to `for` loops
@@ -106,6 +119,7 @@
 ## 0.2.0 — 2026-08-27
 
 ### Added
+
 - Generic `passthrough_fields` config option: external plugins declare which document `data` fields to forward into the search index (e.g. `file_type`, `icon_url`, `icon_set` from jekyll-documents)
 - Field renaming in `passthrough_fields`: entries can be strings (same name) or hashes (`{source => target}`) for integration with other search conventions
 - `icon_field` config option (default: `"icon_url"`): tells the browser runtime which field to render as an `<img>` icon before the result title; set to `null` to disable
@@ -113,10 +127,12 @@
 - Result `<article>` elements carry `data-source`, `data-categories`, `data-tags`, plus `data-*` for all passthrough fields (snake_case → data-kebab-case) for CSS-based result customization
 
 ### Fixed
+
 - Allow whitespace in script/style end tags in `DocumentBuilder#clean` (`</script\s*>` instead of `</script>`) — CodeQL: bad HTML filtering regexp
 - Fix polynomial ReDoS in `SearchTag` and `RelatedTag` syntax regexes — strip markup before matching, remove leading/trailing `\s*` patterns that caused O(n²) backtracking (CodeQL: polynomial regex on uncontrolled data)
 
 ### Changed
+
 - Simplified release workflow to tag-push trigger (`push: tags: v*`) — no manual `gh release create` needed
 - Switched to RubyGems trusted publishing (`rubygems/release-gem@v1` with OIDC)
 - Centralized version in `version.rb` as single source of truth — removed `version` field from `package.json`

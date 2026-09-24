@@ -28,6 +28,7 @@ The project uses a focused quality stack: RuboCop (style), bundler-audit
 maintenance burden of additional code-smell tools on a small focused gem.
 
 External automated code review services:
+
 - [CodeQL](https://codeql.github.com) — GitHub native security scanning
   (Ruby + JavaScript), runs on every push.
 - [Semgrep](https://semgrep.dev) — CI security scan using the Semgrep Pro
@@ -168,7 +169,7 @@ test files are `spec/related_analyzer_spec.rb`, `spec/related_tag_spec.rb`,
 ## What is committed
 
 | Artifact | Committed? | Why |
-|---|---|---|
+| --- | --- | --- |
 | Wikipedia fixture posts (40) | Yes | CC BY-SA 3.0 allows redistribution with attribution |
 | arXiv fixture posts (40) | **No** | Mixed/restrictive licenses — see below |
 | Baseline search-index JSON | Yes | Generated test artifact (indexed data, not raw text) |
@@ -198,6 +199,7 @@ ruby spec/fixtures/download_arxiv.rb
 ```
 
 This script:
+
 - Fetches 40 recent arXiv papers from 5 CS/AI subfields
 - Downloads each PDF and extracts text with `pdftotext`
 - Records the actual per-paper license in each post's frontmatter
@@ -249,6 +251,7 @@ To run the full integration tests that call a real Ollama server:
    ```
 
 These tests:
+
 - Build the full 80-post index with real Ollama embeddings
 - Verify embedding dimensions and validity
 - Test semantic search quality with concept queries
@@ -277,7 +280,7 @@ ruby spec/fixtures/generate_semantic_gold.rb
 ## Test categories
 
 | Tag | Description | Requires arXiv? | Requires Ollama? |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `:unit` | Ruby unit tests | No | No |
 | `:system` | Ruby system tests (build fixture site) | Partially | No |
 | `:integration` | Ruby integration tests | No | No |

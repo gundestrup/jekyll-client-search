@@ -3,7 +3,8 @@
   "private": true,
   "description": "Browser runtime tests for the jekyll-client-search gem",
   "scripts": {
-    "lint": "eslint assets/ test/ eslint.config.js",
+    "lint": "eslint assets/ test/ eslint.config.js && npm run lint:markdown",
+    "lint:markdown": "markdownlint-cli2",
     "test": "npm run lint && node --test test/runtime.test.js test/dropdown.test.js test/query-embedders.test.js test/related.test.js test/system.test.js test/gold-standard.test.js test/comparison.test.js test/meta.test.js"
   },
   "repository": {
@@ -20,6 +21,10 @@
     "eslint": "^10.10.0",
     "globals": "^17.12.0",
     "jsdom": "30.0.1",
+    "markdownlint-cli2": "0.23.2",
     "minisearch": "7.2.0"
+  },
+  "overrides": {
+    "smol-toml": "1.8.0"
   }
 }
