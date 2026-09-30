@@ -18,17 +18,14 @@ module Jekyll
 
       def initialize(tag_name, markup, tokens)
         super
+        # No validation here: `{% comment %}` still parses nested tags, so
+        # `initialize` runs on commented-out tags. Validate in `render` —
+        # a bad tag inside a comment must not break the build.
         @markup = markup.to_s.strip
-        unless (match = @markup.match(SYNTAX))
-          raise Liquid::SyntaxError,
-                "search_form: invalid syntax. Use {% search_form %}, " \
-                "{% search_form scripts_only %}, or {% search_form no_scripts %}"
-        end
-
-        @mode = match[1] || "full"
       end
 
       def render(context)
+        validate_markup!
         site = context.registers[:site]
         return "" if site.nil?
 
@@ -50,6 +47,18 @@ module Jekyll
       end
 
       private
+
+      def validate_markup!
+        return if @mode
+
+        unless (match = @markup.match(SYNTAX))
+          raise Liquid::SyntaxError,
+                "search_form: invalid syntax. Use {% search_form %}, " \
+                "{% search_form scripts_only %}, or {% search_form no_scripts %}"
+        end
+
+        @mode = match[1] || "full"
+      end
 
       def build_form
         <<~HTML

@@ -6,7 +6,7 @@ RSpec.describe Jekyll::ClientSearch::DropdownTag, :unit do
   def render_tag(markup, config = {})
     site = instance_double(Jekyll::Site, config: config)
     template = Liquid::Template.parse("{% search_dropdown #{markup} %}")
-    template.render({}, registers: { site: site })
+    template.render!({}, registers: { site: site })
   end
 
   let(:minisearch_config) do
@@ -114,6 +114,13 @@ RSpec.describe Jekyll::ClientSearch::DropdownTag, :unit do
 
   it "raises Liquid::SyntaxError on invalid markup" do
     expect { render_tag("bogus") }.to raise_error(Liquid::SyntaxError)
+  end
+
+  it "ignores invalid markup inside a {% comment %} block" do
+    # {% comment %} still parses nested tags — initialize must not raise.
+    template = Liquid::Template.parse("{% comment %}{% search_dropdown bogus %}{% endcomment %}")
+    site = instance_double(Jekyll::Site, config: {})
+    expect(template.render!({}, registers: { site: site }).strip).to eq("")
   end
 
   it "renders nothing when site is nil" do

@@ -6,7 +6,7 @@ RSpec.describe Jekyll::ClientSearch::RelatedTag, :unit do
   def render_tag(markup, config = {})
     site = instance_double(Jekyll::Site, config: config)
     template = Liquid::Template.parse("{% related_articles #{markup} %}")
-    template.render({}, registers: { site: site })
+    template.render!({}, registers: { site: site })
   end
 
   it "renders the container, sort control, and scripts when related is enabled" do
@@ -55,6 +55,13 @@ RSpec.describe Jekyll::ClientSearch::RelatedTag, :unit do
 
   it "raises Liquid::SyntaxError on invalid markup" do
     expect { render_tag("bogus:value") }.to raise_error(Liquid::SyntaxError)
+  end
+
+  it "ignores invalid markup inside a {% comment %} block" do
+    # {% comment %} still parses nested tags — initialize must not raise.
+    template = Liquid::Template.parse("{% comment %}{% related_articles bogus:value %}{% endcomment %}")
+    site = instance_double(Jekyll::Site, config: {})
+    expect(template.render!({}, registers: { site: site }).strip).to eq("")
   end
 
   it "sets data-related-max when max:3 is given" do

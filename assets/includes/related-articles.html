@@ -15,8 +15,10 @@
 #   scripts: true (default) to load runtime scripts, false to skip
 ---
 
-{% assign related_sort = include.sort | default: "relevance" %}
-{% assign include_scripts = include.scripts | default: true %}
+{% comment %}Bracket access: bare include.sort falls back to Hash#sort on
+non-empty param hashes, so the default would silently stop applying.{% endcomment %}
+{% assign related_sort = include["sort"] | default: "relevance" %}
+{% assign include_scripts = include["scripts"] | default: true %}
 {% if include_scripts == false or include_scripts == "false" %}
   {% assign include_scripts = false %}
 {% endif %}

@@ -19,7 +19,31 @@ module Jekyll
 
       def initialize(tag_name, markup, tokens)
         super
+        # No validation here: `{% comment %}` still parses nested tags, so
+        # `initialize` runs on commented-out tags. Validate in `render` —
+        # a bad tag inside a comment must not break the build.
         @markup = markup.to_s.strip
+        @input_id = "cs-dropdown-input-#{object_id}"
+        @results_id = "cs-dropdown-results-#{object_id}"
+      end
+
+      def render(context)
+        validate_markup!
+        site = context.registers[:site]
+        return "" unless enabled?(site)
+
+        configuration = Configuration.new(site)
+        return "" unless configuration.dropdown_enabled?
+
+        render_mode(configuration, site)
+      end
+
+      private
+
+      def validate_markup!
+        return if @validated
+
+        @validated = true
         unless (match = @markup.match(SYNTAX))
           raise Liquid::SyntaxError,
                 "search_dropdown: invalid syntax. Use {% search_dropdown %}, " \
@@ -31,21 +55,7 @@ module Jekyll
         raise Liquid::SyntaxError, "search_dropdown: max must be greater than zero" if @max_items && @max_items < 1
 
         @mode = match[3] || "full"
-        @input_id = "cs-dropdown-input-#{object_id}"
-        @results_id = "cs-dropdown-results-#{object_id}"
       end
-
-      def render(context)
-        site = context.registers[:site]
-        return "" unless enabled?(site)
-
-        configuration = Configuration.new(site)
-        return "" unless configuration.dropdown_enabled?
-
-        render_mode(configuration, site)
-      end
-
-      private
 
       def enabled?(site)
         return false if site.nil?

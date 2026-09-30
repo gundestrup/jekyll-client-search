@@ -18,11 +18,34 @@ module Jekyll
 
       def initialize(tag_name, markup, tokens)
         super
+        # No validation here: `{% comment %}` still parses nested tags, so
+        # `initialize` runs on commented-out tags. Validate in `render` —
+        # a bad tag inside a comment must not break the build.
         @markup = markup.to_s.strip
-        parse_tokens(@markup)
       end
 
+      def render(context)
+        parse_tokens(@markup)
+        site = context.registers[:site]
+        return "" if site.nil?
+
+        config = site.config.fetch("client_search", {})
+        return "" if config == false
+        return "" unless related_enabled?(config)
+
+        asset_prefix = asset_prefix(site)
+        sort_attr = @sort ? " data-related-sort=\"#{@sort}\"" : ""
+        max_attr = resolve_max_attr(config)
+        scripts = build_scripts(asset_prefix)
+        build_html(sort_attr, max_attr, scripts)
+      end
+
+      private
+
       def parse_tokens(markup)
+        return if @parsed
+
+        @parsed = true
         @sort = nil
         @max_items = nil
         @include_scripts = true
@@ -48,23 +71,6 @@ module Jekyll
           "{% related_articles sort:date %}, {% related_articles max:3 %}, " \
           "or {% related_articles no_scripts %}"
       end
-
-      def render(context)
-        site = context.registers[:site]
-        return "" if site.nil?
-
-        config = site.config.fetch("client_search", {})
-        return "" if config == false
-        return "" unless related_enabled?(config)
-
-        asset_prefix = asset_prefix(site)
-        sort_attr = @sort ? " data-related-sort=\"#{@sort}\"" : ""
-        max_attr = resolve_max_attr(config)
-        scripts = build_scripts(asset_prefix)
-        build_html(sort_attr, max_attr, scripts)
-      end
-
-      private
 
       def related_enabled?(config)
         related = config.fetch("related", {})
