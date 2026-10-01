@@ -4,13 +4,23 @@
 # modes, engine_url/SRI/baseurl handling, and lazy markup validation. Each
 # tag spec passes its tag name and tag-specific HTML markers. `render_tag`
 # is defined by the including spec file with its hardcoded tag name.
-RSpec.shared_examples "a client-search Liquid tag" do |tag_name:, form_marker:, results_marker:, tag_asset:|
+RSpec.shared_examples "a client-search Liquid tag" do |tag_name:, form_marker:, results_marker:,
+                                                      tag_asset:, extra_markers: []|
   let(:minisearch_config) do
     { "client_search" => { "enabled" => true, "engine" => "minisearch" } }
   end
 
   let(:elasticlunr_config) do
     { "client_search" => { "enabled" => true, "engine" => "elasticlunr" } }
+  end
+
+  it "renders tag markup + scripts for minisearch with default CDN URL" do
+    html = render_tag("", minisearch_config)
+    markers = [form_marker, results_marker, *extra_markers,
+               "minisearch@7.2.0/dist/umd/index.min.js",
+               "search-runtime-config.js", "client-search-shared.js",
+               tag_asset, "adapters/minisearch.js"]
+    markers.each { |marker| expect(html).to include(marker) }
   end
 
   it "renders different CDN URL and adapter for elasticlunr" do

@@ -27,20 +27,8 @@ RSpec.describe Jekyll::ClientSearch::SearchTag, :unit do
                   tag_name: "search_form",
                   form_marker: 'id="search-form"',
                   results_marker: 'id="search-results"',
-                  tag_asset: "client-search-base.js"
-
-  it "renders form + scripts for minisearch with default CDN URL" do
-    html = render_tag("", minisearch_config)
-    expect(html).to include('id="search-form"')
-    expect(html).to include('id="search-query"')
-    expect(html).to include('id="search-status"')
-    expect(html).to include('id="search-results"')
-    expect(html).to include("minisearch@7.2.0/dist/umd/index.min.js")
-    expect(html).to include("search-runtime-config.js")
-    expect(html).to include("client-search-shared.js")
-    expect(html).to include("client-search-base.js")
-    expect(html).to include("adapters/minisearch.js")
-  end
+                  tag_asset: "client-search-base.js",
+                  extra_markers: ['id="search-query"', 'id="search-status"']
 
   it "renders embedder config and query embedder for semantic engine" do
     html = render_tag("", semantic_config)

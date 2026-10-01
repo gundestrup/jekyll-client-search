@@ -17,20 +17,8 @@ RSpec.describe Jekyll::ClientSearch::DropdownTag, :unit do
                   tag_name: "search_dropdown",
                   form_marker: "data-client-search-dropdown",
                   results_marker: "cs-dropdown-results",
-                  tag_asset: "client-search-dropdown.js"
-
-  it "renders dropdown HTML + scripts for minisearch with default CDN URL" do
-    html = render_tag("", minisearch_config)
-    expect(html).to include("data-client-search-dropdown")
-    expect(html).to include("cs-dropdown-input")
-    expect(html).to include("cs-dropdown-results")
-    expect(html).to include('data-max-items="5"')
-    expect(html).to include("minisearch@7.2.0/dist/umd/index.min.js")
-    expect(html).to include("search-runtime-config.js")
-    expect(html).to include("client-search-shared.js")
-    expect(html).to include("client-search-dropdown.js")
-    expect(html).to include("adapters/minisearch.js")
-  end
+                  tag_asset: "client-search-dropdown.js",
+                  extra_markers: ["cs-dropdown-input", 'data-max-items="5"']
 
   it "renders with max:10 override" do
     html = render_tag("max:10", minisearch_config)
