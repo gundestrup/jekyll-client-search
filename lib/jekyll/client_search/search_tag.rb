@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "cgi"
-
 module Jekyll
   module ClientSearch
     # Liquid tag that renders the search form, status/results containers,
@@ -14,6 +12,8 @@ module Jekyll
     #
     # When client_search is disabled the tag renders nothing.
     class SearchTag < Liquid::Tag
+      include ScriptTags
+
       SYNTAX = /\A(scripts_only|no_scripts)?\z/
 
       def initialize(tag_name, markup, tokens)
@@ -73,31 +73,8 @@ module Jekyll
       end
 
       def build_scripts(configuration, prefix)
-        scripts = []
-        engine = engine_script(configuration)
-        scripts << engine if engine
-        scripts << "<script src=\"#{prefix}/assets/search-runtime-config.js\"></script>"
-        scripts.concat(embedder_scripts(configuration, prefix))
-        scripts << "<script src=\"#{prefix}/assets/client-search-shared.js\"></script>"
-        scripts << "<script src=\"#{prefix}/assets/client-search-base.js\"></script>"
-        scripts << "<script src=\"#{prefix}/assets/adapters/#{configuration.engine}.js\"></script>"
-        scripts.map { |script| "  #{script}" }.join("\n")
-      end
-
-      def engine_script(configuration)
-        url = configuration.engine_url
-        return nil unless url
-
-        attrs = ["src=\"#{CGI.escapeHTML(url)}\""]
-        if configuration.engine_crossorigin
-          crossorigin = CGI.escapeHTML(configuration.engine_crossorigin)
-          attrs << "crossorigin=\"#{crossorigin}\""
-        end
-        if configuration.engine_sri
-          integrity = CGI.escapeHTML(configuration.engine_sri)
-          attrs << "integrity=\"#{integrity}\""
-        end
-        "<script #{attrs.join(' ')}></script>"
+        script_tags(configuration, prefix, "client-search-base.js",
+                    extra: embedder_scripts(configuration, prefix))
       end
 
       def embedder_scripts(configuration, prefix)

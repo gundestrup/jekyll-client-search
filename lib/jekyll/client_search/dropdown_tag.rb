@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "cgi"
-
 module Jekyll
   module ClientSearch
     # Liquid tag that renders a compact live-search dropdown suitable for
@@ -15,6 +13,8 @@ module Jekyll
     #
     # When client_search is disabled the tag renders nothing.
     class DropdownTag < Liquid::Tag
+      include ScriptTags
+
       SYNTAX = /\A(max:(\d+))?\s*(scripts_only|no_scripts)?\z/
 
       def initialize(tag_name, markup, tokens)
@@ -72,7 +72,7 @@ module Jekyll
         form_html = build_form(max)
         return form_html if @mode == "no_scripts"
 
-        scripts = build_scripts(configuration, prefix)
+        scripts = script_tags(configuration, prefix, "client-search-dropdown.js")
         return scripts if @mode == "scripts_only"
 
         "#{form_html}\n#{scripts}"
@@ -96,33 +96,6 @@ module Jekyll
                 data-cs-dropdown-results data-max-items="#{max}"></ul>
           </div>
         HTML
-      end
-
-      def build_scripts(configuration, prefix)
-        scripts = []
-        engine = engine_script(configuration)
-        scripts << engine if engine
-        scripts << "<script src=\"#{prefix}/assets/search-runtime-config.js\"></script>"
-        scripts << "<script src=\"#{prefix}/assets/client-search-shared.js\"></script>"
-        scripts << "<script src=\"#{prefix}/assets/client-search-dropdown.js\"></script>"
-        scripts << "<script src=\"#{prefix}/assets/adapters/#{configuration.engine}.js\"></script>"
-        scripts.map { |script| "  #{script}" }.join("\n")
-      end
-
-      def engine_script(configuration)
-        url = configuration.engine_url
-        return nil unless url
-
-        attrs = ["src=\"#{CGI.escapeHTML(url)}\""]
-        if configuration.engine_crossorigin
-          crossorigin = CGI.escapeHTML(configuration.engine_crossorigin)
-          attrs << "crossorigin=\"#{crossorigin}\""
-        end
-        if configuration.engine_sri
-          integrity = CGI.escapeHTML(configuration.engine_sri)
-          attrs << "integrity=\"#{integrity}\""
-        end
-        "<script #{attrs.join(' ')}></script>"
       end
     end
   end
