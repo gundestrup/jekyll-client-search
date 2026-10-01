@@ -13,10 +13,6 @@ RSpec.describe Jekyll::ClientSearch::SearchTag, :unit do
     { "client_search" => { "enabled" => true, "engine" => "minisearch" } }
   end
 
-  let(:elasticlunr_config) do
-    { "client_search" => { "enabled" => true, "engine" => "elasticlunr" } }
-  end
-
   let(:semantic_config) do
     {
       "client_search" => {
@@ -26,6 +22,12 @@ RSpec.describe Jekyll::ClientSearch::SearchTag, :unit do
       }
     }
   end
+
+  it_behaves_like "a client-search Liquid tag",
+                  tag_name: "search_form",
+                  form_marker: 'id="search-form"',
+                  results_marker: 'id="search-results"',
+                  tag_asset: "client-search-base.js"
 
   it "renders form + scripts for minisearch with default CDN URL" do
     html = render_tag("", minisearch_config)
@@ -40,13 +42,6 @@ RSpec.describe Jekyll::ClientSearch::SearchTag, :unit do
     expect(html).to include("adapters/minisearch.js")
   end
 
-  it "renders different CDN URL and adapter for elasticlunr" do
-    html = render_tag("", elasticlunr_config)
-    expect(html).to include("elasticlunr@0.9.5/elasticlunr.min.js")
-    expect(html).to include("adapters/elasticlunr.js")
-    expect(html).not_to include("minisearch")
-  end
-
   it "renders embedder config and query embedder for semantic engine" do
     html = render_tag("", semantic_config)
     expect(html).to include("search-embedder-config.js")
@@ -55,94 +50,6 @@ RSpec.describe Jekyll::ClientSearch::SearchTag, :unit do
     # Semantic has no external engine library
     expect(html).not_to include("cdn.jsdelivr.net/npm/minisearch")
     expect(html).not_to include("cdn.jsdelivr.net/npm/elasticlunr")
-  end
-
-  it "renders nothing when client_search is disabled" do
-    html = render_tag("", "client_search" => { "enabled" => false })
-    expect(html.strip).to eq("")
-  end
-
-  it "renders with defaults when client_search config is absent" do
-    html = render_tag("")
-    expect(html).to include('id="search-form"')
-    expect(html).to include("adapters/minisearch.js")
-  end
-
-  it "renders only form HTML with no_scripts mode" do
-    html = render_tag("no_scripts", minisearch_config)
-    expect(html).to include('id="search-form"')
-    expect(html).to include('id="search-results"')
-    expect(html).not_to include("<script")
-  end
-
-  it "renders only scripts with scripts_only mode" do
-    html = render_tag("scripts_only", minisearch_config)
-    expect(html).to include("<script")
-    expect(html).not_to include('id="search-form"')
-    expect(html).not_to include('id="search-results"')
-  end
-
-  it "uses engine_url from config when provided" do
-    config = {
-      "client_search" => {
-        "enabled" => true,
-        "engine" => "minisearch",
-        "engine_url" => "/assets/vendor/minisearch.min.js"
-      }
-    }
-    html = render_tag("", config)
-    expect(html).to include('src="/assets/vendor/minisearch.min.js"')
-    expect(html).not_to include("cdn.jsdelivr.net")
-  end
-
-  it "includes SRI and crossorigin attributes when configured" do
-    config = {
-      "client_search" => {
-        "enabled" => true,
-        "engine" => "minisearch",
-        "engine_url" => "https://cdn.example.com/minisearch.min.js",
-        "engine_sri" => "sha384-abc123",
-        "engine_crossorigin" => "anonymous"
-      }
-    }
-    html = render_tag("", config)
-    expect(html).to include('integrity="sha384-abc123"')
-    expect(html).to include('crossorigin="anonymous"')
-  end
-
-  it "prefixes script URLs with baseurl when set" do
-    config = {
-      "client_search" => { "enabled" => true, "engine" => "minisearch" },
-      "baseurl" => "/blog"
-    }
-    html = render_tag("", config)
-    expect(html).to include('src="/blog/assets/search-runtime-config.js"')
-    expect(html).to include('src="/blog/assets/client-search-base.js"')
-  end
-
-  it "raises Liquid::SyntaxError on invalid markup" do
-    expect { render_tag("bogus") }.to raise_error(Liquid::SyntaxError)
-  end
-
-  it "ignores invalid markup inside a {% comment %} block" do
-    # {% comment %} still parses nested tags — initialize must not raise.
-    template = Liquid::Template.parse("{% comment %}{% search_form bogus %}{% endcomment %}")
-    site = instance_double(Jekyll::Site, config: {})
-    expect(template.render!({}, registers: { site: site }).strip).to eq("")
-  end
-
-  it "renders nothing when site is nil" do
-    template = Liquid::Template.parse("{% search_form %}")
-    html = template.render({}, registers: { site: nil })
-    expect(html).to eq("")
-  end
-
-  it "renders without engine CDN script for semantic engine" do
-    html = render_tag("", semantic_config)
-    expect(html).not_to include("cdn.jsdelivr.net")
-    expect(html).to include("search-runtime-config.js")
-    expect(html).to include("client-search-base.js")
-    expect(html).to include("adapters/semantic.js")
   end
 
   it "renders without query embedder script for none type" do
