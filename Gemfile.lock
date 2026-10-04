@@ -121,7 +121,7 @@ GEM
     language_server-protocol (3.17.0.6)
     lint_roller (1.1.0)
     liquid (4.0.4)
-    listen (3.10.0)
+    listen (3.10.1)
       logger
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
@@ -162,7 +162,7 @@ GEM
       terminal-table (>= 3.0)
       tins (~> 1.55)
     ostruct (0.6.3)
-    parallel (2.2.0)
+    parallel (2.3.0)
     parser (3.3.12.0)
       ast (~> 2.4.1)
       racc
@@ -269,7 +269,7 @@ GEM
     terminal-table (3.0.2)
       unicode-display_width (>= 1.1.1, < 3)
     thor (1.5.0)
-    tins (1.59.0)
+    tins (1.60.0)
       bigdecimal
       irb
       mize (~> 0.6)
@@ -365,7 +365,7 @@ CHECKSUMS
   language_server-protocol (3.17.0.6) sha256=5ef2c0c138f8267e1bc631d3328347d354f96724b0af22f2c79516120443b7f0
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
   liquid (4.0.4) sha256=4fcfebb1a045e47918388dbb7a0925e7c3893e58d2bd6c3b3c73ec17a2d8fdb3
-  listen (3.10.0) sha256=c6e182db62143aeccc2e1960033bebe7445309c7272061979bb098d03760c9d2
+  listen (3.10.1) sha256=4c3f32855657f348747da4dd2372ff3790d90a6b1d3e4f21a3706adb2d04783c
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
   mercenary (0.4.0) sha256=b25a1e4a59adca88665e08e24acf0af30da5b5d859f7d8f38fba52c28f405138
   mini_portile2 (2.8.9) sha256=0cd7c7f824e010c072e33f68bc02d85a00aeb6fce05bb4819c03dfd3c140c289
@@ -382,7 +382,7 @@ CHECKSUMS
   nokogiri (1.19.4-x86_64-linux-musl) sha256=17dfb7c1fa194ae02fbf7c51a7afc8d278045ab3fdacfd86f91d02d7b274470b
   ollama-ruby (1.23.2) sha256=e53aa92f307e76f6bd9d751c932682f9d89ab8a8cd94d8a15e51e5a479026b20
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
-  parallel (2.2.0) sha256=e1059c5fd7b649558a0aec38a769f06a42942bdb40503d005a59c352fe011cd8
+  parallel (2.3.0) sha256=f75a3e904101ce6a1ccb6b8dc800cbafd42166d83330192438dcf29395167a6f
   parser (3.3.12.0) sha256=21a6d7f755d5a24dfbdc6e6b772e4e879a52e7631a88bc5a3a134606052c9828
   pathutil (0.16.2) sha256=e43b74365631cab4f6d5e4228f812927efc9cb2c71e62976edcb252ee948d589
   pp (0.6.4) sha256=dfcb0fce700c41456265922884f9fe195d7fbb0674a3578e6c0f69588e82b570
@@ -432,7 +432,7 @@ CHECKSUMS
   term-ansicolor (1.11.3) sha256=8c01ec3abd095eb94dca8aed5a127d36e594239eb525eb306259c9e930534603
   terminal-table (3.0.2) sha256=f951b6af5f3e00203fb290a669e0a85c5dd5b051b3b023392ccfd67ba5abae91
   thor (1.5.0) sha256=e3a9e55fe857e44859ce104a84675ab6e8cd59c650a49106a05f55f136425e73
-  tins (1.59.0) sha256=7cbb837f564bcf0752bb6116024e9958259284568719216be45d9b7dba0ec4b3
+  tins (1.60.0) sha256=919f9b6e4cc3aa0d80fb37d43118c8fb093462a4482bbcf2728bde47d4a80791
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
   unicode-display_width (2.6.0) sha256=12279874bba6d5e4d2728cef814b19197dbb10d7a7837a869bab65da943b7f5a
   webrick (1.9.2) sha256=beb4a15fc474defed24a3bda4ffd88a490d517c9e4e6118c3edce59e45864131
