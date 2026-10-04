@@ -1,0 +1,46 @@
+{
+  "repo_notes": [
+    { "content": "Jekyll plugin (Ruby gem) that generates a JSON search index at build time for client-side search. Supports three engines: MiniSearch, ElasticLunr, and a semantic cosine-similarity adapter over pre-computed embeddings." },
+    { "content": "Browser runtime uses a base + adapter architecture: client-search-base.js owns form wiring, DOM rendering, and the two-stage strategy (exact AND with prefix/boosting first, fuzzy OR fallback). Each adapter is a pure translator to the engine's native API — the semantic adapter is the exception (cosine similarity, no AND/OR)." },
+    { "content": "Embeddings are generated at build time via a local Ollama server (ollama-ruby, lazy-loaded optional dep). IndexCache stores content-hash-keyed vectors so unchanged documents are not re-embedded. fail_on_error:true fails the build by default." },
+    { "content": "Liquid tags: {% search_form %}, {% search_dropdown %} (navbar live search), {% related_articles %} (build-time similarity cutoff analysis via RelatedAnalyzer)." },
+    { "content": "passthrough_fields config lets other plugins (e.g. jekyll-documents) forward document data fields into the index; rendered as data-* attributes for CSS customization." },
+    { "content": "See AGENTS.md and README.developer.md for full conventions and release process." }
+  ],
+  "pages": [
+    {
+      "title": "Architecture Overview",
+      "purpose": "Build-time indexing vs browser runtime: Jekyll generator produces search-index.json + runtime JS assets; base shell + pluggable engine adapters",
+      "page_notes": [{ "content": "Include Mermaid diagram: collections -> Generator -> DocumentBuilder -> search-index.json -> base.js -> adapter -> engine" }]
+    },
+    {
+      "title": "Generator and DocumentBuilder",
+      "purpose": "How the Jekyll generator normalizes collection documents (id, title, url, excerpt, content, categories, tags, source), applies passthrough_fields, and writes the JSON index and search-runtime-config.js",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Browser Runtime and Adapters",
+      "purpose": "client-search-base.js two-stage search strategy (AND then fuzzy OR), debounced live search, dropdown runtime, and the adapter contract ({combineWith, fuzzy, prefix} -> [{ref, score}])",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Embeddings and Semantic Search",
+      "purpose": "OllamaEmbeddingAdapter, IndexCache content-hash caching, transformers.js browser query embedder, ollama_api query embedder, and model/document prefix alignment requirements",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Liquid Tags",
+      "purpose": "{% search_form %}, {% search_dropdown %}, {% related_articles %} — config-driven markup, parameters, and RelatedAnalyzer cutoff analysis producing search-relations.json",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Configuration",
+      "purpose": "All client_search: options in _config.yml — engine selection, collections, live_search, dropdown, related, embedding — with defaults and validation",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Testing and Release",
+      "purpose": "RSpec suite, npm tests for JS runtime, quality gates, and the release workflow (trusted publishing to RubyGems)"
+    }
+  ]
+}
