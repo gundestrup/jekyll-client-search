@@ -10,7 +10,7 @@
 [![Ruby](https://img.shields.io/badge/ruby-%E2%89%A5%203.3-red.svg)](https://www.ruby-lang.org/)
 [![Jekyll](https://img.shields.io/badge/jekyll-4.x-blue.svg)](https://jekyllrb.com/)
 [![License: AGPL v3](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue.svg)](LICENSE)
-[![DeepWiki](https://img.shields.io/badge/DeepWiki-docs-7B68EE.svg)](https://deepwiki.com/gundestrup/jekyll-client-search)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gundestrup/jekyll-client-search)
 [![Coverage](https://img.shields.io/badge/coverage-100%25%20branches-brightgreen.svg)](#testing-strategy)
 [![Semgrep](https://img.shields.io/badge/semgrep-scanning-brightgreen.svg)](https://semgrep.dev)
 [![CodeFactor](https://www.codefactor.io/repository/github/gundestrup/jekyll-client-search/badge)](https://www.codefactor.io/repository/github/gundestrup/jekyll-client-search)
