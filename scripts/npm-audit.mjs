@@ -8,7 +8,7 @@
 //
 //   node scripts/npm-audit.mjs [low|moderate|high|critical]
 import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -30,7 +30,19 @@ const allowed = new Map(
   ])
 );
 
-const { stdout, error } = spawnSync("npm", ["audit", "--json"], {
+// Resolve npm without consulting PATH (SonarCloud S4036): under
+// `npm run audit` npm_execpath is npm's own cli.js; standalone, npm
+// sits next to the node binary — both are fixed, unwritable locations.
+const npmCli = process.env.npm_execpath;
+const nodeBin = process.env.npm_node_execpath ?? process.execPath;
+const npmBin = join(
+  dirname(nodeBin),
+  process.platform === "win32" ? "npm.cmd" : "npm"
+);
+const [cmd, args] = npmCli
+  ? [nodeBin, [npmCli, "audit", "--json"]]
+  : [npmBin, ["audit", "--json"]];
+const { stdout, error } = spawnSync(cmd, args, {
   cwd: root,
   encoding: "utf8",
 });
