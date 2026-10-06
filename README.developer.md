@@ -112,11 +112,11 @@ CI. Skip either with `git commit --no-verify` or `git push --no-verify`.
 ### CI checks
 
 The [CI workflow](.github/workflows/ci.yml) runs on every push and pull
-request across Ruby 3.2/3.3/3.4 and Node 22/24:
+request across Ruby 3.3/3.4 and Node 22/24:
 
 - `bundle exec rake ci` (rspec, rubocop, syntax checks, npm test, gem build)
 - `bundle exec bundle-audit check --update` (Ruby dependency security)
-- `npm audit --audit-level=high` (JavaScript dependency security)
+- `npm run audit` (JavaScript dependency security gate — see `scripts/npm-audit.mjs`)
 - `npm outdated` (non-blocking — warns about outdated npm packages)
 - `semgrep ci` (security scan with custom rules from `.semgrep.yml`)
 
