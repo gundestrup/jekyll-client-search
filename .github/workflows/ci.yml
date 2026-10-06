@@ -42,7 +42,7 @@ jobs:
         run: bundle exec bundle-audit check --update
 
       - name: Audit JavaScript dependencies
-        run: npm audit --audit-level=high
+        run: npm run audit
 
       - name: Check for outdated npm packages
         run: npm outdated || true

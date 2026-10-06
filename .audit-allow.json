@@ -1,0 +1,7 @@
+{
+  "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm": {
+    "package": "braces",
+    "reason": "No patched release (all <=3.0.3 affected). Dev-only transitive dep of markdownlint-cli2 globbing; exploitation needs attacker-controlled glob patterns committed to the repo.",
+    "expires": "2027-01-06"
+  }
+}

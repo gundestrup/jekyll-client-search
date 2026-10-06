@@ -23,6 +23,14 @@
 - Removed stale literal counts from docs (test examples, Semgrep rule
   counts) — numbers that change on their own aren't restated.
 
+### Security
+
+- Dev-tooling audit gate: `scripts/npm-audit.mjs` + `.audit-allow.json`
+  replace the bare `npm audit` CI step — patchable transitive deps are
+  forced to fixed versions via `overrides` (smol-toml, katex), and only
+  explicitly allowlisted unpatched advisories are tolerated (braces,
+  dev-only, no patched release).
+
 ## 0.3.4 — 2026-09-11
 
 ### Added
