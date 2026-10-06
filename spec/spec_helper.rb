@@ -8,7 +8,11 @@ SimpleCov.start do
   skip "/spec/"
   cover "lib/**/*.rb"
   minimum_coverage line: 85, branch: 75 if ENV["CI"] || ENV["COVERAGE"]
-  formatter SimpleCov::Formatter::CoberturaFormatter if ENV["CI"]
+  if ENV["CI"]
+    formatter SimpleCov::Formatter::MultiFormatter.new(
+      [SimpleCov::Formatter::CoberturaFormatter, SimpleCov::Formatter::JSONFormatter]
+    )
+  end
 end
 
 require "bundler/setup"
