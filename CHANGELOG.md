@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Fixed
+
+- `LICENSE` now contains the verbatim AGPL-3.0 text (was a 22-line
+  stub that license scanners could not detect); README keeps the
+  copyright attribution.
+
 ### Added
 
 - Codecov coverage reporting: CI uploads Cobertura XML (via `simplecov-cobertura`) from the Ruby 3.4 / Node 24 matrix job, with `codecov.yml` status checks (85% project/patch targets) and a README badge
