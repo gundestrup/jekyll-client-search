@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- CI: Semgrep moved from an inline `pip3 install semgrep==1.176.0` pin to hashed `.github/requirements-ci.txt` (compiled from `requirements-ci.in`, Python 3.12), installed with `--require-hashes`. Bumped Semgrep to 1.180.0; the version is now Dependabot-visible via a new `pip` ecosystem entry for `/.github`.
+
 ## 0.3.5 — 2026-10-06
 
 ### Fixed
