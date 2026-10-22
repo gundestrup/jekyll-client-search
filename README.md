@@ -653,14 +653,61 @@ Jekyll build time using a local [Ollama](https://ollama.ai/) server and the
 
 ### Choosing a model
 
-Any Ollama-compatible embedding model works. Common choices:
+Any Ollama-compatible embedding model works. Hosted embedding APIs (OpenAI
+`text-embedding-3-small`, Gemini Embedding, the Voyage API) are not
+supported — the adapter only speaks Ollama's `/api/embed` protocol, and
+local embeddings keep the corpus on your machine. Open-weight models that
+ship GGUF builds (e.g. `voyage-4-nano`) can still be tested through a
+local Ollama server.
 
-| Model | Dimensions | Good for |
-| --- | --- | --- |
-| `embeddinggemma:300m` | 768 | Default, multilingual, good quality |
-| `nomic-embed-text` | 768 | Multilingual, good quality |
-| `bge-m3` | 1024 | Multilingual, high quality |
-| `all-minilm` | 384 | English, fast, lightweight |
+Measured on a 152-document site (Apple Silicon, sequential `/api/embed`
+calls, GPU-resident models, `related.minimum_similarity: 0.55`):
+
+| Model | Dims | ~ms/doc | Full corpus | Quality* | Value† | ~Cost/yr‡ | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `embeddinggemma:300m` | 768 | ~105 | ~16 s | 96 | 1.00 | ~27 s | Default; balanced quality |
+| `embeddinggemma-2:270m` | 768 | ~260 | ~40 s | 111 | 0.47 | ~67 s | Successor to 300m; second-best judged relatedness |
+| `embeddinggemma-2:570m` | 768 | ~246 | ~37 s | 111 | 0.50 | ~63 s | Multimodal variant — text vectors byte-identical to 270m; no gain for text-only use |
+| `nomic-embed-text` | 768 | ~100 | ~15 s | 105 | **1.16** | ~25 s | Fast; best measured value |
+| `voyage-4-nano` | 1024 | ~115 | ~17 s | 107 | 1.03 | ~29 s | Open-weight (Apache 2.0); community GGUF at its 1024-dim base — official 2048 dim (post-hoc linear head) retested, judged equivalent (103) |
+| `bge-m3` | 1024 | ~305 | ~46 s | 107 | 0.38 | ~78 s | Multilingual; strong judged quality |
+| `jina-embeddings-v3` | 1024 | ~241 | ~37 s | **112** | 0.51 | ~62 s | CC-BY-NC-4.0 (non-commercial); community GGUF base weights — best judged picks + 88% corroboration; text-matching LoRA tested via llama.cpp: worse (98) |
+| `bge-large` | 1024 | ~115 | ~17 s | 106 | 1.01 | ~29 s | English-only yet still strong judged quality |
+| `mxbai-embed-large` | 1024 | ~340 | ~52 s | 107 | 0.35 | ~87 s | Strong judged quality |
+| `snowflake-arctic-embed2` | 1024 | ~505 | ~77 s | 81 | 0.17 | ~130 s | Conservative scores — few edges pass the 0.55 cutoff, weakest judged picks |
+| `all-minilm` | 384 | — | — | — | — | — | English only; not measured |
+| `qwen3-embedding:0.6b` | 1024 | ~350 | ~53 s | 90 | 0.28 | ~89 s | Strong multilingual results upstream |
+| `qwen3-embedding:4b` | 2560 | ~4000 | ~10 min | 87 | 0.02 | ~17 min | Poor value: ~38× the cost for below-average judged picks |
+| `qwen3-embedding:8b` | 4096 | ~10800 | ~27 min | 100 | 0.01 | ~46 min | Reference quality but ~103× the cost; build-time only |
+
+\* judged relevance: `gpt-oss:120b-cloud` scored every deduplicated
+related-article suggestion 0–2, blind to which model proposed it
+(`benchmarks/related_quality_judge.rb`); mean precision normalized to
+`qwen3-embedding:8b` = 100. Raw mean scores ranged 0.70–0.96 of 2.00.
+† quality ÷ ms/doc, normalized to `embeddinggemma:300m` = 1.00.
+‡ amortized embedding time per year assuming one cold re-embed plus weekly
+builds changing two posts — at this scale every model is affordable, so
+quality dominates the choice.
+
+The index cache amortizes cold-corpus cost — only new or changed documents
+re-embed — but every changed post pays the per-document latency at each
+build.
+
+Judged quality inverted the earlier agreement-based ranking: models with
+"hot" similarity distributions (`embeddinggemma-2`, `nomic-embed-text`,
+`voyage-4-nano`, `bge-m3`, `mxbai-embed-large`) were not producing noise —
+the judge rated their novel picks as the *most* relevant. Conservative
+models (snowflake, the small Qwen3s) scored worst on judged precision
+despite high agreement with `qwen3-embedding:8b`. Practical takeaway for
+this corpus size: `nomic-embed-text`, `voyage-4-nano`, and the default
+`embeddinggemma:300m` offer the best measured value; `embeddinggemma-2:270m`
+is the quality leader at ~2.5× the default's cost; the large Qwen3 models
+do not pay for themselves below several thousand documents.
+
+"Build-time only" models are too large to run in the browser for
+`engine: semantic` — use them only with a lexical engine, where embeddings
+serve `related` analysis and never reach the visitor's browser, or with
+`query_embedder.type: ollama_api` where every visitor can reach the API.
 
 The model used at build time must match the query model's weights, vector
 space, dimensions, and preprocessing. Cross-runtime compatibility is verified
@@ -669,6 +716,36 @@ provided, but sites should independently verify ranking when changing models.
 For any other Ollama model, set `embedding.query_embedder.model` to a
 compatible Transformers.js model explicitly or use `ollama_api` so both paths
 call the same Ollama model.
+
+Document/query prefixes are applied automatically for `embeddinggemma`,
+`embeddinggemma-2`, `nomic-embed-text`, and `voyage-4-nano`; other models
+get no prefix.
+Qwen3 embedding models take no document prefix; for semantic search the
+instruct-format query prefix must be set via `embedding.query_prefix`.
+Cosine similarity distributions differ substantially per model — some run
+"narrow" (snowflake: almost nothing passes 0.55) and some run "hot"
+(nomic, embeddinggemma-2: nearly everything does) — so retune
+`related.minimum_similarity` and the semantic threshold when switching
+rather than comparing at the default.
+
+To benchmark your own site and corpus:
+
+```bash
+cd jekyll-client-search
+bundle install
+OLLAMA_BASE_URL=http://127.0.0.1:11434 \
+  EMBEDDING_MODELS="embeddinggemma:300m,nomic-embed-text,bge-m3" \
+  bundle exec ruby benchmarks/related_model_benchmark.rb /path/to/site
+```
+
+The script times `OllamaEmbeddingAdapter.embed` per document and runs the
+real `RelatedAnalyzer`, then diffs each model's related lists against the
+baseline (`BASELINE_MODEL` env, default `embeddinggemma:300m`). Raw vectors
+are cached under `benchmarks/.related-embeddings/` so re-runs are cheap.
+
+If `ollama embed` calls fail with a socket error, try `base_url:
+http://127.0.0.1:11434` — Ollama only listens on IPv4 loopback, and some
+HTTP clients resolve `localhost` to `::1` first.
 
 ## Related articles reference
 

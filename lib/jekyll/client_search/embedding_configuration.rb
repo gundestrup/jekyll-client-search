@@ -9,9 +9,25 @@ module Jekyll
           "document" => "title: none | text: ",
           "query" => "task: search result | query: "
         },
+        "embeddinggemma-2" => {
+          "document" => "title: none | text: ",
+          "query" => "task: search result | query: "
+        },
         "nomic-embed-text" => {
           "document" => "search_document: ",
           "query" => "search_query: "
+        },
+        "voyage-4-nano" => {
+          "document" => "Represent the document for retrieval: ",
+          "query" => "Represent the query for retrieving supporting documents: "
+        },
+        "qwen3-embedding" => {
+          "document" => "",
+          "query" => "Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: "
+        },
+        "bge-large" => {
+          "document" => "",
+          "query" => "Represent this sentence for searching relevant passages: "
         }
       }.freeze
 

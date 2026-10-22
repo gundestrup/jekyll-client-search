@@ -12,9 +12,12 @@ group :development, :test do
   gem "rspec", "~> 3.13"
 end
 
-gem "rubocop", "~> 1.91", group: :development
+group :development do
+  gem "rubocop", "~> 1.91"
+  gem "rubocop-rspec", "~> 3.10"
+end
 
-gem "rubocop-rspec", "~> 3.10", group: :development
-
-gem "simplecov", "~> 1.1", group: :test
-gem "simplecov-cobertura", "~> 4.0", group: :test
+group :test do
+  gem "simplecov", "~> 1.1"
+  gem "simplecov-cobertura", "~> 4.0"
+end

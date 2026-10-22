@@ -1,0 +1,2186 @@
+{
+  "history": [
+    {
+      "timestamp": "2026-10-21T19:13:53Z",
+      "site": "/Users/svend/workspace/gundestrup.dk",
+      "related_config": {
+        "enabled": true,
+        "minimum_similarity": 0.55,
+        "max_items": 5
+      },
+      "results": {
+        "embeddinggemma:300m": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 254,
+            "semantic_score_median": 0.618862,
+            "semantic_score_min": 0.550424,
+            "semantic_score_max": 0.971195
+          }
+        },
+        "qwen3-embedding:4b": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 151,
+            "total_relations": 751,
+            "semantic_relations": 186,
+            "semantic_score_median": 0.612691,
+            "semantic_score_min": 0.550033,
+            "semantic_score_max": 0.979987
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 3.967,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/2009/04/06/apple-airport-extreem-error-6753-and-6742/"
+                ],
+                "removed": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/greenland/2005/11/16/greenland/"
+                ],
+                "removed": [
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/science/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/linux/2009/05/28/hddtemp-linux/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                "added": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                "added": [
+                  "/computer/website/2005/11/16/more-website-updated/",
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/"
+                ],
+                "removed": [
+                  "/computer/design/2007/08/09/borg-collective/",
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              }
+            ]
+          }
+        },
+        "qwen3-embedding:8b": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 300,
+            "semantic_score_median": 0.622195,
+            "semantic_score_min": 0.550421,
+            "semantic_score_max": 0.981433
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 3.88,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ],
+                "removed": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/2005/11/15/webpage-history/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/2008/11/16/pictures-from-our-us-trip/"
+                ],
+                "removed": [
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/svend-gundestrup/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/gps-mark-niels-chile/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/linux/2009/05/28/hddtemp-linux/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                "added": [
+                  "/computer/2005/11/15/webpage-history/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                "added": [
+                  "/computer/2005/11/15/webpage-history/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2026-10-21T19:33:04Z",
+      "site": "/Users/svend/workspace/gundestrup.dk",
+      "related_config": {
+        "enabled": true,
+        "minimum_similarity": 0.55,
+        "max_items": 5
+      },
+      "results": {
+        "embeddinggemma:300m": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 254,
+            "semantic_score_median": 0.618862,
+            "semantic_score_min": 0.550424,
+            "semantic_score_max": 0.971195
+          }
+        },
+        "embeddinggemma-2:270m": {
+          "timing": {
+            "total_ms": 39359,
+            "mean_ms": 258.9,
+            "median_ms": 93.5,
+            "p95_ms": 1242.4,
+            "first_call_ms": 4161.0
+          },
+          "metrics": {
+            "documents_with_relations": 152,
+            "total_relations": 760,
+            "semantic_relations": 760,
+            "semantic_score_median": 0.743673,
+            "semantic_score_min": 0.644187,
+            "semantic_score_max": 0.977608
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 2.27,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ],
+                "removed": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/svend-a-mette/svend-gundestrup/travel/greenland/2005/11/16/greenland/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/2008/11/16/pictures-from-our-us-trip/"
+                ],
+                "removed": [
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/gps-mark-niels-chile/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computer/",
+                "added": [
+                  "/computer/linux/2006/01/25/kubuntu-and-kubuntu-testing-etch/",
+                  "/computer/linux/2005/11/16/debian-etch-watch-out-problems-when-upgrading/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ],
+                "removed": [
+                  "/computer/linux/2006/01/25/kubuntu-64-and-javaswat/",
+                  "/computer/linux/2009/05/28/hddtemp-linux/",
+                  "/computer/linux/2005/11/16/debian-etch-sourcelist-is-arrived-and-working/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computers-and-programming/",
+                "added": [
+                  "/computer/linux/2005/11/16/lessons-laerned-from-etch-upgrade/",
+                  "/computer/linux/2005/11/16/linux-bash-command-line/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/news/2009/11/20/snow-leopard-106-kernel-panick-bsod/",
+                  "/computer/2008/01/25/diskeeper/",
+                  "/computer/2010/05/17/snow-leopard-106-kernel-panick-bsod-fully-updates/",
+                  "/computer/linux/2009/05/28/hddtemp-linux/"
+                ],
+                "removed": [
+                  "/computer/2005/11/16/computer/",
+                  "/computer/linux/2005/11/16/debian/",
+                  "/computer/2005/11/16/computers-and-programming/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              }
+            ]
+          }
+        },
+        "qwen3-embedding:4b": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 151,
+            "total_relations": 751,
+            "semantic_relations": 186,
+            "semantic_score_median": 0.612691,
+            "semantic_score_min": 0.550033,
+            "semantic_score_max": 0.979987
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 3.967,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/2009/04/06/apple-airport-extreem-error-6753-and-6742/"
+                ],
+                "removed": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/greenland/2005/11/16/greenland/"
+                ],
+                "removed": [
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/science/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/linux/2009/05/28/hddtemp-linux/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                "added": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                "added": [
+                  "/computer/website/2005/11/16/more-website-updated/",
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/"
+                ],
+                "removed": [
+                  "/computer/design/2007/08/09/borg-collective/",
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              }
+            ]
+          }
+        },
+        "qwen3-embedding:8b": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 300,
+            "semantic_score_median": 0.622195,
+            "semantic_score_min": 0.550421,
+            "semantic_score_max": 0.981433
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 3.88,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ],
+                "removed": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/2005/11/15/webpage-history/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/2008/11/16/pictures-from-our-us-trip/"
+                ],
+                "removed": [
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/svend-gundestrup/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/gps-mark-niels-chile/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/linux/2009/05/28/hddtemp-linux/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                "added": [
+                  "/computer/2005/11/15/webpage-history/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                "added": [
+                  "/computer/2005/11/15/webpage-history/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2026-10-21T19:38:29Z",
+      "site": "/Users/svend/workspace/gundestrup.dk",
+      "related_config": {
+        "enabled": true,
+        "minimum_similarity": 0.55,
+        "max_items": 5
+      },
+      "results": {
+        "embeddinggemma:300m": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 254,
+            "semantic_score_median": 0.618862,
+            "semantic_score_min": 0.550424,
+            "semantic_score_max": 0.971195
+          }
+        },
+        "embeddinggemma-2:270m": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 152,
+            "total_relations": 760,
+            "semantic_relations": 760,
+            "semantic_score_median": 0.743673,
+            "semantic_score_min": 0.644187,
+            "semantic_score_max": 0.977608
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 2.27,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ],
+                "removed": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/svend-a-mette/svend-gundestrup/travel/greenland/2005/11/16/greenland/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/2008/11/16/pictures-from-our-us-trip/"
+                ],
+                "removed": [
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/gps-mark-niels-chile/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computer/",
+                "added": [
+                  "/computer/linux/2006/01/25/kubuntu-and-kubuntu-testing-etch/",
+                  "/computer/linux/2005/11/16/debian-etch-watch-out-problems-when-upgrading/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ],
+                "removed": [
+                  "/computer/linux/2006/01/25/kubuntu-64-and-javaswat/",
+                  "/computer/linux/2009/05/28/hddtemp-linux/",
+                  "/computer/linux/2005/11/16/debian-etch-sourcelist-is-arrived-and-working/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computers-and-programming/",
+                "added": [
+                  "/computer/linux/2005/11/16/lessons-laerned-from-etch-upgrade/",
+                  "/computer/linux/2005/11/16/linux-bash-command-line/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/news/2009/11/20/snow-leopard-106-kernel-panick-bsod/",
+                  "/computer/2008/01/25/diskeeper/",
+                  "/computer/2010/05/17/snow-leopard-106-kernel-panick-bsod-fully-updates/",
+                  "/computer/linux/2009/05/28/hddtemp-linux/"
+                ],
+                "removed": [
+                  "/computer/2005/11/16/computer/",
+                  "/computer/linux/2005/11/16/debian/",
+                  "/computer/2005/11/16/computers-and-programming/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              }
+            ]
+          }
+        },
+        "nomic-embed-text": {
+          "timing": {
+            "total_ms": 15079,
+            "mean_ms": 99.2,
+            "median_ms": 47.9,
+            "p95_ms": 333.7,
+            "first_call_ms": 1348.2
+          },
+          "metrics": {
+            "documents_with_relations": 152,
+            "total_relations": 760,
+            "semantic_relations": 756,
+            "semantic_score_median": 0.697736,
+            "semantic_score_min": 0.55017,
+            "semantic_score_max": 0.990915
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 2.059,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/",
+                  "/computer/website/2008/11/16/moving-to-site5/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/family/gry-a-martin/laura/2008/11/13/laura/",
+                  "/computer/design/2007/07/12/nytimedk/"
+                ],
+                "removed": [
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/gps-mark-niels-chile/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computer/",
+                "added": [
+                  "/computer/linux/2006/11/22/the-bliss-of-subversion-on-kubuntuubuntu/",
+                  "/computer/linux/2006/01/25/kubuntu-and-kubuntu-testing-etch/",
+                  "/computer/2008/01/25/diskeeper/"
+                ],
+                "removed": [
+                  "/computer/linux/2006/01/25/kubuntu-64-and-javaswat/",
+                  "/computer/linux/2009/05/28/hddtemp-linux/",
+                  "/computer/linux/2005/11/16/debian-etch-sourcelist-is-arrived-and-working/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computers-and-programming/",
+                "added": [
+                  "/computer/linux/2005/11/16/lessons-laerned-from-etch-upgrade/",
+                  "/computer/linux/2006/01/25/kubuntu-and-kubuntu-testing-etch/",
+                  "/computer/linux/2005/11/16/linux-bash-command-line/"
+                ],
+                "removed": [
+                  "/computer/linux/2005/11/16/debian/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/2005/11/16/vista-korer-bedst-pa-en-fuldblods-computer/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              }
+            ]
+          }
+        },
+        "bge-m3": {
+          "timing": {
+            "total_ms": 46204,
+            "mean_ms": 304.0,
+            "median_ms": 126.2,
+            "p95_ms": 900.5,
+            "first_call_ms": 8863.4
+          },
+          "metrics": {
+            "documents_with_relations": 151,
+            "total_relations": 751,
+            "semantic_relations": 448,
+            "semantic_score_median": 0.608274,
+            "semantic_score_min": 0.550031,
+            "semantic_score_max": 0.965071
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 3.311,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/family/gry-a-martin/valdemar/2008/11/13/nyheder/",
+                  "/news/latest/2008/11/15/another-update/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/svend-a-mette/mette-kjobaek-gundestrup-andersen/2010/04/02/mette-kjobaek-gundestrup-andersen/",
+                  "/family/gry-a-martin/laura/2008/11/13/laura/",
+                  "/news/latest/2008/11/15/another-update/"
+                ],
+                "removed": [
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/svend-gundestrup/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/gps-mark-niels-chile/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computer/",
+                "added": [
+                  "/computer/2008/01/25/diskeeper/"
+                ],
+                "removed": [
+                  "/computer/linux/2005/11/16/debian-etch-sourcelist-is-arrived-and-working/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computers-and-programming/",
+                "added": [
+                  "/computer/2009/04/17/lommecomputeren-presset-ud-af-danske-hospitaler/",
+                  "/computer/linux/2005/11/16/lessons-laerned-from-etch-upgrade/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/linux/2006/11/22/kubuntu-upgrade-dapper-to-edgyeft/",
+                  "/computer/linux/2011/12/11/ubuntu-timemachine/"
+                ],
+                "removed": [
+                  "/computer/linux/2005/11/16/debian/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              }
+            ]
+          }
+        },
+        "mxbai-embed-large": {
+          "timing": {
+            "total_ms": 51512,
+            "mean_ms": 338.9,
+            "median_ms": 280.8,
+            "p95_ms": 740.0,
+            "first_call_ms": 1541.5
+          },
+          "metrics": {
+            "documents_with_relations": 152,
+            "total_relations": 755,
+            "semantic_relations": 604,
+            "semantic_score_median": 0.664852,
+            "semantic_score_min": 0.550652,
+            "semantic_score_max": 0.980872
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 2.559,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/"
+                ],
+                "removed": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/gry-a-martin/laura/2008/11/13/laura/",
+                  "/family/maryanne-a-niels/niels/2008/12/31/egede-medaillen-til-niels-s-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/greenland/2005/11/16/greenland/"
+                ],
+                "removed": [
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/gps-mark-niels-chile/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computers-and-programming/",
+                "added": [
+                  "/computer/2009/12/28/when-ncp-ecom-gets-greedy/",
+                  "/computer/2006/11/27/hosting/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/vista-korer-bedst-pa-en-fuldblods-computer/",
+                "added": [
+                  "/computer/2009/05/25/skandinavisk-tastatur-til-pocket-pc-20002003-50-61/",
+                  "/computer/2009/04/17/lommecomputeren-presset-ud-af-danske-hospitaler/",
+                  "/computer/2009/03/01/vista-if-you-have-the-time/",
+                  "/family/svend-a-mette/svend-gundestrup/medicin/2005/11/16/mednotedk-er-online/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/04/06/apple-airport-extreem-error-6753-and-6742/",
+                  "/computer/linux/2012/04/11/apple-breath-mt-daapd-firefly/",
+                  "/computer/2006/12/18/bookmark-problems/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                "added": [
+                  "/family/gry-a-martin/laura/2008/11/13/laura/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              }
+            ]
+          }
+        },
+        "snowflake-arctic-embed2": {
+          "timing": {
+            "total_ms": 77036,
+            "mean_ms": 506.8,
+            "median_ms": 221.2,
+            "p95_ms": 2185.9,
+            "first_call_ms": 2816.3
+          },
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 131,
+            "semantic_score_median": 0.59051,
+            "semantic_score_min": 0.551256,
+            "semantic_score_max": 0.968389
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 4.06,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/computer/2009/04/06/apple-airport-extreem-error-6753-and-6742/",
+                  "/computer/linux/2012/04/11/apple-breath-mt-daapd-firefly/",
+                  "/computer/2006/12/18/bookmark-problems/"
+                ],
+                "removed": [
+                  "/computer/website/2005/11/16/more-website-updated/",
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/maryanne-a-niels/niels/2005/11/16/niels-gundestrup/",
+                  "/family/maryanne-a-niels/niels/2008/12/31/egede-medaillen-til-niels-s-gundestrup/",
+                  "/computer/2005/11/15/webpage-history/"
+                ],
+                "removed": [
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/",
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/svend-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/science/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                "added": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                "added": [
+                  "/computer/design/2007/07/12/nytimedk/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ],
+                "removed": [
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/",
+                  "/computer/design/2007/08/09/borg-collective/"
+                ]
+              },
+              {
+                "id": "/computer/linux/2005/11/16/debian-etch-watch-out-problems-when-upgrading/",
+                "added": [
+                  "/computer/2005/11/16/computer/",
+                  "/computer/linux/2006/01/25/kubuntu-64-and-javaswat/"
+                ],
+                "removed": [
+                  "/computer/linux/2006/11/22/kubuntu-upgrade-dapper-to-edgyeft/",
+                  "/computer/linux/2005/11/16/lessons-laerned-from-etch-upgrade/"
+                ]
+              }
+            ]
+          }
+        },
+        "qwen3-embedding:4b": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 151,
+            "total_relations": 751,
+            "semantic_relations": 186,
+            "semantic_score_median": 0.612691,
+            "semantic_score_min": 0.550033,
+            "semantic_score_max": 0.979987
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 3.967,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/2009/04/06/apple-airport-extreem-error-6753-and-6742/"
+                ],
+                "removed": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/greenland/2005/11/16/greenland/"
+                ],
+                "removed": [
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/science/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/linux/2009/05/28/hddtemp-linux/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                "added": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                "added": [
+                  "/computer/website/2005/11/16/more-website-updated/",
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/"
+                ],
+                "removed": [
+                  "/computer/design/2007/08/09/borg-collective/",
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              }
+            ]
+          }
+        },
+        "qwen3-embedding:8b": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 300,
+            "semantic_score_median": 0.622195,
+            "semantic_score_min": 0.550421,
+            "semantic_score_max": 0.981433
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 3.88,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ],
+                "removed": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/2005/11/15/webpage-history/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/2008/11/16/pictures-from-our-us-trip/"
+                ],
+                "removed": [
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/svend-gundestrup/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/gps-mark-niels-chile/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/linux/2009/05/28/hddtemp-linux/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                "added": [
+                  "/computer/2005/11/15/webpage-history/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                "added": [
+                  "/computer/2005/11/15/webpage-history/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2026-10-21T19:46:39Z",
+      "site": "/Users/svend/workspace/gundestrup.dk",
+      "related_config": {
+        "enabled": true,
+        "minimum_similarity": 0.55,
+        "max_items": 5
+      },
+      "results": {
+        "embeddinggemma:300m": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 254,
+            "semantic_score_median": 0.618862,
+            "semantic_score_min": 0.550424,
+            "semantic_score_max": 0.971195
+          }
+        },
+        "voyage-4-nano": {
+          "timing": {
+            "total_ms": 17312,
+            "mean_ms": 113.9,
+            "median_ms": 56.4,
+            "p95_ms": 459.7,
+            "first_call_ms": 472.2
+          },
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 528,
+            "semantic_score_median": 0.64868,
+            "semantic_score_min": 0.550371,
+            "semantic_score_max": 0.981111
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 2.913,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/"
+                ],
+                "removed": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/svend-a-mette/2008/11/15/svend-a-mette/",
+                  "/family/svend-a-mette/mette-kjobaek-gundestrup-andersen/2010/04/02/mette-kjobaek-gundestrup-andersen/",
+                  "/computer/design/2007/07/12/nytimedk/",
+                  "/family/gry-a-martin/laura/2008/11/13/laura/"
+                ],
+                "removed": [
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/",
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/svend-gundestrup/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/gps-mark-niels-chile/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computer/",
+                "added": [
+                  "/computer/linux/2006/01/25/kubuntu-and-kubuntu-testing-etch/",
+                  "/computer/linux/2009/04/29/ubuntu-904-upgrade-from-hell-if-you-have-software-raid/"
+                ],
+                "removed": [
+                  "/computer/linux/2009/05/28/hddtemp-linux/",
+                  "/computer/linux/2005/11/16/debian-etch-sourcelist-is-arrived-and-working/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computers-and-programming/",
+                "added": [
+                  "/computer/2008/01/25/diskeeper/"
+                ],
+                "removed": [
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/2008/11/24/word-2007-windows-crashed-on-exit/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              }
+            ]
+          }
+        },
+        "embeddinggemma-2:270m": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 152,
+            "total_relations": 760,
+            "semantic_relations": 760,
+            "semantic_score_median": 0.743673,
+            "semantic_score_min": 0.644187,
+            "semantic_score_max": 0.977608
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 2.27,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ],
+                "removed": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/svend-a-mette/svend-gundestrup/travel/greenland/2005/11/16/greenland/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/2008/11/16/pictures-from-our-us-trip/"
+                ],
+                "removed": [
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/gps-mark-niels-chile/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computer/",
+                "added": [
+                  "/computer/linux/2006/01/25/kubuntu-and-kubuntu-testing-etch/",
+                  "/computer/linux/2005/11/16/debian-etch-watch-out-problems-when-upgrading/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ],
+                "removed": [
+                  "/computer/linux/2006/01/25/kubuntu-64-and-javaswat/",
+                  "/computer/linux/2009/05/28/hddtemp-linux/",
+                  "/computer/linux/2005/11/16/debian-etch-sourcelist-is-arrived-and-working/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computers-and-programming/",
+                "added": [
+                  "/computer/linux/2005/11/16/lessons-laerned-from-etch-upgrade/",
+                  "/computer/linux/2005/11/16/linux-bash-command-line/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/news/2009/11/20/snow-leopard-106-kernel-panick-bsod/",
+                  "/computer/2008/01/25/diskeeper/",
+                  "/computer/2010/05/17/snow-leopard-106-kernel-panick-bsod-fully-updates/",
+                  "/computer/linux/2009/05/28/hddtemp-linux/"
+                ],
+                "removed": [
+                  "/computer/2005/11/16/computer/",
+                  "/computer/linux/2005/11/16/debian/",
+                  "/computer/2005/11/16/computers-and-programming/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              }
+            ]
+          }
+        },
+        "nomic-embed-text": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 152,
+            "total_relations": 760,
+            "semantic_relations": 756,
+            "semantic_score_median": 0.697736,
+            "semantic_score_min": 0.55017,
+            "semantic_score_max": 0.990915
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 2.059,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/",
+                  "/computer/website/2008/11/16/moving-to-site5/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/family/gry-a-martin/laura/2008/11/13/laura/",
+                  "/computer/design/2007/07/12/nytimedk/"
+                ],
+                "removed": [
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/gps-mark-niels-chile/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computer/",
+                "added": [
+                  "/computer/linux/2006/11/22/the-bliss-of-subversion-on-kubuntuubuntu/",
+                  "/computer/linux/2006/01/25/kubuntu-and-kubuntu-testing-etch/",
+                  "/computer/2008/01/25/diskeeper/"
+                ],
+                "removed": [
+                  "/computer/linux/2006/01/25/kubuntu-64-and-javaswat/",
+                  "/computer/linux/2009/05/28/hddtemp-linux/",
+                  "/computer/linux/2005/11/16/debian-etch-sourcelist-is-arrived-and-working/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computers-and-programming/",
+                "added": [
+                  "/computer/linux/2005/11/16/lessons-laerned-from-etch-upgrade/",
+                  "/computer/linux/2006/01/25/kubuntu-and-kubuntu-testing-etch/",
+                  "/computer/linux/2005/11/16/linux-bash-command-line/"
+                ],
+                "removed": [
+                  "/computer/linux/2005/11/16/debian/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/2005/11/16/vista-korer-bedst-pa-en-fuldblods-computer/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              }
+            ]
+          }
+        },
+        "bge-m3": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 151,
+            "total_relations": 751,
+            "semantic_relations": 448,
+            "semantic_score_median": 0.608274,
+            "semantic_score_min": 0.550031,
+            "semantic_score_max": 0.965071
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 3.311,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/family/gry-a-martin/valdemar/2008/11/13/nyheder/",
+                  "/news/latest/2008/11/15/another-update/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/svend-a-mette/mette-kjobaek-gundestrup-andersen/2010/04/02/mette-kjobaek-gundestrup-andersen/",
+                  "/family/gry-a-martin/laura/2008/11/13/laura/",
+                  "/news/latest/2008/11/15/another-update/"
+                ],
+                "removed": [
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/svend-gundestrup/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/gps-mark-niels-chile/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computer/",
+                "added": [
+                  "/computer/2008/01/25/diskeeper/"
+                ],
+                "removed": [
+                  "/computer/linux/2005/11/16/debian-etch-sourcelist-is-arrived-and-working/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computers-and-programming/",
+                "added": [
+                  "/computer/2009/04/17/lommecomputeren-presset-ud-af-danske-hospitaler/",
+                  "/computer/linux/2005/11/16/lessons-laerned-from-etch-upgrade/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/linux/2006/11/22/kubuntu-upgrade-dapper-to-edgyeft/",
+                  "/computer/linux/2011/12/11/ubuntu-timemachine/"
+                ],
+                "removed": [
+                  "/computer/linux/2005/11/16/debian/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              }
+            ]
+          }
+        },
+        "mxbai-embed-large": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 152,
+            "total_relations": 755,
+            "semantic_relations": 604,
+            "semantic_score_median": 0.664852,
+            "semantic_score_min": 0.550652,
+            "semantic_score_max": 0.980872
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 2.559,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/"
+                ],
+                "removed": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/gry-a-martin/laura/2008/11/13/laura/",
+                  "/family/maryanne-a-niels/niels/2008/12/31/egede-medaillen-til-niels-s-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/greenland/2005/11/16/greenland/"
+                ],
+                "removed": [
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/gps-mark-niels-chile/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computers-and-programming/",
+                "added": [
+                  "/computer/2009/12/28/when-ncp-ecom-gets-greedy/",
+                  "/computer/2006/11/27/hosting/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/vista-korer-bedst-pa-en-fuldblods-computer/",
+                "added": [
+                  "/computer/2009/05/25/skandinavisk-tastatur-til-pocket-pc-20002003-50-61/",
+                  "/computer/2009/04/17/lommecomputeren-presset-ud-af-danske-hospitaler/",
+                  "/computer/2009/03/01/vista-if-you-have-the-time/",
+                  "/family/svend-a-mette/svend-gundestrup/medicin/2005/11/16/mednotedk-er-online/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/04/06/apple-airport-extreem-error-6753-and-6742/",
+                  "/computer/linux/2012/04/11/apple-breath-mt-daapd-firefly/",
+                  "/computer/2006/12/18/bookmark-problems/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                "added": [
+                  "/family/gry-a-martin/laura/2008/11/13/laura/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              }
+            ]
+          }
+        },
+        "snowflake-arctic-embed2": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 131,
+            "semantic_score_median": 0.59051,
+            "semantic_score_min": 0.551256,
+            "semantic_score_max": 0.968389
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 4.06,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/computer/2009/04/06/apple-airport-extreem-error-6753-and-6742/",
+                  "/computer/linux/2012/04/11/apple-breath-mt-daapd-firefly/",
+                  "/computer/2006/12/18/bookmark-problems/"
+                ],
+                "removed": [
+                  "/computer/website/2005/11/16/more-website-updated/",
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/maryanne-a-niels/niels/2005/11/16/niels-gundestrup/",
+                  "/family/maryanne-a-niels/niels/2008/12/31/egede-medaillen-til-niels-s-gundestrup/",
+                  "/computer/2005/11/15/webpage-history/"
+                ],
+                "removed": [
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/",
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/svend-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/science/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                "added": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                "added": [
+                  "/computer/design/2007/07/12/nytimedk/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ],
+                "removed": [
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/",
+                  "/computer/design/2007/08/09/borg-collective/"
+                ]
+              },
+              {
+                "id": "/computer/linux/2005/11/16/debian-etch-watch-out-problems-when-upgrading/",
+                "added": [
+                  "/computer/2005/11/16/computer/",
+                  "/computer/linux/2006/01/25/kubuntu-64-and-javaswat/"
+                ],
+                "removed": [
+                  "/computer/linux/2006/11/22/kubuntu-upgrade-dapper-to-edgyeft/",
+                  "/computer/linux/2005/11/16/lessons-laerned-from-etch-upgrade/"
+                ]
+              }
+            ]
+          }
+        },
+        "qwen3-embedding:4b": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 151,
+            "total_relations": 751,
+            "semantic_relations": 186,
+            "semantic_score_median": 0.612691,
+            "semantic_score_min": 0.550033,
+            "semantic_score_max": 0.979987
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 3.967,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/2009/04/06/apple-airport-extreem-error-6753-and-6742/"
+                ],
+                "removed": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/greenland/2005/11/16/greenland/"
+                ],
+                "removed": [
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/science/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/linux/2009/05/28/hddtemp-linux/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                "added": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                "added": [
+                  "/computer/website/2005/11/16/more-website-updated/",
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/"
+                ],
+                "removed": [
+                  "/computer/design/2007/08/09/borg-collective/",
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              }
+            ]
+          }
+        },
+        "qwen3-embedding:8b": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 300,
+            "semantic_score_median": 0.622195,
+            "semantic_score_min": 0.550421,
+            "semantic_score_max": 0.981433
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 3.88,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ],
+                "removed": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/2005/11/15/webpage-history/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/2008/11/16/pictures-from-our-us-trip/"
+                ],
+                "removed": [
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/svend-gundestrup/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/gps-mark-niels-chile/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/linux/2009/05/28/hddtemp-linux/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                "added": [
+                  "/computer/2005/11/15/webpage-history/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                "added": [
+                  "/computer/2005/11/15/webpage-history/"
+                ],
+                "removed": [
+                  "/computer/design/2006/06/15/mogensottecom/"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2026-10-21T19:58:28Z",
+      "site": "/Users/svend/workspace/gundestrup.dk",
+      "related_config": {
+        "enabled": true,
+        "minimum_similarity": 0.55,
+        "max_items": 5
+      },
+      "results": {
+        "voyage-4-nano-2048": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 152,
+            "total_relations": 760,
+            "semantic_relations": 748,
+            "semantic_score_median": 0.710892,
+            "semantic_score_min": 0.550129,
+            "semantic_score_max": 0.98748
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 2.191,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/"
+                ],
+                "removed": [
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/svend-a-mette/2008/11/15/svend-a-mette/",
+                  "/family/svend-a-mette/mette-kjobaek-gundestrup-andersen/2010/04/02/mette-kjobaek-gundestrup-andersen/",
+                  "/family/gry-a-martin/laura/2008/11/13/laura/",
+                  "/computer/design/2007/07/12/nytimedk/"
+                ],
+                "removed": [
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/",
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/2005/11/15/webpage-history/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/2008/11/16/pictures-from-our-us-trip/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computer/",
+                "added": [
+                  "/computer/linux/2006/01/25/kubuntu-and-kubuntu-testing-etch/",
+                  "/computer/linux/2009/04/29/ubuntu-904-upgrade-from-hell-if-you-have-software-raid/"
+                ],
+                "removed": [
+                  "/computer/linux/2009/05/28/hddtemp-linux/",
+                  "/computer/linux/2005/11/16/debian-etch-sourcelist-is-arrived-and-working/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computers-and-programming/",
+                "added": [
+                  "/computer/2008/01/25/diskeeper/",
+                  "/computer/linux/2005/11/16/lessons-laerned-from-etch-upgrade/",
+                  "/computer/2005/11/15/webpage-history/"
+                ],
+                "removed": [
+                  "/computer/linux/2005/11/16/debian/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/2008/11/24/word-2007-windows-crashed-on-exit/",
+                  "/computer/2008/01/25/diskeeper/",
+                  "/computer/2009/03/01/vista-if-you-have-the-time/",
+                  "/computer/2005/11/16/vista-korer-bedst-pa-en-fuldblods-computer/"
+                ],
+                "removed": [
+                  "/computer/linux/2009/05/28/hddtemp-linux/",
+                  "/computer/2005/11/16/computer/",
+                  "/computer/linux/2005/11/16/debian/",
+                  "/computer/2005/11/16/computers-and-programming/"
+                ]
+              }
+            ]
+          }
+        },
+        "qwen3-embedding:8b": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 300,
+            "semantic_score_median": 0.622195,
+            "semantic_score_min": 0.550421,
+            "semantic_score_max": 0.981433
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2026-10-21T20:15:24Z",
+      "site": "/Users/svend/workspace/gundestrup.dk",
+      "related_config": {
+        "enabled": true,
+        "minimum_similarity": 0.55,
+        "max_items": 5
+      },
+      "results": {
+        "qwen3-embedding:0.6b": {
+          "timing": {
+            "total_ms": 52865,
+            "mean_ms": 347.8,
+            "median_ms": 124.1,
+            "p95_ms": 1821.3,
+            "first_call_ms": 1879.5
+          },
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 219,
+            "semantic_score_median": 0.616449,
+            "semantic_score_min": 0.55128,
+            "semantic_score_max": 0.988424
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 3.867,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/",
+                  "/computer/2009/04/06/apple-airport-extreem-error-6753-and-6742/"
+                ],
+                "removed": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/",
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/svend-gundestrup/",
+                  "/family/svend-a-mette/mette-kjobaek-gundestrup-andersen/2010/04/02/mette-kjobaek-gundestrup-andersen/",
+                  "/family/gry-a-martin/laura/2008/11/13/laura/",
+                  "/family/maryanne-a-niels/niels/2005/11/16/niels-gundestrup/"
+                ],
+                "removed": [
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/",
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/2005/11/15/webpage-history/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/2008/11/16/pictures-from-our-us-trip/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                "added": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ],
+                "removed": [
+                  "/computer/2005/11/15/webpage-history/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                "added": [
+                  "/computer/design/2007/07/12/nytimedk/",
+                  "/computer/website/2005/11/16/more-website-updated/"
+                ],
+                "removed": [
+                  "/computer/2005/11/15/webpage-history/",
+                  "/computer/design/2007/08/09/borg-collective/"
+                ]
+              },
+              {
+                "id": "/computer/linux/2005/11/16/dontt-upgrade-to-etch/",
+                "added": [
+                  "/computer/linux/2009/04/29/ubuntu-904-upgrade-from-hell-if-you-have-software-raid/"
+                ],
+                "removed": [
+                  "/computer/linux/2006/11/22/kubuntu-upgrade-dapper-to-edgyeft/"
+                ]
+              }
+            ]
+          }
+        },
+        "qwen3-embedding:8b": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 300,
+            "semantic_score_median": 0.622195,
+            "semantic_score_min": 0.550421,
+            "semantic_score_max": 0.981433
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2026-10-21T20:40:14Z",
+      "site": "/Users/svend/workspace/gundestrup.dk",
+      "related_config": {
+        "enabled": true,
+        "minimum_similarity": 0.55,
+        "max_items": 5
+      },
+      "results": {
+        "embeddinggemma-2:570m": {
+          "timing": {
+            "total_ms": 37391,
+            "mean_ms": 246.0,
+            "median_ms": 88.3,
+            "p95_ms": 1235.1,
+            "first_call_ms": 2207.2
+          },
+          "metrics": {
+            "documents_with_relations": 152,
+            "total_relations": 760,
+            "semantic_relations": 760,
+            "semantic_score_median": 0.743673,
+            "semantic_score_min": 0.644187,
+            "semantic_score_max": 0.977608
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 2.296,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/"
+                ],
+                "removed": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/svend-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/greenland/2005/11/16/greenland/"
+                ],
+                "removed": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/2005/11/15/webpage-history/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computer/",
+                "added": [
+                  "/computer/linux/2006/01/25/kubuntu-and-kubuntu-testing-etch/",
+                  "/computer/linux/2005/11/16/debian-etch-watch-out-problems-when-upgrading/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ],
+                "removed": [
+                  "/computer/linux/2006/01/25/kubuntu-64-and-javaswat/",
+                  "/computer/linux/2009/05/28/hddtemp-linux/",
+                  "/computer/linux/2005/11/16/debian-etch-sourcelist-is-arrived-and-working/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computers-and-programming/",
+                "added": [
+                  "/computer/linux/2005/11/16/lessons-laerned-from-etch-upgrade/",
+                  "/computer/linux/2005/11/16/linux-bash-command-line/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/news/2009/11/20/snow-leopard-106-kernel-panick-bsod/",
+                  "/computer/2008/01/25/diskeeper/",
+                  "/computer/2010/05/17/snow-leopard-106-kernel-panick-bsod-fully-updates/"
+                ],
+                "removed": [
+                  "/computer/2005/11/16/computer/",
+                  "/computer/linux/2005/11/16/debian/",
+                  "/computer/2005/11/16/computers-and-programming/"
+                ]
+              }
+            ]
+          }
+        },
+        "qwen3-embedding:8b": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 300,
+            "semantic_score_median": 0.622195,
+            "semantic_score_min": 0.550421,
+            "semantic_score_max": 0.981433
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2026-10-21T21:07:42Z",
+      "site": "/Users/svend/workspace/gundestrup.dk",
+      "related_config": {
+        "enabled": true,
+        "minimum_similarity": 0.55,
+        "max_items": 5
+      },
+      "results": {
+        "bge-large": {
+          "timing": {
+            "total_ms": 17469,
+            "mean_ms": 114.9,
+            "median_ms": 106.2,
+            "p95_ms": 166.4,
+            "first_call_ms": 1283.5
+          },
+          "metrics": {
+            "documents_with_relations": 152,
+            "total_relations": 757,
+            "semantic_relations": 681,
+            "semantic_score_median": 0.658932,
+            "semantic_score_min": 0.550205,
+            "semantic_score_max": 0.980037
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 2.342,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/computer/2006/11/27/hosting/",
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/"
+                ],
+                "removed": [
+                  "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/gry-a-martin/laura/2008/11/13/laura/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/chile/2005/11/16/chile/",
+                  "/family/svend-a-mette/2008/11/15/svend-a-mette/",
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/svend-gundestrup/"
+                ],
+                "removed": [
+                  "/computer/website/2005/11/16/major-update-of-website-almost-complete/",
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/2005/11/15/webpage-history/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/2008/11/16/pictures-from-our-us-trip/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computers-and-programming/",
+                "added": [
+                  "/computer/2008/12/31/servage-dont-get-hosted-there/",
+                  "/computer/2009/12/28/when-ncp-ecom-gets-greedy/",
+                  "/computer/linux/2005/11/16/lessons-laerned-from-etch-upgrade/",
+                  "/computer/2006/11/27/hosting/"
+                ],
+                "removed": [
+                  "/computer/linux/2005/11/16/debian/",
+                  "/computer/2005/11/16/ms-dos-commands/",
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/linux/2005/11/16/debian-etch-sourcelist-is-arrived-and-working/"
+                ],
+                "removed": [
+                  "/computer/linux/2009/05/28/hddtemp-linux/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/vista-korer-bedst-pa-en-fuldblods-computer/",
+                "added": [
+                  "/computer/2009/04/17/lommecomputeren-presset-ud-af-danske-hospitaler/",
+                  "/computer/2009/05/25/skandinavisk-tastatur-til-pocket-pc-20002003-50-61/",
+                  "/computer/2009/03/01/vista-if-you-have-the-time/",
+                  "/news/2010/03/25/kriminalitetindbygger-i-kobenhavnsomradet-fordelt-pa-kommuner/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/04/06/apple-airport-extreem-error-6753-and-6742/",
+                  "/computer/linux/2012/04/11/apple-breath-mt-daapd-firefly/",
+                  "/computer/2006/12/18/bookmark-problems/"
+                ]
+              }
+            ]
+          }
+        },
+        "qwen3-embedding:8b": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 300,
+            "semantic_score_median": 0.622195,
+            "semantic_score_min": 0.550421,
+            "semantic_score_max": 0.981433
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2026-10-21T21:13:56Z",
+      "site": "/Users/svend/workspace/gundestrup.dk",
+      "related_config": {
+        "enabled": true,
+        "minimum_similarity": 0.55,
+        "max_items": 5
+      },
+      "results": {
+        "jina-embeddings-v3": {
+          "timing": {
+            "total_ms": 36686,
+            "mean_ms": 241.4,
+            "median_ms": 118.0,
+            "p95_ms": 998.8,
+            "first_call_ms": 715.0
+          },
+          "metrics": {
+            "documents_with_relations": 152,
+            "total_relations": 757,
+            "semantic_relations": 598,
+            "semantic_score_median": 0.654871,
+            "semantic_score_min": 0.55088,
+            "semantic_score_max": 0.987676
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 2.783,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                  "/computer/2006/11/27/hosting/"
+                ],
+                "removed": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/svend-gundestrup/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/greenland/2005/11/16/greenland/"
+                ],
+                "removed": [
+                  "/computer/2005/11/15/webpage-history/",
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/science/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computer/",
+                "added": [
+                  "/computer/linux/2006/01/25/kubuntu-and-kubuntu-testing-etch/",
+                  "/computer/linux/2005/11/16/linux-bash-command-line/"
+                ],
+                "removed": [
+                  "/computer/linux/2009/05/28/hddtemp-linux/",
+                  "/computer/linux/2005/11/16/debian-etch-sourcelist-is-arrived-and-working/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/computers-and-programming/",
+                "added": [
+                  "/computer/2005/11/15/webpage-history/",
+                  "/computer/2007/02/02/roling-with-servage/"
+                ],
+                "removed": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/",
+                  "/computer/2009/05/13/64bit-vista-hauppauge-4gb-ram-problem-here-is-the-solutions/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/vista-korer-bedst-pa-en-fuldblods-computer/",
+                "added": [
+                  "/computer/2007/10/09/the-truth-about-vista/",
+                  "/computer/2009/03/01/vista-if-you-have-the-time/",
+                  "/computer/2005/11/16/computer/"
+                ],
+                "removed": [
+                  "/computer/2009/04/06/apple-airport-extreem-error-6753-and-6742/",
+                  "/computer/linux/2012/04/11/apple-breath-mt-daapd-firefly/",
+                  "/computer/2006/12/18/bookmark-problems/"
+                ]
+              }
+            ]
+          }
+        },
+        "qwen3-embedding:8b": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 300,
+            "semantic_score_median": 0.622195,
+            "semantic_score_min": 0.550421,
+            "semantic_score_max": 0.981433
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2026-10-21T21:25:57Z",
+      "site": "/Users/svend/workspace/gundestrup.dk",
+      "related_config": {
+        "enabled": true,
+        "minimum_similarity": 0.55,
+        "max_items": 5
+      },
+      "results": {
+        "jina-embeddings-v3-text-matching": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 255,
+            "semantic_score_median": 0.611048,
+            "semantic_score_min": 0.550132,
+            "semantic_score_max": 0.981375
+          },
+          "vs_baseline": {
+            "mean_shared_related_ids": 3.947,
+            "examples": [
+              {
+                "id": "/computer/2005/11/15/webpage-history/",
+                "added": [
+                  "/family/svend-a-mette/svend-gundestrup/medicin/2005/11/16/mednotedk-er-online/",
+                  "/computer/design/2005/11/25/new-webdesign-humlehaven19/",
+                  "/computer/2006/11/27/hosting/"
+                ],
+                "removed": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/design/2005/11/16/new-webdesign-wwwonecrazydanecom/",
+                  "/2005/11/15/welcome-to-home-of-gundestrup/"
+                ]
+              },
+              {
+                "id": "/2005/11/15/welcome-to-home-of-gundestrup/",
+                "added": [
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/svend-gundestrup/",
+                  "/family/svend-a-mette/mette-kjobaek-gundestrup-andersen/2010/04/02/mette-kjobaek-gundestrup-andersen/",
+                  "/family/maryanne-a-niels/niels/2005/11/16/niels-gundestrup/",
+                  "/family/gry-a-martin/2005/11/16/gry-a-martin-gundestrup/"
+                ],
+                "removed": [
+                  "/news/latest/2008/11/15/another-update/",
+                  "/computer/2005/11/15/webpage-history/",
+                  "/family/svend-a-mette/svend-gundestrup/2005/11/16/science/",
+                  "/family/svend-a-mette/svend-gundestrup/travel/2008/11/16/pictures-from-our-us-trip/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/ms-dos-commands/",
+                "added": [
+                  "/computer/2009/05/02/64-bit-cisco-vpn-client-for-windows-solution-ncp-ecom/"
+                ],
+                "removed": [
+                  "/computer/linux/2009/05/28/hddtemp-linux/"
+                ]
+              },
+              {
+                "id": "/computer/2005/11/16/vista-korer-bedst-pa-en-fuldblods-computer/",
+                "added": [
+                  "/computer/2009/03/01/vista-if-you-have-the-time/"
+                ],
+                "removed": [
+                  "/computer/2006/12/18/bookmark-problems/"
+                ]
+              },
+              {
+                "id": "/computer/design/2005/11/16/new-webdesign-wwwninnijdk/",
+                "added": [
+                  "/computer/website/2005/11/16/more-website-updated/"
+                ],
+                "removed": [
+                  "/computer/2005/11/15/webpage-history/"
+                ]
+              }
+            ]
+          }
+        },
+        "qwen3-embedding:8b": {
+          "timing": null,
+          "metrics": {
+            "documents_with_relations": 150,
+            "total_relations": 750,
+            "semantic_relations": 300,
+            "semantic_score_median": 0.622195,
+            "semantic_score_min": 0.550421,
+            "semantic_score_max": 0.981433
+          }
+        }
+      }
+    }
+  ]
+}

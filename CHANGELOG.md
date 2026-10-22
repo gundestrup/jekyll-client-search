@@ -4,6 +4,23 @@
 
 - Dev-tooling bump: `jsdom` 30.1.3 (patch).
 
+### Added
+
+- `benchmarks/embedding_model_benchmark.rb`,
+  `benchmarks/related_model_benchmark.rb`, and
+  `benchmarks/related_quality_judge.rb` — measure Ollama embedding
+  latency per model on a real site, compare `related` output across
+  models, and score judged relevance with a blind LLM judge
+  (10 local embedding models benchmarked on a 152-document site).
+- `embeddinggemma-2` document/query prefixes (same prompt format as
+  `embeddinggemma`), `voyage-4-nano` prefixes (open-weight Voyage
+  model via community GGUF), and `qwen3-embedding` prefixes (official
+  instruct-format query prefix; empty document prefix).
+- README model-selection guidance: measured per-document latency table,
+  LLM-judged quality ratings, quality-per-cost value index, amortized
+  yearly cost, `qwen3-embedding` build-time-only notes, and the
+  `localhost` → `127.0.0.1` loopback gotcha.
+
 ### Changed
 
 - CI: Semgrep moved from an inline `pip3 install semgrep==1.176.0` pin to hashed `.github/requirements-ci.txt` (compiled from `requirements-ci.in`, Python 3.12), installed with `--require-hashes`. Bumped Semgrep to 1.180.0; the version is now Dependabot-visible via a new `pip` ecosystem entry for `/.github`.
