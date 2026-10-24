@@ -87,4 +87,56 @@ RSpec.describe Jekyll::ClientSearch::OllamaEmbeddingAdapter, :unit do
     expect(adapter.embed("test text")).to be_nil
     expect(Jekyll.logger).to have_received(:warn).with("ClientSearch:", /embedding failed for text: boom/)
   end
+
+  it "resolves a localhost base URL to the reachable IPv4 loopback" do
+    client_class = class_double(Ollama::Client).as_stubbed_const
+    allow(client_class).to receive(:new).and_return(instance_double(Ollama::Client))
+    allow(adapter).to receive(:tcp_reachable?) { |address, _port| address == "127.0.0.1" }
+    allow(Jekyll.logger).to receive(:info)
+
+    adapter.send(:client)
+
+    expect(client_class).to have_received(:new).with(
+      base_url: "http://127.0.0.1:11434", connect_timeout: 5, read_timeout: 120
+    )
+  end
+
+  it "resolves a localhost base URL to the reachable IPv6 loopback" do
+    client_class = class_double(Ollama::Client).as_stubbed_const
+    allow(client_class).to receive(:new).and_return(instance_double(Ollama::Client))
+    allow(adapter).to receive(:tcp_reachable?) { |address, _port| address == "::1" }
+    allow(Jekyll.logger).to receive(:info)
+
+    adapter.send(:client)
+
+    expect(client_class).to have_received(:new).with(
+      base_url: "http://[::1]:11434", connect_timeout: 5, read_timeout: 120
+    )
+  end
+
+  it "keeps the configured URL when no loopback literal is reachable" do
+    client_class = class_double(Ollama::Client).as_stubbed_const
+    allow(client_class).to receive(:new).and_return(instance_double(Ollama::Client))
+    allow(adapter).to receive(:tcp_reachable?).and_return(false)
+
+    adapter.send(:client)
+
+    expect(client_class).to have_received(:new).with(
+      base_url: "http://localhost:11434", connect_timeout: 5, read_timeout: 120
+    )
+  end
+
+  it "does not probe loopback for a non-localhost base URL" do
+    adapter = described_class.new(model: "test-model", base_url: "http://gpu-box:11434")
+    client_class = class_double(Ollama::Client).as_stubbed_const
+    allow(client_class).to receive(:new).and_return(instance_double(Ollama::Client))
+    allow(adapter).to receive(:tcp_reachable?)
+
+    adapter.send(:client)
+
+    expect(adapter).not_to have_received(:tcp_reachable?)
+    expect(client_class).to have_received(:new).with(
+      base_url: "http://gpu-box:11434", connect_timeout: 5, read_timeout: 120
+    )
+  end
 end

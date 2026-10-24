@@ -11,6 +11,11 @@ module Jekyll
     #     enabled: true
     #     model: all-minilm          # or nomic-embed-text, bge-m3, etc.
     #     base_url: http://localhost:11434
+    #
+    # A +localhost+ base_url is resolved once to the loopback literal
+    # (127.0.0.1 or ::1) that accepts a TCP connection, because Excon
+    # does not fall back across address families when the DNS name maps
+    # to a family the server is not listening on.
     class OllamaEmbeddingAdapter
       attr_reader :model, :base_url, :connect_timeout, :read_timeout
 
@@ -48,11 +53,52 @@ module Jekyll
         @client ||= begin
           require "ollama"
           Ollama::Client.new(
-            base_url: @base_url,
+            base_url: resolved_base_url,
             connect_timeout: @connect_timeout,
             read_timeout: @read_timeout
           )
         end
+      end
+
+      # "localhost" may resolve to ::1 while the server only listens on
+      # 127.0.0.1, or the reverse. Excon does not fall back across
+      # address families, so probe both loopback literals once and use
+      # the one that accepts a TCP connection. Any other host name is
+      # used exactly as configured.
+      def resolved_base_url
+        @resolved_base_url ||= resolve_localhost(@base_url)
+      end
+
+      def resolve_localhost(base_url)
+        require "uri"
+        uri = URI.parse(base_url)
+        return base_url unless uri.host.to_s.chomp(".").casecmp("localhost").zero?
+
+        resolved = loopback_base_url(uri)
+        return base_url unless resolved
+
+        Jekyll.logger.info "ClientSearch:", "resolved localhost to #{resolved}"
+        resolved
+      rescue URI::InvalidURIError
+        base_url
+      end
+
+      def loopback_base_url(uri)
+        %w[127.0.0.1 ::1].each do |address|
+          next unless tcp_reachable?(address, uri.port)
+
+          resolved = uri.dup
+          resolved.host = address.include?(":") ? "[#{address}]" : address
+          return resolved.to_s
+        end
+        nil
+      end
+
+      def tcp_reachable?(address, port)
+        require "socket"
+        Socket.tcp(address, port, connect_timeout: @connect_timeout) { true }
+      rescue SystemCallError, SocketError
+        false
       end
     end
   end

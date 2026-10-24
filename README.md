@@ -488,7 +488,7 @@ All options:
 | `related.max_items` | `null` | Optional safety cap after cutoff; `null` keeps every matching relation. |
 | `embedding.enabled` | `false` | Generate embedding vectors at build time via Ollama. |
 | `embedding.model` | `embeddinggemma:300m` | Ollama model name for embedding generation. |
-| `embedding.base_url` | `http://localhost:11434` | Ollama server URL. |
+| `embedding.base_url` | `http://localhost:11434` | Ollama server URL. `localhost` is resolved once to the loopback literal (`127.0.0.1` or `[::1]`) that accepts a TCP connection, so IPv4-only and IPv6-only servers both work. |
 | `embedding.connect_timeout` | `5` | Ollama connection timeout in seconds. |
 | `embedding.read_timeout` | `120` | Ollama response timeout in seconds. |
 | `embedding.fail_on_error` | `true` | Fail the build when an embedding cannot be generated. |
@@ -743,9 +743,11 @@ real `RelatedAnalyzer`, then diffs each model's related lists against the
 baseline (`BASELINE_MODEL` env, default `embeddinggemma:300m`). Raw vectors
 are cached under `benchmarks/.related-embeddings/` so re-runs are cheap.
 
-If `ollama embed` calls fail with a socket error, try `base_url:
-http://127.0.0.1:11434` — Ollama only listens on IPv4 loopback, and some
-HTTP clients resolve `localhost` to `::1` first.
+A `localhost` `base_url` is resolved automatically to the loopback literal
+that accepts a TCP connection (`127.0.0.1` or `[::1]`), because the HTTP
+client does not fall back across address families and Ollama often listens
+on IPv4 loopback only. If `ollama embed` calls still fail with a socket
+error, set `base_url: http://127.0.0.1:11434` explicitly.
 
 ## Related articles reference
 
