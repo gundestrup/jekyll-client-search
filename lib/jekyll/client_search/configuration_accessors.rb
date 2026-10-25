@@ -20,6 +20,19 @@ module Jekyll
         @related
       end
 
+      # The Ollama model whose vectors are written into the search index and
+      # must match the browser query embedder's vector space. Defaults to
+      # embedding.model; override with semantic.index_model.
+      def embedding_index_model
+        @semantic.index_model || embedding_model
+      end
+
+      # The Ollama model used for related-article similarity analysis.
+      # Defaults to embedding.model; override with related.index_model.
+      def embedding_related_model
+        @related.index_model || embedding_model
+      end
+
       def query_embedder_type
         @query_embedder.type
       end

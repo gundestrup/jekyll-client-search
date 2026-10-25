@@ -6,13 +6,13 @@
 # Embeds a real site's documents with each Ollama model — timed, so the run
 # doubles as the embedding speed benchmark — then runs the real
 # RelatedAnalyzer per model and reports how the related-article output
-# differs from the baseline model (embeddinggemma:300m).
+# differs from the baseline model (embeddinggemma-2:570m).
 #
 # Usage:
 #   bundle exec ruby benchmarks/related_model_benchmark.rb ../gundestrup.dk
 #
 # Optional environment (same as embedding_model_benchmark.rb, plus):
-#   BASELINE_MODEL=embeddinggemma:300m   comparison baseline
+#   BASELINE_MODEL=embeddinggemma-2:570m   comparison baseline
 #   RELATED_MIN_SIMILARITY=0.55          semantic cutoff (site default)
 #   RELATED_MAX_ITEMS=5                  related entries per document
 #
@@ -27,7 +27,7 @@ require_relative "embedding_model_benchmark"
 
 CACHE_DIR = File.join(__dir__, ".related-embeddings")
 RELATED_RESULTS_PATH = File.join(__dir__, "related-model-results.json")
-BASELINE = ENV["BASELINE_MODEL"] || "embeddinggemma:300m"
+BASELINE = ENV["BASELINE_MODEL"] || "embeddinggemma-2:570m"
 RELATED_CONFIG = {
   "enabled" => true,
   "minimum_similarity" => (ENV["RELATED_MIN_SIMILARITY"] || 0.55).to_f,

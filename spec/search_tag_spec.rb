@@ -18,7 +18,8 @@ RSpec.describe Jekyll::ClientSearch::SearchTag, :unit do
       "client_search" => {
         "enabled" => true,
         "engine" => "semantic",
-        "embedding" => { "enabled" => true, "query_embedder" => { "type" => "transformers" } }
+        "embedding" => { "enabled" => true, "model" => "embeddinggemma:300m",
+                         "query_embedder" => { "type" => "transformers" } }
       }
     }
   end

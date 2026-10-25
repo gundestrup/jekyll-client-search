@@ -20,10 +20,44 @@
   LLM-judged quality ratings, quality-per-cost value index, amortized
   yearly cost, `qwen3-embedding` build-time-only notes, and the
   `localhost` → `127.0.0.1` loopback gotcha.
+- Split index/related embedding models: `semantic.index_model` selects
+  the Ollama model whose vectors go into `search-index.json` (must match
+  the browser query embedder); `related.index_model` selects the model
+  used for related-article analysis. Both default to `embedding.model`;
+  equal models share one embedding pass, divergent models embed each
+  document twice into separate cached vector fields.
+  `semantic.document_prefix` / `semantic.query_prefix` override the
+  index model's prefixes. Related-model vectors are cached separately
+  in `.jekyll-client-search-related-cache.json` and never written to
+  the index.
+- `embeddinggemma-2` (`:270m`, `:570m`, untagged) maps to
+  `onnx-community/embeddinggemma-2-ONNX` for the transformers.js query
+  embedder. `test/onnx-parity.test.js` is an opt-in check
+  (`ONNX_PARITY=1`, requires `@huggingface/transformers` and a running
+  Ollama) that compares ONNX and Ollama vectors and rankings;
+  `embeddinggemma:300m` remains the verified mapping.
 
 ### Changed
 
+- Default `embedding.model` is now `embeddinggemma-2:570m` (was
+  `embeddinggemma:300m`) — the judged-quality leader among license-free
+  local models (111 vs 96) at ~2.5× the per-document latency; its text
+  vectors are byte-identical to `embeddinggemma-2:270m`. The
+  transformers.js query embedder maps it to
+  `onnx-community/embeddinggemma-2-ONNX`; sites that prefer the verified
+  browser mapping can set `semantic.index_model: embeddinggemma:300m`
+  while related analysis stays on the default model.
 - CI: Semgrep moved from an inline `pip3 install semgrep==1.176.0` pin to hashed `.github/requirements-ci.txt` (compiled from `requirements-ci.in`, Python 3.12), installed with `--require-hashes`. Bumped Semgrep to 1.180.0; the version is now Dependabot-visible via a new `pip` ecosystem entry for `/.github`.
+
+### Fixed
+
+- A `localhost` `embedding.base_url` (the default) is resolved once to
+  the loopback literal that accepts a TCP connection — `127.0.0.1` or
+  `[::1]` — because `ollama-ruby`/Excon does not fall back across
+  address families and Ollama commonly listens on IPv4 loopback only.
+  Embedding calls that died with `Excon::Error::Socket "Broken pipe"`
+  when `localhost` resolved to `::1` first now connect on both
+  IPv4-only and IPv6-only servers.
 
 ## 0.3.5 — 2026-10-06
 

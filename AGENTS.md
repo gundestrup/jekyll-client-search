@@ -116,15 +116,18 @@ client_search:
     output: search-relations.json
     minimum_similarity: 0.55
     max_items: 5                # default: 5; null = no limit
+    index_model: null           # default: embedding.model
   embedding:
     enabled: false
-    model: embeddinggemma:300m
+    model: embeddinggemma-2:570m
     base_url: http://localhost:11434
     query_embedder:
       type: transformers         # transformers | ollama_api | none
     connect_timeout: 5
     read_timeout: 120
     fail_on_error: true
+  semantic:
+    index_model: null           # index/query vector space; default: embedding.model
 ```
 
 The `engine` option selects `minisearch`, `elasticlunr`, or `semantic`.
@@ -160,8 +163,16 @@ When `embedding.enabled: true`:
   through transformers.js. `ollama_api` calls a reachable `/api/embed`
   endpoint instead. Model-specific document/query prefixes must remain
   aligned.
+- `semantic.index_model` selects the model embedded into the index (must
+  match the browser query embedder); `related.index_model` selects the
+  model for related analysis. Both default to `embedding.model` — equal
+  models share one pass; divergent models embed twice into `embedding`
+  and `related_embedding` fields, each with its own prefixes and
+  embedding identity. `related_embedding` is stripped before the index
+  is emitted.
 - The `IndexCache` (`.jekyll-client-search-cache.json` in the site source)
   stores content hashes, embedding identity, and cached vectors per document ID.
+  A divergent related model uses `.jekyll-client-search-related-cache.json`.
 - On rebuild, unchanged documents reuse cached embeddings only when the model,
   endpoint, provider, and cache schema also match.
 - Cache writes are atomic; the cache is git-ignored and safe to delete.

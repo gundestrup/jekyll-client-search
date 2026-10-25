@@ -115,7 +115,8 @@ RSpec.shared_examples "a client-search Liquid tag" do |tag_name:, form_marker:, 
       "client_search" => {
         "enabled" => true,
         "engine" => "semantic",
-        "embedding" => { "enabled" => true, "query_embedder" => { "type" => "transformers" } }
+        "embedding" => { "enabled" => true, "model" => "embeddinggemma:300m",
+                         "query_embedder" => { "type" => "transformers" } }
       }
     }
     html = render_tag("", config)

@@ -11,7 +11,7 @@ require "tmpdir"
 #
 #   OLLAMA_INTEGRATION=1 bundle exec rspec spec/ollama_integration_spec.rb
 #
-OLLAMA_MODEL = "embeddinggemma:300m"
+OLLAMA_MODEL = "embeddinggemma-2:570m"
 OLLAMA_BASE_URL = "http://localhost:11434"
 
 RSpec.describe Jekyll::ClientSearch::OllamaEmbeddingAdapter, :ollama_integration do
@@ -155,7 +155,9 @@ RSpec.describe Jekyll::ClientSearch::OllamaEmbeddingAdapter, :ollama_integration
         "destination" => dest,
         "client_search" => {
           "engine" => "semantic",
-          "embedding" => { "enabled" => true, "model" => OLLAMA_MODEL, "base_url" => OLLAMA_BASE_URL }
+          "embedding" => { "enabled" => true, "model" => OLLAMA_MODEL,
+                           "base_url" => OLLAMA_BASE_URL,
+                           "query_embedder" => { "type" => "none" } }
         },
         "quiet" => true
       )
@@ -189,7 +191,8 @@ RSpec.describe Jekyll::ClientSearch::OllamaEmbeddingAdapter, :ollama_integration
         "source" => fixture_site, "destination" => dest,
         "client_search" => { "engine" => "semantic",
                              "embedding" => { "enabled" => true, "model" => OLLAMA_MODEL,
-                                              "base_url" => OLLAMA_BASE_URL } },
+                                              "base_url" => OLLAMA_BASE_URL,
+                                              "query_embedder" => { "type" => "none" } } },
         "quiet" => true
       )
       Jekyll::Site.new(config1).process
@@ -201,7 +204,8 @@ RSpec.describe Jekyll::ClientSearch::OllamaEmbeddingAdapter, :ollama_integration
           "source" => fixture_site, "destination" => dest2,
           "client_search" => { "engine" => "semantic",
                                "embedding" => { "enabled" => true, "model" => OLLAMA_MODEL,
-                                                "base_url" => OLLAMA_BASE_URL } },
+                                                "base_url" => OLLAMA_BASE_URL,
+                                                "query_embedder" => { "type" => "none" } } },
           "quiet" => true
         )
         Jekyll::Site.new(config2).process
@@ -244,7 +248,9 @@ RSpec.describe Jekyll::ClientSearch::OllamaEmbeddingAdapter, :ollama_integration
         "destination" => dest,
         "client_search" => {
           "engine" => "semantic",
-          "embedding" => { "enabled" => true, "model" => OLLAMA_MODEL, "base_url" => OLLAMA_BASE_URL }
+          "embedding" => { "enabled" => true, "model" => OLLAMA_MODEL,
+                           "base_url" => OLLAMA_BASE_URL,
+                           "query_embedder" => { "type" => "none" } }
         },
         "quiet" => true
       )

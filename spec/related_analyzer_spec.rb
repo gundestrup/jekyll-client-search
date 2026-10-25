@@ -175,6 +175,22 @@ RSpec.describe Jekyll::ClientSearch::RelatedAnalyzer, :unit do
     expect(gamma["score"]).to eq(gamma["semantic_similarity"])
   end
 
+  it "prefers related_embedding over embedding when both are present" do
+    documents = [
+      doc("/alpha/", "Alpha", [1.0, 0.0]),
+      doc("/beta/", "Beta", [0.0, 1.0])
+    ]
+    # The index vectors are orthogonal; the related vectors are identical,
+    # so the related space must be the one scored.
+    documents[0]["related_embedding"] = [1.0, 1.0]
+    documents[1]["related_embedding"] = [1.0, 1.0]
+
+    result = described_class.new(semantic_only_config).analyze(documents)
+    alpha_relations = result.fetch("relations").fetch("/alpha/")
+    expect(alpha_relations.map { |relation| relation["id"] }).to contain_exactly("/beta/")
+    expect(alpha_relations.first["semantic_similarity"]).to eq(1.0)
+  end
+
   it "skips semantic relation when vectors have different lengths" do
     documents = [
       doc("/alpha/", "Alpha", [1.0, 0.0]),

@@ -4,6 +4,7 @@
 /coverage/
 /node_modules/
 /.jekyll-client-search-cache.json
+/.jekyll-client-search-related-cache.json
 /spec/fixtures/site/_site/
 /benchmarks/semantic-benchmark.json
 /benchmarks/.related-embeddings/

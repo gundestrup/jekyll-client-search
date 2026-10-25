@@ -27,7 +27,7 @@ module Jekyll
         "icon_field" => "icon_url",
         "embedding" => {
           "enabled" => false,
-          "model" => "embeddinggemma:300m",
+          "model" => "embeddinggemma-2:570m",
           "base_url" => "http://localhost:11434",
           "connect_timeout" => 5,
           "read_timeout" => 120,
@@ -41,9 +41,7 @@ module Jekyll
       def initialize(site)
         configured = normalize_configured(site.config["client_search"])
         @values = DEFAULTS.merge(configured)
-        @live_search = LiveSearchConfiguration.new(configured["live_search"] || {}, engine: engine)
-        @related = RelatedConfiguration.new(configured["related"] || {})
-        @dropdown = DropdownConfiguration.new(configured["dropdown"] || {})
+        build_sub_configurations(configured)
         merge_embedding_config(configured["embedding"])
         validate_engine!
         return unless embedding_enabled?
@@ -53,6 +51,13 @@ module Jekyll
       end
 
       private
+
+      def build_sub_configurations(configured)
+        @live_search = LiveSearchConfiguration.new(configured["live_search"] || {}, engine: engine)
+        @related = RelatedConfiguration.new(configured["related"] || {})
+        @semantic = SemanticConfiguration.new(configured["semantic"] || {})
+        @dropdown = DropdownConfiguration.new(configured["dropdown"] || {})
+      end
 
       def normalize_configured(value)
         return { "enabled" => false } if value == false
@@ -70,13 +75,9 @@ module Jekyll
                 "client_search embedding configuration must be a mapping"
         end
         @values["embedding"] = DEFAULTS.fetch("embedding").merge(embedding)
-        merge_query_embedder_config(embedding["query_embedder"])
-      end
-
-      def merge_query_embedder_config(configured_query_embedder)
         @query_embedder = QueryEmbedderConfiguration.new(
-          configured_query_embedder || {},
-          build_model: embedding_model,
+          embedding["query_embedder"] || {},
+          build_model: embedding_index_model,
           build_base_url: embedding_base_url,
           query_prefix: embedding_query_prefix
         )

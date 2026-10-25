@@ -218,6 +218,57 @@ RSpec.describe Jekyll::ClientSearch::Generator, :unit do
     end
   end
 
+  it "embeds documents with separate models for the semantic index and related analysis" do
+    Dir.mktmpdir("client-search-split-models") do |source|
+      write_post(source)
+      site = build_site(
+        source,
+        "client_search" => {
+          "engine" => "semantic",
+          "embedding" => { "enabled" => true, "model" => "embeddinggemma-2:570m" },
+          "semantic" => { "index_model" => "embeddinggemma:300m" },
+          "related" => { "enabled" => true, "index_model" => "embeddinggemma-2:570m" }
+        }
+      )
+      generator = described_class.new
+      allow(generator).to receive(:build_embedding_adapter).and_return(double(embed: [1.0, 0.0]))
+
+      generator.generate(site)
+
+      expect(generator).to have_received(:build_embedding_adapter)
+        .with(anything, model: "embeddinggemma:300m")
+      expect(generator).to have_received(:build_embedding_adapter)
+        .with(anything, model: "embeddinggemma-2:570m")
+      documents = generated_documents(site)
+      expect(documents.first["embedding"]).to eq([1.0, 0.0])
+      expect(documents.first).not_to have_key("related_embedding")
+      expect(site.pages.map(&:url)).to include("/search-relations.json")
+    end
+  end
+
+  it "reuses the index embedding for related analysis when the models match" do
+    Dir.mktmpdir("client-search-shared-model") do |source|
+      write_post(source)
+      site = build_site(
+        source,
+        "client_search" => {
+          "engine" => "semantic",
+          "embedding" => { "enabled" => true, "model" => "embeddinggemma-2:570m" },
+          "related" => { "enabled" => true }
+        }
+      )
+      generator = described_class.new
+      allow(generator).to receive(:build_embedding_adapter).and_return(double(embed: [1.0, 0.0]))
+
+      generator.generate(site)
+
+      expect(generator).to have_received(:build_embedding_adapter).once
+      documents = generated_documents(site)
+      expect(documents.first["embedding"]).to eq([1.0, 0.0])
+      expect(site.pages.map(&:url)).to include("/search-relations.json")
+    end
+  end
+
   it "removes temporary embeddings from a lexical index after related analysis" do
     Dir.mktmpdir("client-search-related-embeddings") do |source|
       write_post(source)
@@ -383,7 +434,7 @@ RSpec.describe Jekyll::ClientSearch::Generator, :unit do
         source,
         "client_search" => {
           "engine" => "semantic",
-          "embedding" => { "enabled" => true }
+          "embedding" => { "enabled" => true, "model" => "embeddinggemma:300m" }
         }
       )
 

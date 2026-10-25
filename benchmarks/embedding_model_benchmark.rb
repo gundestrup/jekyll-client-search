@@ -14,7 +14,7 @@
 #   bundle exec ruby benchmarks/embedding_model_benchmark.rb ../gundestrup.dk
 #
 # Optional environment:
-#   EMBEDDING_MODELS="embeddinggemma:300m,qwen3-embedding:4b" (default: all three)
+#   EMBEDDING_MODELS="embeddinggemma-2:570m,qwen3-embedding:4b" (default: all three)
 #   BENCH_LIMIT=25          limit the number of documents
 #   OLLAMA_BASE_URL=...     default http://localhost:11434
 
@@ -29,7 +29,7 @@ require "jekyll-client-search"
 SITE_DIR = File.expand_path(ARGV[0] || ENV["SITE_DIR"] || Dir.pwd)
 RESULTS_PATH = File.join(__dir__, "embedding-model-results.json")
 BASE_URL = ENV["OLLAMA_BASE_URL"] || "http://localhost:11434"
-MODELS = (ENV["EMBEDDING_MODELS"] || "embeddinggemma:300m,qwen3-embedding:4b,qwen3-embedding:8b")
+MODELS = (ENV["EMBEDDING_MODELS"] || "embeddinggemma-2:570m,qwen3-embedding:4b,qwen3-embedding:8b")
          .split(",").map(&:strip)
 LIMIT = ENV["BENCH_LIMIT"]&.to_i
 # Mirror EmbeddingConfiguration#configured_prefix: a model without a known

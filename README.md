@@ -449,15 +449,18 @@ client_search:
     output: search-relations.json
     minimum_similarity: 0.55
     max_items: null
+    index_model: null             # default: embedding.model
   embedding:
     enabled: false
-    model: embeddinggemma:300m
+    model: embeddinggemma-2:570m
     base_url: http://localhost:11434
     connect_timeout: 5
     read_timeout: 120
     fail_on_error: true
     query_embedder:
       type: transformers
+  semantic:
+    index_model: null             # default: embedding.model
 ```
 
 All options:
@@ -486,8 +489,12 @@ All options:
 | `related.semantic` | `true` | Include vector relations when document embeddings are available. |
 | `related.minimum_similarity` | `0.55` | Cosine cutoff for semantic relations; no fixed relation count. |
 | `related.max_items` | `null` | Optional safety cap after cutoff; `null` keeps every matching relation. |
+| `related.index_model` | `embedding.model` | Ollama model for related-article similarity. May differ from the index model since relations never reach the browser. |
+| `semantic.index_model` | `embedding.model` | Ollama model whose vectors go into the index; must match the browser query model. |
+| `semantic.document_prefix` | Model-specific | Document prefix for `semantic.index_model` (defaults to `embedding.document_prefix` when the models match). |
+| `semantic.query_prefix` | Model-specific | Query prefix for `semantic.index_model` (defaults to `embedding.query_prefix` when the models match). |
 | `embedding.enabled` | `false` | Generate embedding vectors at build time via Ollama. |
-| `embedding.model` | `embeddinggemma:300m` | Ollama model name for embedding generation. |
+| `embedding.model` | `embeddinggemma-2:570m` | Ollama model name for embedding generation. |
 | `embedding.base_url` | `http://localhost:11434` | Ollama server URL. `localhost` is resolved once to the loopback literal (`127.0.0.1` or `[::1]`) that accepts a TCP connection, so IPv4-only and IPv6-only servers both work. |
 | `embedding.connect_timeout` | `5` | Ollama connection timeout in seconds. |
 | `embedding.read_timeout` | `120` | Ollama response timeout in seconds. |
@@ -609,7 +616,7 @@ Jekyll build time using a local [Ollama](https://ollama.ai/) server and the
 1. Install [Ollama](https://ollama.ai/) and pull an embedding model:
 
    ```bash
-   ollama pull embeddinggemma:300m
+   ollama pull embeddinggemma-2:570m
    ```
 
 2. Add `ollama-ruby` to your site's Gemfile (optional dependency):
@@ -625,9 +632,17 @@ Jekyll build time using a local [Ollama](https://ollama.ai/) server and the
      engine: semantic
      embedding:
        enabled: true
-       model: embeddinggemma:300m
        base_url: http://localhost:11434
    ```
+
+   With `query_embedder.type: transformers` (the default), the build
+   model needs a packaged browser ONNX mapping — `embeddinggemma` and
+   `embeddinggemma-2` models have one (see
+   [Browser query models](#browser-query-models)); any other
+   `embedding.model` requires an explicit `query_embedder.model` or
+   `query_embedder.type: ollama_api`. For build-time-only embeddings — a
+   lexical engine with `related` analysis — any Ollama model works
+   as-is.
 
 ### How it works
 
@@ -641,12 +656,14 @@ Jekyll build time using a local [Ollama](https://ollama.ai/) server and the
 - A content-hash cache (`.jekyll-client-search-cache.json` in the site
   source) tracks which documents have already been embedded. Unchanged
   documents reuse the cached embedding — only new or modified documents
-  are sent to the model.
+  are sent to the model. When the index and related models differ, the
+  related vectors are cached separately in
+  `.jekyll-client-search-related-cache.json`.
 - Cache entries include the provider, model, endpoint, and cache schema. A
   model or embedding configuration change automatically invalidates old
   vectors and re-embeds the documents.
-- Cache writes are atomic. The cache file is git-ignored and safe to delete
-  (it will be rebuilt on the next `jekyll build`).
+- Cache writes are atomic. The cache files are git-ignored and safe to
+  delete (they will be rebuilt on the next `jekyll build`).
 - By default, an embedding failure fails the build rather than silently
   producing an unusable semantic index. Set `embedding.fail_on_error: false`
   only when warning-only behavior is intentional.
@@ -665,9 +682,9 @@ calls, GPU-resident models, `related.minimum_similarity: 0.55`):
 
 | Model | Dims | ~ms/doc | Full corpus | Quality* | Value† | ~Cost/yr‡ | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `embeddinggemma:300m` | 768 | ~105 | ~16 s | 96 | 1.00 | ~27 s | Default; balanced quality |
-| `embeddinggemma-2:270m` | 768 | ~260 | ~40 s | 111 | 0.47 | ~67 s | Successor to 300m; second-best judged relatedness |
-| `embeddinggemma-2:570m` | 768 | ~246 | ~37 s | 111 | 0.50 | ~63 s | Multimodal variant — text vectors byte-identical to 270m; no gain for text-only use |
+| `embeddinggemma-2:570m` | 768 | ~246 | ~37 s | 111 | 0.50 | ~63 s | **Default** — best judged relatedness short of non-commercial jina; text vectors byte-identical to 270m; ONNX twin packaged (verify parity) |
+| `embeddinggemma-2:270m` | 768 | ~260 | ~40 s | 111 | 0.47 | ~67 s | Same text vectors as 570m; shares its ONNX twin (verify parity) |
+| `embeddinggemma:300m` | 768 | ~105 | ~16 s | 96 | 1.00 | ~27 s | Fast; verified transformers.js browser mapping |
 | `nomic-embed-text` | 768 | ~100 | ~15 s | 105 | **1.16** | ~25 s | Fast; best measured value |
 | `voyage-4-nano` | 1024 | ~115 | ~17 s | 107 | 1.03 | ~29 s | Open-weight (Apache 2.0); community GGUF at its 1024-dim base — official 2048 dim (post-hoc linear head) retested, judged equivalent (103) |
 | `bge-m3` | 1024 | ~305 | ~46 s | 107 | 0.38 | ~78 s | Multilingual; strong judged quality |
@@ -699,10 +716,12 @@ Judged quality inverted the earlier agreement-based ranking: models with
 the judge rated their novel picks as the *most* relevant. Conservative
 models (snowflake, the small Qwen3s) scored worst on judged precision
 despite high agreement with `qwen3-embedding:8b`. Practical takeaway for
-this corpus size: `nomic-embed-text`, `voyage-4-nano`, and the default
-`embeddinggemma:300m` offer the best measured value; `embeddinggemma-2:270m`
-is the quality leader at ~2.5× the default's cost; the large Qwen3 models
-do not pay for themselves below several thousand documents.
+this corpus size: `nomic-embed-text`, `voyage-4-nano`, and
+`embeddinggemma:300m` offer the best measured value; the default
+`embeddinggemma-2:570m` (and its identical-text-vector twin `:270m`)
+trades ~2.5× the per-document latency for the best judged relatedness of
+any license-free model; the large Qwen3 models do not pay for themselves
+below several thousand documents.
 
 "Build-time only" models are too large to run in the browser for
 `engine: semantic` — use them only with a lexical engine, where embeddings
@@ -711,11 +730,69 @@ serve `related` analysis and never reach the visitor's browser, or with
 
 The model used at build time must match the query model's weights, vector
 space, dimensions, and preprocessing. Cross-runtime compatibility is verified
-for the default `embeddinggemma:300m` mapping. An `all-minilm` mapping is also
-provided, but sites should independently verify ranking when changing models.
-For any other Ollama model, set `embedding.query_embedder.model` to a
-compatible Transformers.js model explicitly or use `ollama_api` so both paths
-call the same Ollama model.
+for the `embeddinggemma:300m` → `onnx-community/embeddinggemma-300m-ONNX`
+mapping. The `embeddinggemma-2` family maps to
+`onnx-community/embeddinggemma-2-ONNX` — packaged but not yet parity-verified
+against the Ollama vectors, so confirm ranking on your own corpus. An
+`all-minilm` mapping is also provided. For any other Ollama model, set
+`embedding.query_embedder.model` to a compatible transformers.js model
+explicitly or use `ollama_api` so both paths call the same Ollama model.
+
+### Splitting the index and related models
+
+`search-relations.json` is computed entirely at build time, so related
+analysis can use a different vector space than the semantic index — the
+index vectors are the only ones the browser query embedder must match.
+Two optional keys control this; both default to `embedding.model`:
+
+```yaml
+client_search:
+  engine: semantic
+  embedding:
+    enabled: true
+    model: embeddinggemma-2:570m      # default build model
+  semantic:
+    index_model: embeddinggemma:300m  # vectors written into the index
+  related:
+    enabled: true
+    index_model: embeddinggemma-2:570m # vectors used for related analysis
+```
+
+When `semantic.index_model` and `related.index_model` resolve to the same
+model, documents are embedded once and the vector serves both outputs —
+there is no extra cost. When they differ, each document is embedded twice
+(once per model) and the related vectors are kept in a separate field,
+analyzed by `RelatedAnalyzer`, then stripped before `search-index.json`
+is written. Each model gets its own content-hash cache, so per-model
+vectors still amortize across builds. `semantic.document_prefix` /
+`semantic.query_prefix` can override the index model's prefixes; explicit
+`embedding.document_prefix` / `embedding.query_prefix` apply to
+`embedding.model`.
+
+`semantic.index_model` matters whenever vectors go into the index —
+including a lexical engine with `embedding.include_in_index: true`. It
+must always match the browser query model; `semantic.index_model:
+embeddinggemma:300m` is the safe choice for the verified transformers.js
+mapping.
+
+### Browser query models
+
+With `query_embedder.type: transformers`, the query model runs in the
+visitor's browser and must be a transformers.js-compatible ONNX build of
+the *index* model's weights. These Ollama models have a packaged mapping:
+
+| `embedding.model` / `semantic.index_model` | transformers.js model |
+| --- | --- |
+| `embeddinggemma:300m` | `onnx-community/embeddinggemma-300m-ONNX` (verified) |
+| `embeddinggemma-2`, `embeddinggemma-2:270m`, `embeddinggemma-2:570m` | `onnx-community/embeddinggemma-2-ONNX` (verify parity) |
+| `all-minilm` | `Xenova/all-MiniLM-L6-v2` |
+
+For anything else, set `embedding.query_embedder.model` to a compatible
+transformers.js model or use `query_embedder.type: ollama_api`. The full
+set of supported architectures and tasks is in the
+[transformers.js docs](https://huggingface.co/docs/transformers.js/index);
+compatible ONNX weights are tagged
+[`library:transformers.js` on the Hub](https://huggingface.co/models?library=transformers.js).
 
 Document/query prefixes are applied automatically for `embeddinggemma`,
 `embeddinggemma-2`, `nomic-embed-text`, and `voyage-4-nano`; other models
@@ -740,7 +817,7 @@ OLLAMA_BASE_URL=http://127.0.0.1:11434 \
 
 The script times `OllamaEmbeddingAdapter.embed` per document and runs the
 real `RelatedAnalyzer`, then diffs each model's related lists against the
-baseline (`BASELINE_MODEL` env, default `embeddinggemma:300m`). Raw vectors
+baseline (`BASELINE_MODEL` env, default `embeddinggemma-2:570m`). Raw vectors
 are cached under `benchmarks/.related-embeddings/` so re-runs are cheap.
 
 A `localhost` `base_url` is resolved automatically to the loopback literal
@@ -1055,7 +1132,7 @@ client_search:
   engine: semantic
   embedding:
     enabled: true
-    model: embeddinggemma:300m
+    model: embeddinggemma-2:570m
     query_embedder:
       type: ollama_api
       api_url: https://embeddings.example.com/api/embed

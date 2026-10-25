@@ -60,43 +60,63 @@ module Jekyll
         configured.nil? ? engine == "semantic" : configured == true
       end
 
+      # Document prefix for the index model (semantic.index_model).
       def embedding_document_prefix
-        configured_prefix("document_prefix", "document")
+        configured_prefix("document", model: embedding_index_model, override: @semantic.document_prefix)
       end
 
+      # Query prefix for the index model — must match the browser query
+      # embedder's vector space.
       def embedding_query_prefix
-        configured_prefix("query_prefix", "query")
+        configured_prefix("query", model: embedding_index_model, override: @semantic.query_prefix)
+      end
+
+      # Document prefix for the related-analysis model (related.index_model).
+      def embedding_related_document_prefix
+        configured_prefix("document", model: embedding_related_model)
       end
 
       def embedding_identity
-        {
-          "provider" => "ollama",
-          "model" => embedding_model,
-          "base_url" => embedding_base_url,
-          "document_prefix" => embedding_document_prefix,
-          "query_prefix" => embedding_query_prefix,
-          "schema" => 2
-        }
+        embedding_identity_for(model: embedding_index_model,
+                               document_prefix: embedding_document_prefix,
+                               query_prefix: embedding_query_prefix)
+      end
+
+      def embedding_related_identity
+        embedding_identity_for(model: embedding_related_model,
+                               document_prefix: embedding_related_document_prefix,
+                               query_prefix: configured_prefix("query", model: embedding_related_model))
       end
 
       private
 
-      def configured_prefix(config_key, role)
-        embedding = @values.fetch("embedding")
-        return embedding.fetch(config_key).to_s if embedding.key?(config_key)
+      def embedding_identity_for(model:, document_prefix:, query_prefix:)
+        {
+          "provider" => "ollama",
+          "model" => model,
+          "base_url" => embedding_base_url,
+          "document_prefix" => document_prefix,
+          "query_prefix" => query_prefix,
+          "schema" => 2
+        }
+      end
 
-        model_name = embedding_model.split(":").first
-        PREFIXES.fetch(model_name, {}).fetch(role, "")
+      def configured_prefix(role, model:, override: nil)
+        return override.to_s if override
+
+        embedding = @values.fetch("embedding")
+        config_key = "#{role}_prefix"
+        return embedding[config_key].to_s if model == embedding_model && embedding.key?(config_key)
+
+        PREFIXES.fetch(model.split(":").first, {}).fetch(role, "")
       end
 
       def positive_timeout(key)
         value = @values.fetch("embedding").fetch(key).to_f
-        unless value.positive? && value.finite?
-          raise Jekyll::Errors::FatalException,
-                "embedding #{key} must be a finite value greater than zero"
-        end
+        return value if value.positive? && value.finite?
 
-        value
+        raise Jekyll::Errors::FatalException,
+              "embedding #{key} must be a finite value greater than zero"
       end
 
       def validate_embedding!

@@ -237,9 +237,10 @@ To run the full integration tests that call a real Ollama server:
 
 1. Install [Ollama](https://ollama.ai/)
 
-2. Pull the required model:
+2. Pull the required models:
 
    ```bash
+   ollama pull embeddinggemma-2:570m
    ollama pull embeddinggemma:300m
    ```
 
@@ -249,6 +250,16 @@ To run the full integration tests that call a real Ollama server:
    OLLAMA_INTEGRATION=1 bundle exec rspec spec/ollama_integration_spec.rb
    OLLAMA_INTEGRATION=1 bundle exec rspec spec/llm_injection_spec.rb
    ```
+
+To verify cross-runtime parity between the transformers.js ONNX twin and
+the Ollama build model (opt-in — needs the model downloaded once):
+
+```bash
+npm i -D @huggingface/transformers@3.8.1
+ONNX_PARITY=1 node --test test/onnx-parity.test.js
+```
+
+Set `OLLAMA_MODEL`, `ONNX_MODEL`, or `ONNX_DTYPE` to check other mappings.
 
 These tests:
 
@@ -450,7 +461,8 @@ This check also runs in the release workflow — the publish will fail if
    ```
 
    The Ollama integration tests require a running [Ollama](https://ollama.ai/)
-   server with the `embeddinggemma:300m` model pulled (`ollama pull
+   server with the `embeddinggemma-2:570m` and `embeddinggemma:300m` models
+   pulled (`ollama pull embeddinggemma-2:570m` and `ollama pull
    embeddinggemma:300m`). Do not publish a release until the Ollama
    integration tests pass locally — they are skipped by default and will
    not block CI, so they must be run manually before each release.

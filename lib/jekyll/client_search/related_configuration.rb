@@ -62,12 +62,27 @@ module Jekyll
         @values.fetch("max_items")
       end
 
+      # Ollama model used for related-article similarity analysis. nil means
+      # the site uses the general embedding.model.
+      def index_model
+        value = @values["index_model"]
+        value&.to_s
+      end
+
       private
 
       def validate!
         validate_booleans!
         validate_similarity!
         validate_max_items!
+        validate_index_model!
+      end
+
+      def validate_index_model!
+        return if index_model.nil? || !index_model.empty?
+
+        raise Jekyll::Errors::FatalException,
+              "client_search related index_model must not be empty"
       end
 
       def validate_booleans!

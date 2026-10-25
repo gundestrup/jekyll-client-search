@@ -8,6 +8,9 @@ module Jekyll
 
       MODEL_MAP = {
         "embeddinggemma:300m" => "onnx-community/embeddinggemma-300m-ONNX",
+        "embeddinggemma-2" => "onnx-community/embeddinggemma-2-ONNX",
+        "embeddinggemma-2:270m" => "onnx-community/embeddinggemma-2-ONNX",
+        "embeddinggemma-2:570m" => "onnx-community/embeddinggemma-2-ONNX",
         "all-minilm" => "Xenova/all-MiniLM-L6-v2"
       }.freeze
 

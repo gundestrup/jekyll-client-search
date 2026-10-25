@@ -2,7 +2,7 @@
     "use strict";
 
     var config = window.ClientSearchEmbedderConfig || {};
-    var model = config.model || config.buildModel || "embeddinggemma:300m";
+    var model = config.model || config.buildModel || "embeddinggemma-2:570m";
     var apiUrl = config.apiUrl || "http://localhost:11434/api/embed";
     var activeController = null;
 

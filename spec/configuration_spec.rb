@@ -187,7 +187,7 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
   it "has embedding disabled by default" do
     settings = configuration
     expect(settings).not_to be_embedding_enabled
-    expect(settings.embedding_model).to eq("embeddinggemma:300m")
+    expect(settings.embedding_model).to eq("embeddinggemma-2:570m")
     expect(settings.embedding_base_url).to eq("http://localhost:11434")
     expect(settings.embedding_connect_timeout).to eq(5.0)
     expect(settings.embedding_read_timeout).to eq(120.0)
@@ -268,7 +268,7 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
   end
 
   it "defaults query_embedder to a pinned Transformers worker" do
-    settings = configuration("embedding" => { "enabled" => true })
+    settings = configuration("embedding" => { "enabled" => true, "model" => "embeddinggemma:300m" })
     config = JSON.parse(settings.query_embedder_config_json)
     expect(settings.query_embedder_type).to eq("transformers")
     expect(config["libraryUrl"]).to eq(
@@ -310,15 +310,73 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
       .to raise_error(Jekyll::Errors::FatalException, /query_embedder.model is required/)
   end
 
+  it "maps the default model to its transformers.js twin for the semantic engine" do
+    settings = configuration("engine" => "semantic", "embedding" => { "enabled" => true })
+    expect(settings.query_embedder_model).to eq("onnx-community/embeddinggemma-2-ONNX")
+  end
+
+  it "defaults semantic.index_model and related.index_model to embedding.model" do
+    settings = configuration("embedding" => { "enabled" => true, "model" => "bge-m3" })
+    expect(settings.embedding_index_model).to eq("bge-m3")
+    expect(settings.embedding_related_model).to eq("bge-m3")
+  end
+
+  it "supports different index models for related analysis and the semantic index" do
+    settings = configuration(
+      "engine" => "semantic",
+      "embedding" => { "enabled" => true, "model" => "embeddinggemma-2:570m" },
+      "semantic" => { "index_model" => "embeddinggemma:300m" },
+      "related" => { "enabled" => true, "index_model" => "embeddinggemma-2:570m" }
+    )
+    expect(settings.embedding_index_model).to eq("embeddinggemma:300m")
+    expect(settings.embedding_related_model).to eq("embeddinggemma-2:570m")
+    expect(settings.query_embedder_model).to eq("onnx-community/embeddinggemma-300m-ONNX")
+    expect(settings.embedding_identity["model"]).to eq("embeddinggemma:300m")
+    expect(settings.embedding_related_identity["model"]).to eq("embeddinggemma-2:570m")
+  end
+
+  it "rejects empty and non-mapping split index model settings" do
+    expect { configuration("semantic" => "invalid") }
+      .to raise_error(Jekyll::Errors::FatalException, /semantic configuration must be a mapping/)
+    expect { configuration("semantic" => { "index_model" => "" }) }
+      .to raise_error(Jekyll::Errors::FatalException, /semantic index_model must not be empty/)
+    expect { configuration("related" => { "index_model" => "" }) }
+      .to raise_error(Jekyll::Errors::FatalException, /related index_model must not be empty/)
+  end
+
+  it "uses index-model prefixes for the index and related-model prefixes for related" do
+    settings = configuration(
+      "engine" => "semantic",
+      "embedding" => { "enabled" => true, "model" => "bge-m3" },
+      "semantic" => { "index_model" => "embeddinggemma-2:570m" }
+    )
+    expect(settings.embedding_document_prefix).to eq("title: none | text: ")
+    expect(settings.embedding_query_prefix).to eq("task: search result | query: ")
+    expect(settings.embedding_related_document_prefix).to eq("")
+  end
+
+  it "applies embedding prefix overrides to both jobs when the models match" do
+    settings = configuration(
+      "embedding" => { "enabled" => true, "document_prefix" => "doc: ", "query_prefix" => "q: " }
+    )
+    expect(settings.embedding_document_prefix).to eq("doc: ")
+    expect(settings.embedding_related_document_prefix).to eq("doc: ")
+    expect(settings.embedding_related_identity["query_prefix"]).to eq("q: ")
+  end
+
   it "derives the Ollama API URL from base_url by default" do
-    settings = configuration("embedding" => { "enabled" => true, "base_url" => "http://gpu-box:11434" })
+    settings = configuration(
+      "embedding" => { "enabled" => true, "model" => "embeddinggemma:300m",
+                       "base_url" => "http://gpu-box:11434" }
+    )
     config = JSON.parse(settings.query_embedder_config_json)
     expect(config["apiUrl"]).to eq("http://gpu-box:11434/api/embed")
   end
 
   it "allows overriding the query embedder API URL" do
     settings = configuration(
-      "embedding" => { "enabled" => true, "query_embedder" => { "api_url" => "https://api.example.com/embed" } }
+      "embedding" => { "enabled" => true, "model" => "embeddinggemma:300m",
+                       "query_embedder" => { "api_url" => "https://api.example.com/embed" } }
     )
     config = JSON.parse(settings.query_embedder_config_json)
     expect(config["apiUrl"]).to eq("https://api.example.com/embed")
@@ -329,7 +387,7 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
       "embedding" => { "enabled" => true, "query_embedder" => { "type" => "ollama_api" } }
     )
     expect(settings.query_embedder_type).to eq("ollama_api")
-    expect(settings.query_embedder_model).to eq("embeddinggemma:300m")
+    expect(settings.query_embedder_model).to eq("embeddinggemma-2:570m")
     expect(settings.query_embedder_asset).to eq("assets/query-embedders/ollama-api.js")
   end
 
@@ -349,7 +407,7 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
   it "includes the query embedder assets in runtime_assets for semantic engine" do
     settings = configuration(
       "engine" => "semantic",
-      "embedding" => { "enabled" => true }
+      "embedding" => { "enabled" => true, "model" => "embeddinggemma:300m" }
     )
     expect(settings.runtime_assets).to include(
       "assets/query-embedders/transformers.js",
@@ -368,7 +426,8 @@ RSpec.describe Jekyll::ClientSearch::Configuration, :unit do
   it "omits the Transformers worker asset when worker mode is disabled" do
     settings = configuration(
       "engine" => "semantic",
-      "embedding" => { "enabled" => true, "query_embedder" => { "worker" => false } }
+      "embedding" => { "enabled" => true, "model" => "embeddinggemma:300m",
+                       "query_embedder" => { "worker" => false } }
     )
     expect(settings.runtime_assets).to include("assets/query-embedders/transformers.js")
     expect(settings.runtime_assets).not_to include("assets/query-embedders/transformers-worker.js")

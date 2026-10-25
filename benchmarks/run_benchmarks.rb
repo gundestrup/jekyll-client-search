@@ -113,7 +113,7 @@ def write_semantic_benchmark(documents, model, base_url)
 end
 
 def measure_build_with_llm
-  model = "embeddinggemma:300m"
+  model = "embeddinggemma-2:570m"
   base_url = "http://localhost:11434"
 
   require "net/http"
@@ -184,7 +184,7 @@ entry = {
   "benchmark_schema" => 3,
   "timestamp" => Time.now.utc.iso8601,
   "ruby_version" => RUBY_VERSION,
-  "ollama_model" => with_llm ? "embeddinggemma:300m" : nil,
+  "ollama_model" => with_llm ? "embeddinggemma-2:570m" : nil,
   "metrics" => {
     "build_time_without_llm_ms" => no_llm[:time_ms],
     "build_time_with_llm_ms" => with_llm&.dig(:time_ms),

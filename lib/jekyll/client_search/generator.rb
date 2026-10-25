@@ -25,6 +25,7 @@ module Jekyll
 
       def add_generated_pages(site, documents, configuration)
         add_related_page(site, documents, configuration) if configuration.related_enabled?
+        documents.each { |document| document.delete("related_embedding") }
         remove_embeddings(documents) unless configuration.embedding_include_in_index?
         site.pages << SearchIndexPage.new(site, configuration.output, documents)
         site.pages << RuntimeConfigPage.new(site, configuration) if configuration.copy_runtime?
@@ -39,18 +40,60 @@ module Jekyll
       end
 
       def enhance_with_embeddings(site, documents, configuration)
-        cache = IndexCache.new(site.source, embedding_identity: configuration.embedding_identity)
-        adapter = build_embedding_adapter(configuration)
+        embedding_jobs(configuration).each do |job|
+          cache = IndexCache.new(site.source, embedding_identity: job[:identity],
+                                              file_name: job[:cache_file])
+          adapter = build_embedding_adapter(configuration, model: job[:model])
 
-        documents.each { |entry| embed_document(entry, cache, adapter, configuration) }
-        cache.prune(documents.map { |doc| doc["id"] })
-        cache.save
+          documents.each { |entry| embed_document(entry, cache, adapter, configuration, job) }
+          cache.prune(documents.map { |doc| doc["id"] })
+          cache.save
+        end
         documents
       end
 
-      def build_embedding_adapter(configuration)
+      # Each job embeds every document once per model into a target field.
+      # The index model writes "embedding" (kept when include_in_index); a
+      # divergent related model writes "related_embedding" (stripped before
+      # the index is emitted). Identical models share a single pass.
+      def embedding_jobs(configuration)
+        jobs = []
+        jobs << index_embedding_job(configuration) if configuration.embedding_include_in_index?
+        jobs.concat(related_embedding_jobs(configuration)) if configuration.related_enabled?
+        jobs
+      end
+
+      def index_embedding_job(configuration)
+        {
+          model: configuration.embedding_index_model,
+          field: "embedding",
+          document_prefix: configuration.embedding_document_prefix,
+          identity: configuration.embedding_identity,
+          cache_file: IndexCache::CACHE_FILE
+        }
+      end
+
+      def related_embedding_jobs(configuration)
+        return [related_embedding_job("embedding", IndexCache::CACHE_FILE, configuration)] unless
+          configuration.embedding_include_in_index?
+        return [] if configuration.embedding_related_model == configuration.embedding_index_model
+
+        [related_embedding_job("related_embedding", IndexCache::RELATED_CACHE_FILE, configuration)]
+      end
+
+      def related_embedding_job(field, cache_file, configuration)
+        {
+          model: configuration.embedding_related_model,
+          field: field,
+          document_prefix: configuration.embedding_related_document_prefix,
+          identity: configuration.embedding_related_identity,
+          cache_file: cache_file
+        }
+      end
+
+      def build_embedding_adapter(configuration, model: configuration.embedding_model)
         OllamaEmbeddingAdapter.new(
-          model: configuration.embedding_model,
+          model: model,
           base_url: configuration.embedding_base_url,
           connect_timeout: configuration.embedding_connect_timeout,
           read_timeout: configuration.embedding_read_timeout
@@ -66,17 +109,13 @@ module Jekyll
         documents.each { |document| document.delete("embedding") }
       end
 
-      def embed_document(document, cache, adapter, configuration)
-        hash = IndexCache.content_hash(document)
-        cached = cache.lookup(document["id"], hash)
-        if cached && cached["embedding"]
-          document["embedding"] = cached["embedding"]
-          return
-        end
+      def embed_document(document, cache, adapter, configuration, job)
+        hash = IndexCache.content_hash(document.except("embedding", "related_embedding"))
+        return if embedding_restored?(document, cache, hash, job[:field])
 
-        embedding = adapter.embed(embedding_text(document, configuration))
+        embedding = adapter.embed(embedding_text(document, job[:document_prefix]))
         if embedding
-          document["embedding"] = embedding
+          document[job[:field]] = embedding
           cache.store(document["id"], hash, embedding)
         elsif configuration.embedding_fail_on_error?
           raise Jekyll::Errors::FatalException,
@@ -84,9 +123,17 @@ module Jekyll
         end
       end
 
-      def embedding_text(document, configuration)
+      def embedding_restored?(document, cache, hash, field)
+        cached = cache.lookup(document["id"], hash)
+        return false unless cached && cached["embedding"]
+
+        document[field] = cached["embedding"]
+        true
+      end
+
+      def embedding_text(document, document_prefix)
         text = [document["title"], document["excerpt"], document["content"]].compact.join(" ")
-        "#{configuration.embedding_document_prefix}#{text}"
+        "#{document_prefix}#{text}"
       end
 
       def collection_documents(site, configuration, builder)

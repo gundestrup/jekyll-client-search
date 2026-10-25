@@ -12,11 +12,12 @@ module Jekyll
     # should be git-ignored.
     class IndexCache
       CACHE_FILE = ".jekyll-client-search-cache.json"
+      RELATED_CACHE_FILE = ".jekyll-client-search-related-cache.json"
 
       attr_reader :path
 
-      def initialize(site_source, embedding_identity: nil)
-        @path = File.join(site_source, CACHE_FILE)
+      def initialize(site_source, embedding_identity: nil, file_name: CACHE_FILE)
+        @path = File.join(site_source, file_name)
         @embedding_identity = embedding_identity
         @entries = load
       end

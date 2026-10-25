@@ -29,7 +29,10 @@ module Jekyll
 
       def build_relation(source, target)
         metadata = metadata_relation(source, target)
-        semantic_similarity = similarity(source["embedding"], target["embedding"])
+        semantic_similarity = similarity(
+          source["related_embedding"] || source["embedding"],
+          target["related_embedding"] || target["embedding"]
+        )
         return unless metadata || semantic_match?(semantic_similarity)
 
         relation = base_relation(target, metadata, semantic_similarity)
