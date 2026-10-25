@@ -2,7 +2,7 @@
   "history": [
     {
       "timestamp": "2026-08-24T20:55:28Z",
-      "ruby_version": "3.4.10",
+      "ruby_version": "3.4.11",
       "ollama_model": "embeddinggemma:300m",
       "metrics": {
         "build_time_without_llm_ms": 2002,
@@ -16,7 +16,7 @@
     },
     {
       "timestamp": "2026-08-24T21:33:28Z",
-      "ruby_version": "3.4.10",
+      "ruby_version": "3.4.11",
       "ollama_model": "embeddinggemma:300m",
       "metrics": {
         "build_time_without_llm_ms": 2059,
@@ -48,7 +48,7 @@
     },
     {
       "timestamp": "2026-08-24T21:38:40Z",
-      "ruby_version": "3.4.10",
+      "ruby_version": "3.4.11",
       "ollama_model": "embeddinggemma:300m",
       "metrics": {
         "build_time_without_llm_ms": 2044,
@@ -87,7 +87,7 @@
     {
       "benchmark_schema": 2,
       "timestamp": "2026-08-25T06:23:51Z",
-      "ruby_version": "3.4.10",
+      "ruby_version": "3.4.11",
       "ollama_model": "embeddinggemma:300m",
       "metrics": {
         "build_time_without_llm_ms": 3334,
@@ -126,7 +126,7 @@
     {
       "benchmark_schema": 3,
       "timestamp": "2026-08-25T06:56:00Z",
-      "ruby_version": "3.4.10",
+      "ruby_version": "3.4.11",
       "ollama_model": "embeddinggemma:300m",
       "metrics": {
         "build_time_without_llm_ms": 1525,
@@ -166,7 +166,7 @@
   "latest": {
     "benchmark_schema": 3,
     "timestamp": "2026-08-25T06:56:00Z",
-    "ruby_version": "3.4.10",
+    "ruby_version": "3.4.11",
     "ollama_model": "embeddinggemma:300m",
     "metrics": {
       "build_time_without_llm_ms": 1525,

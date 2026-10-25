@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.0 — 2026-10-24
 
 - Dev-tooling bump: `jsdom` 30.1.3 (patch).
 
