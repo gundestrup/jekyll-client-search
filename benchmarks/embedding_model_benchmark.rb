@@ -26,12 +26,12 @@ require "uri"
 require "jekyll"
 require "jekyll-client-search"
 
-SITE_DIR = File.expand_path(ARGV[0] || ENV["SITE_DIR"] || Dir.pwd)
+SITE_DIR = File.expand_path(ARGV[0] || ENV.fetch("SITE_DIR", Dir.pwd))
 RESULTS_PATH = File.join(__dir__, "embedding-model-results.json")
-BASE_URL = ENV["OLLAMA_BASE_URL"] || "http://localhost:11434"
-MODELS = (ENV["EMBEDDING_MODELS"] || "embeddinggemma-2:570m,qwen3-embedding:4b,qwen3-embedding:8b")
-         .split(",").map(&:strip)
-LIMIT = ENV["BENCH_LIMIT"]&.to_i
+BASE_URL = ENV.fetch("OLLAMA_BASE_URL", "http://localhost:11434")
+MODELS = ENV.fetch("EMBEDDING_MODELS", "embeddinggemma-2:570m,qwen3-embedding:4b,qwen3-embedding:8b")
+            .split(",").map(&:strip)
+LIMIT = ENV.fetch("BENCH_LIMIT", nil)&.to_i
 # Mirror EmbeddingConfiguration#configured_prefix: a model without a known
 # entry falls back to an empty document prefix.
 PREFIXES = Jekyll::ClientSearch::EmbeddingConfiguration::PREFIXES

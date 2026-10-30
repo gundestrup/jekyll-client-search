@@ -27,7 +27,7 @@ require "uri"
 require "fileutils"
 require_relative "embedding_model_benchmark"
 
-JUDGE_MODEL = ENV["JUDGE_MODEL"] || "gpt-oss:120b-cloud"
+JUDGE_MODEL = ENV.fetch("JUDGE_MODEL", "gpt-oss:120b-cloud")
 CACHE_DIR = File.join(__dir__, ".related-embeddings")
 JUDGE_CACHE = File.join(CACHE_DIR, "judge-#{JUDGE_MODEL.gsub(/[^a-z0-9.-]/i, '_')}.json")
 EXCERPT_CHARS = 300

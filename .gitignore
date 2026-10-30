@@ -13,3 +13,4 @@
 # Developers must run `ruby spec/fixtures/download_arxiv.rb` to generate them.
 # See README.developer.md for details.
 /spec/fixtures/site/_posts/*-arxiv-*.md
+.DS_Store

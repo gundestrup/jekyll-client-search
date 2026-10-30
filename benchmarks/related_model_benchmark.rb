@@ -27,11 +27,11 @@ require_relative "embedding_model_benchmark"
 
 CACHE_DIR = File.join(__dir__, ".related-embeddings")
 RELATED_RESULTS_PATH = File.join(__dir__, "related-model-results.json")
-BASELINE = ENV["BASELINE_MODEL"] || "embeddinggemma-2:570m"
+BASELINE = ENV.fetch("BASELINE_MODEL", "embeddinggemma-2:570m")
 RELATED_CONFIG = {
   "enabled" => true,
-  "minimum_similarity" => (ENV["RELATED_MIN_SIMILARITY"] || 0.55).to_f,
-  "max_items" => ENV["RELATED_MAX_ITEMS"] ? ENV["RELATED_MAX_ITEMS"].to_i : 5
+  "minimum_similarity" => ENV.fetch("RELATED_MIN_SIMILARITY", 0.55).to_f,
+  "max_items" => ENV.fetch("RELATED_MAX_ITEMS", 5).to_i
 }.freeze
 
 def embedding_cache_path(model)
