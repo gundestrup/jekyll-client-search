@@ -112,7 +112,7 @@ CI. Skip either with `git commit --no-verify` or `git push --no-verify`.
 ### CI checks
 
 The [CI workflow](.github/workflows/ci.yml) runs on every push and pull
-request across Ruby 3.3/3.4 and Node 22/24:
+request across Ruby 3.3/3.4 and Node 22/24/26:
 
 - `bundle exec rake ci` (rspec, rubocop, syntax checks, npm test, gem build)
 - `bundle exec bundle-audit check --update` (Ruby dependency security)

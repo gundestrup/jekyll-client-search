@@ -1,5 +1,39 @@
 # Changelog
 
+## Unreleased
+
+- Dev-tooling bumps: `markdownlint-cli2` 0.24.0, `eslint` ~10.13.0
+  (10.14.0 held back — released same-day), `rubocop` 1.92.2,
+  `ollama-ruby` 1.26.0, `excon` 1.10.0, `sass-embedded` 1.107.0,
+  `addressable` 2.9.1, `csv` 3.3.7, `io-console` 0.9.5,
+  `parser` 3.3.13.0.
+
+### Changed
+
+- CI Node.js matrix is now `22` / `24` / `26` — covers the `engines:
+  >=22` floor, the current LTS, and the active release line.
+- `spec/search_index_page_spec.rb` expanded — now covers the default
+  root-level output path (`search-index.json`), an empty document
+  list, and field/order preservation.
+- `test/meta.test.js` cross-engine check split into one named `test()`
+  per exact-match query — a single failure no longer hides the
+  remaining queries.
+
+### Fixed
+
+- Benchmark scripts access environment via `ENV.fetch("KEY", default)`
+  instead of `ENV["KEY"] || default` (SonarQube: environment variable
+  access without a default value).
+- SonarQube coverage denominator no longer counts `benchmarks/**` —
+  the ~850 lines of manual benchmark tooling are not instrumented by
+  SimpleCov, which diluted the reported project coverage to ~50%.
+
+### Security
+
+- `overrides` pins `re2js` 2.8.8 — markdownlint 0.42.0 (via
+  markdownlint-cli2 0.24.0) pins the vulnerable 2.8.6 (ReDoS in
+  lookbehind matching, GHSA-gg6h-894w-4m9c).
+
 ## 0.4.0 — 2026-10-24
 
 - Dev-tooling bump: `jsdom` 30.1.3 (patch).

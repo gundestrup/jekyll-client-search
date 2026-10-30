@@ -19,13 +19,14 @@
   },
   "devDependencies": {
     "elasticlunr": "0.9.5",
-    "eslint": "^10.11.0",
+    "eslint": "~10.13.0",
     "globals": "^17.13.0",
     "jsdom": "^30.1.3",
-    "markdownlint-cli2": "0.23.3",
+    "markdownlint-cli2": "0.24.0",
     "minisearch": "7.2.0"
   },
   "overrides": {
+    "re2js": "2.8.8",
     "smol-toml": "^1.9.0",
     "katex": "^0.18.2",
     "markdownlint-cli2": {

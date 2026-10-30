@@ -336,13 +336,10 @@ SHARED_QUERIES.forEach(function (q) {
 // For queries where all engines should agree (exact keyword matches),
 // verify that the #1 result is the same across all engines.
 
-test("[meta/cross-engine] exact-match queries produce same #1 across all engines", async function () {
-    var exactMatchQueries = SHARED_QUERIES.filter(function (q) {
-        return q.lexical.top1 === q.semantic.top1;
-    });
-
-    for (var qi = 0; qi < exactMatchQueries.length; qi++) {
-        var q = exactMatchQueries[qi];
+SHARED_QUERIES.filter(function (q) {
+    return q.lexical.top1 === q.semantic.top1;
+}).forEach(function (q) {
+    test(`[meta/cross-engine] exact-match query "${q.query}" produces same #1 across all engines`, async function () {
         var allTop1 = [];
 
         for (var ei = 0; ei < LEXICAL_ENGINES.length; ei++) {
@@ -361,5 +358,5 @@ test("[meta/cross-engine] exact-match queries produce same #1 across all engines
         var allSame = top1Values.every(function (v) { return v === top1Values[0]; });
         assert.ok(allSame,
             `All engines should agree on #1 for "${q.query}" — got: ${JSON.stringify(allTop1.map(function (r) { return r.engine + ": " + r.titles[0]; }))}`);
-    }
+    });
 });

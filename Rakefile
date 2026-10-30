@@ -65,10 +65,11 @@ namespace :version do
       ".rubocop.yml: TargetRubyVersion #{m[0]} != gemspec floor #{floor_minor}" if m[0] != floor_minor
     end
 
-    # CHANGELOG and generated reports are historical — old entries cite
-    # old versions legitimately.
+    # CHANGELOG, generated reports, and benchmark results are
+    # historical — old entries cite old versions legitimately.
     `git ls-files '*.md' '*.json' '*.yml'`.split
-                                          .grep_v(%r{CHANGELOG|test_logs/|README\.performance}).each do |file|
+                                          .grep_v(%r{CHANGELOG|test_logs/|README\.performance|benchmarks/})
+                                          .each do |file|
       content = File.read(file)
 
       # Floor literals: "Ruby >= X.Y", "Ruby X.Y+", badge "ruby-≥ X.Y"
