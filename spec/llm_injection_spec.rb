@@ -96,19 +96,23 @@ RSpec.describe "LLM injection into baseline JSON", :system do
   end
 
   it "injected index structure matches generator output structure" do
-    # Build a real index with mock embeddings
-    Dir.mktmpdir("injection-test") do |source|
-      # Create a minimal site
-      FileUtils.mkdir_p(File.join(source, "_posts"))
-      File.write(File.join(source, "_posts", "2026-01-01-test.md"), <<~MD)
-        ---
-        title: "Test Post"
-        ---
-        Content about testing.
-      MD
+    # Build a real index with mock embeddings — the generator runs during
+    # jekyll_build's site.process, so the adapter stub goes in first.
+    mock = MockEmbeddingAdapter.new
+    allow(Jekyll::ClientSearch::Generator).to receive(:new).and_wrap_original do |method, *args|
+      instance = method.call(*args)
+      allow(instance).to receive(:build_embedding_adapter).and_return(mock)
+      instance
+    end
 
-      config_data = {
-        "plugins" => ["jekyll-client-search"],
+    files = post_files(
+      filename: "2026-01-01-test.md",
+      title: "Test Post",
+      content: "Content about testing."
+    )
+
+    jekyll_build(
+      config: {
         "client_search" => {
           "engine" => "semantic",
           "embedding" => {
@@ -118,45 +122,27 @@ RSpec.describe "LLM injection into baseline JSON", :system do
             "query_embedder" => { "type" => "none" }
           }
         }
-      }
-      require "yaml"
-      File.write(File.join(source, "_config.yml"), YAML.dump(config_data))
+      },
+      files: files
+    ) do |_site, output_files|
+      generated = JSON.parse(output_files.read("search-index.json"))
+      injected = baseline_documents.first.merge("embedding" => mock_embedding)
 
-      mock = MockEmbeddingAdapter.new
-      allow(Jekyll::ClientSearch::Generator).to receive(:new).and_wrap_original do |method, *args|
-        instance = method.call(*args)
-        allow(instance).to receive(:build_embedding_adapter).and_return(mock)
-        instance
-      end
+      # The generator output should have the same field structure as
+      # our injected document
+      generated_fields = generated.first.keys.sort
+      injected_fields = injected.keys.sort
 
-      dest = Dir.mktmpdir("injection-dest")
-      begin
-        jekyll_config = Jekyll.configuration(
-          "source" => source, "destination" => dest, "quiet" => true
-        )
-        Jekyll::Site.new(jekyll_config).process
+      expect(generated_fields).to include("embedding"),
+                                  "generator output should have embedding field when LLM enabled"
+      expect(injected_fields).to include("embedding"),
+                                 "injected document should have embedding field"
 
-        generated = JSON.parse(File.read(File.join(dest, "search-index.json")))
-        injected = baseline_documents.first.merge("embedding" => mock_embedding)
-
-        # The generator output should have the same field structure as
-        # our injected document
-        generated_fields = generated.first.keys.sort
-        injected_fields = injected.keys.sort
-
-        expect(generated_fields).to include("embedding"),
-                                    "generator output should have embedding field when LLM enabled"
-        expect(injected_fields).to include("embedding"),
-                                   "injected document should have embedding field"
-
-        # Both should have the same base fields
-        base_fields = %w[id title url excerpt content categories tags]
-        base_fields.each do |field|
-          expect(generated.first).to have_key(field)
-          expect(injected).to have_key(field)
-        end
-      ensure
-        FileUtils.rm_rf(dest)
+      # Both should have the same base fields
+      base_fields = %w[id title url excerpt content categories tags]
+      base_fields.each do |field|
+        expect(generated.first).to have_key(field)
+        expect(injected).to have_key(field)
       end
     end
   end

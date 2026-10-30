@@ -20,6 +20,19 @@ Both test suites pass with only the committed Wikipedia fixtures and the
 committed baseline JSON artifacts. No network access or external services
 are required for the default test run.
 
+Specs that need a Jekyll site use `jekyll-test-harness` (`jekyll_build` +
+`jekyll_files` DSL, installed in `spec/spec_helper.rb`) instead of hand-rolled
+`Dir.mktmpdir`/`Jekyll::Site.new` scaffolding — see
+`spec/support/site_helpers.rb` and `spec/generator_spec.rb` for the pattern.
+Note that the gem's `Jekyll::ClientSearch::Generator` subclasses
+`Jekyll::Generator`, so it runs automatically inside `jekyll_build`'s
+`site.process`; specs should assert on the built site directly and stub
+`build_embedding_adapter` (see `stub_embedding_adapter`) before building
+rather than calling `generate` manually. Specs that rebuild the same source
+directory multiple times (`spec/embedding_cache_spec.rb`,
+`spec/system_spec.rb`, Ollama integration) still use their own helpers,
+since the harness builds each site in a fresh temporary directory.
+
 ## Quality checks and git hooks
 
 The project uses a focused quality stack: RuboCop (style), bundler-audit

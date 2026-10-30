@@ -18,6 +18,7 @@ group :development do
 end
 
 group :test do
+  gem "jekyll-test-harness", "= 0.1.0.alpha"
   gem "simplecov", "~> 1.1"
   gem "simplecov-cobertura", "~> 4.0"
 end
