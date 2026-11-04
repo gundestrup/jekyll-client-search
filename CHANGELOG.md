@@ -2,16 +2,17 @@
 
 ## Unreleased
 
-- Dev-tooling bumps: `markdownlint-cli2` 0.24.0, `eslint` ~10.13.0
-  (10.14.0 held back — released same-day), `rubocop` 1.92.2,
-  `ollama-ruby` 1.26.0, `excon` 1.10.0, `sass-embedded` 1.107.0,
-  `addressable` 2.9.1, `csv` 3.3.7, `io-console` 0.9.5,
-  `parser` 3.3.13.0.
+- Dev-tooling bumps: `markdownlint-cli2` 0.24.0, `eslint` ~10.14.0,
+  `globals` 17.14.0, `rubocop` 1.92.2, `ollama-ruby` 1.26.0,
+  `excon` 1.10.0, `sass-embedded` 1.107.1, `addressable` 2.9.2,
+  `csv` 3.3.7, `io-console` 0.9.5, `parser` 3.3.13.0.
 
 ### Changed
 
-- CI Node.js matrix is now `22` / `24` / `26` — covers the `engines:
-  >=22` floor, the current LTS, and the active release line.
+- CI Node.js matrix is now `24` / `26` — matching the `engines:
+  >=24` floor. Node 22 dropped (maintenance-only).
+- CI action pins bumped: `ruby/setup-ruby` v1.336.0,
+  `sonarqube-scan-action` v8.4.1, `semgrep` image 1.183.0.
 - `spec/search_index_page_spec.rb` expanded — now covers the default
   root-level output path (`search-index.json`), an empty document
   list, and field/order preservation.
@@ -33,6 +34,9 @@
 - `overrides` pins `re2js` 2.8.8 — markdownlint 0.42.0 (via
   markdownlint-cli2 0.24.0) pins the vulnerable 2.8.6 (ReDoS in
   lookbehind matching, GHSA-gg6h-894w-4m9c).
+- `nokogiri` 1.19.7 (dev-only, via `ollama-ruby`) — fixes
+  GHSA-3w22-6jfg-527w (use-after-free), GHSA-4p39-36wj-23h4
+  (mutation XSS), GHSA-v995-44v6-5fqm (JRuby SSRF).
 
 ## 0.4.0 — 2026-10-24
 

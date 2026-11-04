@@ -7,7 +7,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.9.1)
+    addressable (2.9.2)
       public_suffix (>= 2.0.2, < 8.0)
     ast (2.4.3)
     base64 (0.3.0)
@@ -133,24 +133,24 @@ GEM
     more_math (1.11.0)
       mize
       tins (~> 1)
-    nokogiri (1.19.4)
+    nokogiri (1.19.7)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    nokogiri (1.19.4-aarch64-linux-gnu)
+    nokogiri (1.19.7-aarch64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.19.4-aarch64-linux-musl)
+    nokogiri (1.19.7-aarch64-linux-musl)
       racc (~> 1.4)
-    nokogiri (1.19.4-arm-linux-gnu)
+    nokogiri (1.19.7-arm-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.19.4-arm-linux-musl)
+    nokogiri (1.19.7-arm-linux-musl)
       racc (~> 1.4)
-    nokogiri (1.19.4-arm64-darwin)
+    nokogiri (1.19.7-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.19.4-x86_64-darwin)
+    nokogiri (1.19.7-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.19.4-x86_64-linux-gnu)
+    nokogiri (1.19.7-x86_64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.19.4-x86_64-linux-musl)
+    nokogiri (1.19.7-x86_64-linux-musl)
       racc (~> 1.4)
     ollama-ruby (1.26.0)
       excon (~> 1.0)
@@ -229,36 +229,36 @@ GEM
       rubocop (~> 1.86, >= 1.86.2)
     ruby-progressbar (1.13.0)
     safe_yaml (1.0.5)
-    sass-embedded (1.107.0)
+    sass-embedded (1.107.1)
       google-protobuf (~> 4.31)
       rake (~> 13.3)
-    sass-embedded (1.107.0-aarch64-linux-android)
+    sass-embedded (1.107.1-aarch64-linux-android)
       google-protobuf (~> 4.31)
-    sass-embedded (1.107.0-aarch64-linux-gnu)
+    sass-embedded (1.107.1-aarch64-linux-gnu)
       google-protobuf (~> 4.31)
-    sass-embedded (1.107.0-aarch64-linux-musl)
+    sass-embedded (1.107.1-aarch64-linux-musl)
       google-protobuf (~> 4.31)
-    sass-embedded (1.107.0-arm-linux-androideabi)
+    sass-embedded (1.107.1-arm-linux-androideabi)
       google-protobuf (~> 4.31)
-    sass-embedded (1.107.0-arm-linux-gnueabihf)
+    sass-embedded (1.107.1-arm-linux-gnueabihf)
       google-protobuf (~> 4.31)
-    sass-embedded (1.107.0-arm-linux-musleabihf)
+    sass-embedded (1.107.1-arm-linux-musleabihf)
       google-protobuf (~> 4.31)
-    sass-embedded (1.107.0-arm64-darwin)
+    sass-embedded (1.107.1-arm64-darwin)
       google-protobuf (~> 4.31)
-    sass-embedded (1.107.0-riscv64-linux-android)
+    sass-embedded (1.107.1-riscv64-linux-android)
       google-protobuf (~> 4.31)
-    sass-embedded (1.107.0-riscv64-linux-gnu)
+    sass-embedded (1.107.1-riscv64-linux-gnu)
       google-protobuf (~> 4.31)
-    sass-embedded (1.107.0-riscv64-linux-musl)
+    sass-embedded (1.107.1-riscv64-linux-musl)
       google-protobuf (~> 4.31)
-    sass-embedded (1.107.0-x86_64-darwin)
+    sass-embedded (1.107.1-x86_64-darwin)
       google-protobuf (~> 4.31)
-    sass-embedded (1.107.0-x86_64-linux-android)
+    sass-embedded (1.107.1-x86_64-linux-android)
       google-protobuf (~> 4.31)
-    sass-embedded (1.107.0-x86_64-linux-gnu)
+    sass-embedded (1.107.1-x86_64-linux-gnu)
       google-protobuf (~> 4.31)
-    sass-embedded (1.107.0-x86_64-linux-musl)
+    sass-embedded (1.107.1-x86_64-linux-musl)
       google-protobuf (~> 4.31)
     simplecov (1.3.2)
     simplecov-cobertura (4.0.0)
@@ -315,7 +315,7 @@ DEPENDENCIES
   simplecov-cobertura (~> 4.0)
 
 CHECKSUMS
-  addressable (2.9.1) sha256=f1212365945455c84e8d031eea40fc6bedf0c663a78d95b3ab93591040bc5c35
+  addressable (2.9.2) sha256=9117c7e7d6ee07230e75ce41fb9401ae55354dc654fcd0e862ba41d539e9a610
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
   benchmark (0.5.0) sha256=465df122341aedcb81a2a24b4d3bd19b6c67c1530713fd533f3ff034e419236c
@@ -374,15 +374,15 @@ CHECKSUMS
   mini_portile2 (2.8.9) sha256=0cd7c7f824e010c072e33f68bc02d85a00aeb6fce05bb4819c03dfd3c140c289
   mize (0.7.0) sha256=a435495187aa2c26c0cd28cfeba2aaf829dbe55641ed9564ba8c6831dce92bc4
   more_math (1.11.0) sha256=2f7b507aa935cf3762e8f9153cc661a300dc2ac257b3231af35754fc17c8d527
-  nokogiri (1.19.4) sha256=50c951611c92bca05c51411aef45f1cbc50f2821c4802758c5c6d34696533ab5
-  nokogiri (1.19.4-aarch64-linux-gnu) sha256=1269fb644a6de405057a53dd5c762b1209b43ca7424f839454d3dbc677c31a8f
-  nokogiri (1.19.4-aarch64-linux-musl) sha256=35c65b9ce72b3bb03207bdbe7067915019dc18c1b9b59139684bd6690fdd01af
-  nokogiri (1.19.4-arm-linux-gnu) sha256=a301313e38bb065d68239e79734bcd6f56fb6efaacebde29e9abf2a4735340ca
-  nokogiri (1.19.4-arm-linux-musl) sha256=588923c101bcfa78869734d247d25b598674323e7f22474fc468f6e5647311eb
-  nokogiri (1.19.4-arm64-darwin) sha256=a46db9853286e6597b36ebc6953817d15acf3a299583eb3f89fdc6f91dd63527
-  nokogiri (1.19.4-x86_64-darwin) sha256=7fd17057d3e1f00e9954a74b3cd76595d3d4a5ef233b7ed9599047c204f70551
-  nokogiri (1.19.4-x86_64-linux-gnu) sha256=379fae440b28915e3f19d752ce2dcf8465ed2b2fbefd2a7ca0dd497bc981a06a
-  nokogiri (1.19.4-x86_64-linux-musl) sha256=17dfb7c1fa194ae02fbf7c51a7afc8d278045ab3fdacfd86f91d02d7b274470b
+  nokogiri (1.19.7) sha256=abe94507c54cb18f872777b16bdca4aad32b1abdc4c52fe843f1c80fbdf992b8
+  nokogiri (1.19.7-aarch64-linux-gnu) sha256=8f5e15d299602456406e1f03a9f3456cceb33a0722811e818d2ee2214eb4c84a
+  nokogiri (1.19.7-aarch64-linux-musl) sha256=efe0c3602e6e54521bc21c681930ce5568e2d11203de17400710b2b3ca2e4cb4
+  nokogiri (1.19.7-arm-linux-gnu) sha256=7fd1907125691aa89e838cc91161761c758b4e17bb32f0dd9b5515a82cc759af
+  nokogiri (1.19.7-arm-linux-musl) sha256=28d0ff0c87b6bb2e56580323a6fb049d5d4a02b94f0958fdd47e9ac146991c77
+  nokogiri (1.19.7-arm64-darwin) sha256=f27d7f25f4873fbc3aa35a2cc2fb680c98555fec1925348da439d0869d541142
+  nokogiri (1.19.7-x86_64-darwin) sha256=508e81e8c5f84aaa240dce981bf1c43faae60808726f0ce7024ee92effc5cafe
+  nokogiri (1.19.7-x86_64-linux-gnu) sha256=25865ccb462f714e712fdf8906fde07849cb6704a808e3d629d75baa5af5dd3b
+  nokogiri (1.19.7-x86_64-linux-musl) sha256=464d1f3dfb0d53cf54c0c6a7e23e8e91cf68ec3cafc2b27dc4a7682f2d9bf546
   ollama-ruby (1.26.0) sha256=bc8d55b6343c4a57cd9f2f93010a29332e2cc0d079861406fdfcdc3a4e1d5572
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   parallel (2.3.0) sha256=f75a3e904101ce6a1ccb6b8dc800cbafd42166d83330192438dcf29395167a6f
@@ -414,21 +414,21 @@ CHECKSUMS
   rubocop-rspec (3.10.2) sha256=0b3e2ecc592cd10ecbf0095bb58d1e357905276e069643523cc19eb7495f65e2
   ruby-progressbar (1.13.0) sha256=80fc9c47a9b640d6834e0dc7b3c94c9df37f08cb072b7761e4a71e22cff29b33
   safe_yaml (1.0.5) sha256=a6ac2d64b7eb027bdeeca1851fe7e7af0d668e133e8a88066a0c6f7087d9f848
-  sass-embedded (1.107.0) sha256=013f22a8b5d5221c3e1b5ba4619a864d64f34134973096591db1ecf479d0b80a
-  sass-embedded (1.107.0-aarch64-linux-android) sha256=ef1b79fb97b0d0633fcc8b076adee961948c5bff63d42ecdc243be5e905f8ac2
-  sass-embedded (1.107.0-aarch64-linux-gnu) sha256=abfa28a5a670a86e8bb355be5e381c531da976379c75589737ac5f8c16b58272
-  sass-embedded (1.107.0-aarch64-linux-musl) sha256=a1f683ba22ff99cedff2bcebc6f9c828619d3ffe80553f110e1d7c977289ac1d
-  sass-embedded (1.107.0-arm-linux-androideabi) sha256=0ecfe4ccfa626c898f57c31cd6da5a00a96c0a98b1393a47417441c3cecc2308
-  sass-embedded (1.107.0-arm-linux-gnueabihf) sha256=2828c8e06f3135649d48a807c001fcb8297dc2f5c19777a4d9d5d610a8f6b3be
-  sass-embedded (1.107.0-arm-linux-musleabihf) sha256=c062544a1b1985afa9a53596d832f41932f82c317026e8928c534ae6dcb188ab
-  sass-embedded (1.107.0-arm64-darwin) sha256=38879bb9079a968d48b7709c0e5ad64532364333f2a20d4c999b8d588cd3ff72
-  sass-embedded (1.107.0-riscv64-linux-android) sha256=2c274573c2c462e1ceac6b20decff03992cf9db6b489f5b12bfce14109c61346
-  sass-embedded (1.107.0-riscv64-linux-gnu) sha256=1fbec2ad2a2a0eb90a36caab04ad99ece7803f2b8cd952079170985547453e17
-  sass-embedded (1.107.0-riscv64-linux-musl) sha256=a8a4f4ae04dc61b394e3b51c59fc131a18cceeb0c7ddc2cfd566ddcf615f32f1
-  sass-embedded (1.107.0-x86_64-darwin) sha256=f2e58cf60168fa306adeda9ce10acf82cb025287b8c476529850990c88ce5029
-  sass-embedded (1.107.0-x86_64-linux-android) sha256=62e9b63715dd8da67f9e9495f9bd5c82aa004a9c52b30d83ed3122fea42112b4
-  sass-embedded (1.107.0-x86_64-linux-gnu) sha256=a5fa930b9ce1ebb67155e09884f88895601bac7646aa61ded13106ecae89e0ea
-  sass-embedded (1.107.0-x86_64-linux-musl) sha256=e6f68d04a8d13382131d4abe197630c6052e370f2e226b376d9ffdf564991bf0
+  sass-embedded (1.107.1) sha256=7c4ff32da39fc5f3396aba86559ff37c5454a8bde3aa7f255346dd49d2eaac30
+  sass-embedded (1.107.1-aarch64-linux-android) sha256=2d664620756c82bf0870ef425b663991c9a0536994606dfd2c983bda07521dc8
+  sass-embedded (1.107.1-aarch64-linux-gnu) sha256=3fe4d8ad54a6e3853bcee847421922c5795787150b197e1b220b7c13ad2ba8d8
+  sass-embedded (1.107.1-aarch64-linux-musl) sha256=91aad281a76b8a3d4716d96976de8c2a8086057e3c63f6d1894345d60b36b35a
+  sass-embedded (1.107.1-arm-linux-androideabi) sha256=563d02ac7a5b70811bf08b277fa52d474d9735ce35705ebf1b9094c6ecb9cb7b
+  sass-embedded (1.107.1-arm-linux-gnueabihf) sha256=77d30f611d51aa7fe538ea5909702a1fd3a8be0266acab8a83aad7b2053bc340
+  sass-embedded (1.107.1-arm-linux-musleabihf) sha256=adcaf365ffd49877d9a969e077f304bbbb4fdaa9545ef0f0515fc1808ae8be83
+  sass-embedded (1.107.1-arm64-darwin) sha256=e03cac5e65cd10b49ce9fc5791a391aadd002cda729034420441a984a13a13dc
+  sass-embedded (1.107.1-riscv64-linux-android) sha256=ac819f5d0977c3c3c1777bf9d7392873433fdd2dd6a8fcbbac94673c7fc71d91
+  sass-embedded (1.107.1-riscv64-linux-gnu) sha256=2c2fdddad8ca1062a41d0f82e6fb1a27475fdf1c35ba8dbbb97fd9cea213431e
+  sass-embedded (1.107.1-riscv64-linux-musl) sha256=8489ca8b9402a4ef571da65afc034193b6e00b1d4a0c926318c6fe82c87df02c
+  sass-embedded (1.107.1-x86_64-darwin) sha256=7484cb8bbaa57b644e92237ef53ef6a2b8c6d5a2a996cbc6eb7f35c9b616e30e
+  sass-embedded (1.107.1-x86_64-linux-android) sha256=7354f79b8908948bd4545100b0bd50d0d7c51c24da3782cd5e4b4080d24c7c75
+  sass-embedded (1.107.1-x86_64-linux-gnu) sha256=b882ac9eb6ae7370cbaab46707bd38a4a6c4445aa6008506d8cddad47368b29a
+  sass-embedded (1.107.1-x86_64-linux-musl) sha256=fe85a7fd55877766725fe83f4f3335865504cb2862ebf86498c04a3322aa85e4
   simplecov (1.3.2) sha256=2a22ec1759f1b8db60881a2e038758956fc69ef93ed669be0bde0678de6d0e85
   simplecov-cobertura (4.0.0) sha256=e4fb3159b1ecea545b44f5452a8611305323e78ad23eae8aed35924d072e01ea
   sync (0.5.0) sha256=668356cc07c59ac7ed9ecf34fec3929831f179c07adb1f3e1c3b7a1609a638fd
