@@ -4,14 +4,15 @@
 
 - Dev-tooling bumps: `markdownlint-cli2` 0.24.0, `eslint` ~10.14.0,
   `globals` 17.14.0, `rubocop` 1.92.2, `ollama-ruby` 1.26.0,
-  `excon` 1.10.0, `sass-embedded` 1.107.1, `addressable` 2.9.2,
-  `csv` 3.3.7, `io-console` 0.9.5, `parser` 3.3.13.0.
+  `excon` 1.11.0, `sass-embedded` 1.108.1, `addressable` 2.9.2,
+  `csv` 3.3.7, `io-console` 0.9.5, `parser` 3.3.13.0,
+  `irb` 1.19.0, `tins` 1.62.0; `BUNDLED WITH` 4.0.9 → 4.0.24.
 
 ### Changed
 
 - CI Node.js matrix is now `24` / `26` — matching the `engines:
   >=24` floor. Node 22 dropped (maintenance-only).
-- CI action pins bumped: `ruby/setup-ruby` v1.336.0,
+- CI action pins bumped: `ruby/setup-ruby` v1.338.0,
   `sonarqube-scan-action` v8.4.1, `semgrep` image 1.183.0.
 - `spec/search_index_page_spec.rb` expanded — now covers the default
   root-level output path (`search-index.json`), an empty document
