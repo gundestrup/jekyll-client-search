@@ -23,6 +23,19 @@ via pre-computed embeddings from a local [Ollama](https://ollama.ai) server.
 Related articles can be generated at build time from shared tags, categories,
 and vector similarity.
 
+<!-- markdownlint-disable MD033 -->
+<picture>
+  <source
+    srcset="docs/assets/jekyll-client-search-demo.avif"
+    type="image/avif">
+  <source
+    srcset="docs/assets/jekyll-client-search-demo.webp"
+    type="image/webp">
+  <img src="docs/assets/jekyll-client-search-demo.png"
+       alt="jekyll-client-search demo">
+</picture>
+<!-- markdownlint-enable MD033 -->
+
 ## Table of contents
 
 - [Lightning start](#lightning-start)
@@ -268,7 +281,8 @@ Tag modes:
   `/search/`) with `?q=...` for full results on the search page
 - Arrow Up/Down → highlight items, Enter on highlighted → navigate
 - Click an item → navigate to that document's URL
-- Escape or click outside → close dropdown
+- Escape → close the popup and keep focus in the combobox; click outside
+  → close the dropdown
 - Index is lazy-loaded on first keystroke (no cost on pages where the
   visitor doesn't search)
 
@@ -289,24 +303,32 @@ and the search index includes that field (e.g. from jekyll-documents),
 an `<img>` icon is rendered before each result title. Set `icon_field:
 null` to disable.
 
-**CSS styling:** The dropdown emits no framework classes. Style with:
+**CSS styling:** The dropdown emits no framework classes. Its input uses
+the ARIA combobox pattern; the popup is a listbox whose options are plain
+text containers (not nested links or controls). Style with:
 
 ```css
 .client-search-dropdown { position: relative; }
-.client-search-dropdown ul[role="listbox"] {
+.client-search-dropdown [role="listbox"] {
   position: absolute; top: 100%; right: 0;
   min-width: 300px; z-index: 30;
   background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin: 0; padding: 0;
+}
+.client-search-dropdown [role="listbox"] ul[role="presentation"] {
   list-style: none; margin: 0; padding: 0;
 }
-.client-search-dropdown li { padding: 0.5rem 1rem; }
-.client-search-dropdown li:hover,
-.client-search-dropdown li[aria-selected="true"] { background: #f5f5f5; }
-.client-search-dropdown li a { text-decoration: none; color: inherit; }
+.client-search-dropdown [role="option"] {
+  cursor: pointer; padding: 0.5rem 1rem;
+}
+.client-search-dropdown [role="option"]:hover,
+.client-search-dropdown [role="option"][aria-selected="true"] {
+  background: #f5f5f5;
+}
 
 /* Type-based styling via data attributes */
-.client-search-dropdown li[data-source="documents"] { border-left: 3px solid #48c774; }
-.client-search-dropdown li[data-file-type="pdf"]::before {
+.client-search-dropdown [role="option"][data-source="documents"] { border-left: 3px solid #48c774; }
+.client-search-dropdown [role="option"][data-file-type="pdf"]::before {
   content: "PDF"; background: #ff0000; color: white;
   padding: 0 0.3em; font-size: 0.7em; margin-right: 0.3em;
 }

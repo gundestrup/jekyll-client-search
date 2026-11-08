@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Added
+
+- `rake docs:demo` — captures the checked-in illustrative overview as
+  animated AVIF + WebP + static PNG (headless Chrome + ffmpeg + img2webp;
+  build-host tools), embedded in README via `<picture>`. Examples are
+  schematic, not generated from a live Jekyll build.
+
 - Dev-tooling bumps: `markdownlint-cli2` 0.24.0, `eslint` ~10.14.0,
   `globals` 17.14.0, `rubocop` 1.92.2, `ollama-ruby` 1.26.0,
   `excon` 1.11.0, `sass-embedded` 1.108.1, `addressable` 2.9.2,
@@ -10,6 +17,9 @@
 
 ### Changed
 
+- The live dropdown now follows the ARIA combobox/listbox pattern:
+  focused input with `aria-activedescendant`, uniquely identified plain
+  text options, and no nested links inside listbox options.
 - CI Node.js matrix is now `24` / `26` — matching the `engines:
   >=24` floor. Node 22 dropped (maintenance-only).
 - CI action pins bumped: `ruby/setup-ruby` v1.338.0,

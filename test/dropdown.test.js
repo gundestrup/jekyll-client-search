@@ -55,9 +55,15 @@ function createDropdownWindow(query, config) {
         `<!doctype html>
         <div data-client-search-dropdown>
             <form data-cs-dropdown-form>
-                <input data-cs-dropdown-input type="search">
+                <input id="test-combobox" data-cs-dropdown-input type="search"
+                       role="combobox" aria-autocomplete="list" aria-expanded="false"
+                       aria-controls="test-listbox">
             </form>
-            <ul data-cs-dropdown-results data-max-items="5"></ul>
+            <div id="test-listbox" role="listbox" aria-label="Search suggestions"
+                 aria-hidden="true">
+                <ul role="presentation" aria-hidden="true"
+                    data-cs-dropdown-results data-max-items="5"></ul>
+            </div>
         </div>`,
         {
             url: "https://example.com/",
@@ -116,12 +122,12 @@ async function settle() {
 }
 
 function getResultItems(window) {
-    return Array.from(window.document.querySelectorAll("[data-cs-dropdown-results] li"));
+    return Array.from(window.document.querySelectorAll("[data-cs-dropdown-results] [role=\"option\"]"));
 }
 
 function getResultTitles(window) {
     return getResultItems(window).map(function (li) {
-        return li.querySelector("a").textContent;
+        return li.querySelector(".client-search-dropdown-link").textContent;
     });
 }
 
@@ -175,8 +181,16 @@ test("[dropdown] truncates results to maxItems", async function () {
     ];
     var dom = new JSDOM(
         `<!doctype html><div data-client-search-dropdown>
-        <form data-cs-dropdown-form><input data-cs-dropdown-input type="search"></form>
-        <ul data-cs-dropdown-results data-max-items="2"></ul></div>`,
+        <form data-cs-dropdown-form>
+          <input id="test-combobox" data-cs-dropdown-input type="search"
+                 role="combobox" aria-autocomplete="list" aria-expanded="false"
+                 aria-controls="test-listbox">
+        </form>
+        <div id="test-listbox" role="listbox" aria-label="Search suggestions"
+             aria-hidden="true">
+          <ul role="presentation" aria-hidden="true"
+              data-cs-dropdown-results data-max-items="2"></ul>
+        </div></div>`,
         { url: "https://example.com/", runScripts: "outside-only" }
     );
     dom.window.MiniSearch = MiniSearch;
@@ -197,7 +211,7 @@ test("[dropdown] truncates results to maxItems", async function () {
     input.dispatchEvent(new dom.window.Event("input"));
     await settle();
 
-    var items = dom.window.document.querySelectorAll("[data-cs-dropdown-results] li");
+    var items = dom.window.document.querySelectorAll("[data-cs-dropdown-results] [role=\"option\"]");
     assert.ok(items.length > 0, "should have results for 'common' query");
     assert.ok(items.length <= 2, "should not exceed maxItems=2, got " + items.length);
 });
@@ -210,10 +224,57 @@ test("[dropdown] sets aria-hidden=false when showing results", async function ()
 
     var results = window.document.querySelector("[data-cs-dropdown-results]");
     assert.equal(results.getAttribute("aria-hidden"), "false",
-        "results should be visible (aria-hidden=false)");
+        "options should be visible (aria-hidden=false)");
+    assert.equal(results.parentElement.getAttribute("aria-hidden"), "false",
+        "listbox should be exposed while expanded");
     var inputEl = window.document.querySelector("[data-cs-dropdown-input]");
     assert.equal(inputEl.getAttribute("aria-expanded"), "true",
         "input should have aria-expanded=true");
+});
+
+test("[dropdown] renders plain-text options with unique IDs", async function () {
+    var window = createDropdownWindow("greenland");
+    var input = window.document.querySelector("[data-cs-dropdown-input]");
+    input.dispatchEvent(new window.Event("input"));
+    await settle();
+
+    var results = window.document.querySelector("[data-cs-dropdown-results]");
+    var options = getResultItems(window);
+    var ids = options.map(function (option) { return option.id; });
+
+    assert.equal(input.getAttribute("role"), "combobox");
+    assert.equal(input.getAttribute("aria-controls"), results.parentElement.id);
+    assert.equal(results.parentElement.getAttribute("role"), "listbox");
+    assert.equal(results.getAttribute("role"), "presentation");
+    assert.ok(options.length > 0);
+    assert.equal(new Set(ids).size, ids.length, "option IDs should be unique");
+    options.forEach(function (option) {
+        assert.ok(option.id, "each option should have an ID");
+        assert.equal(option.getAttribute("aria-selected"), "false");
+        assert.equal(option.querySelector("a, button, input"), null,
+            "listbox options should not contain nested interactive controls");
+    });
+});
+
+test("[dropdown] active descendant follows selection and resets on new results", async function () {
+    var window = createDropdownWindow("greenland");
+    var input = window.document.querySelector("[data-cs-dropdown-input]");
+    // Duplicate DOMContentLoaded events must not attach a second runtime
+    // instance to the same search slot.
+    window.document.dispatchEvent(new window.Event("DOMContentLoaded"));
+    input.dispatchEvent(new window.Event("input"));
+    await settle();
+
+    input.dispatchEvent(new window.KeyboardEvent("keydown", { key: "ArrowDown" }));
+    var firstOption = getResultItems(window)[0];
+    assert.equal(input.getAttribute("aria-activedescendant"), firstOption.id);
+
+    input.value = "diabetes";
+    input.dispatchEvent(new window.Event("input"));
+    assert.equal(input.hasAttribute("aria-activedescendant"), false);
+    await settle();
+
+    assert.ok(getResultTitles(window).includes("Diabetes"));
 });
 
 test("[dropdown] result items have safe URLs (same-origin only)", async function () {
@@ -222,10 +283,10 @@ test("[dropdown] result items have safe URLs (same-origin only)", async function
     input.dispatchEvent(new window.Event("input"));
     await settle();
 
-    var links = Array.from(window.document.querySelectorAll("[data-cs-dropdown-results] a"));
-    links.forEach(function (link) {
-        assert.ok(link.href.startsWith("https://example.com/"),
-            "link href should be same-origin: " + link.href);
+    var options = getResultItems(window);
+    options.forEach(function (option) {
+        assert.ok(option.dataset.url.startsWith("/"),
+            "option URL should be a same-origin path: " + option.dataset.url);
     });
 });
 
@@ -253,21 +314,30 @@ test("[dropdown] does not use innerHTML (XSS prevention)", async function () {
         "dropdown source must not use innerHTML");
 });
 
-test("[dropdown] Escape key hides results and blurs input", async function () {
+test("[dropdown] Escape closes results while keeping focus in the combobox", async function () {
     var window = createDropdownWindow("greenland");
     var input = window.document.querySelector("[data-cs-dropdown-input]");
+    input.focus();
     input.dispatchEvent(new window.Event("input"));
     await settle();
 
     assert.ok(getResultItems(window).length > 0, "should have results");
+    input.dispatchEvent(new window.KeyboardEvent("keydown", { key: "ArrowDown" }));
+    assert.ok(input.hasAttribute("aria-activedescendant"), "an option should be active");
 
     input.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Escape" }));
     await settle();
 
     var results = window.document.querySelector("[data-cs-dropdown-results]");
     assert.equal(results.getAttribute("aria-hidden"), "true",
-        "Escape should hide results");
+        "options should be hidden after Escape");
+    assert.equal(results.parentElement.getAttribute("aria-hidden"), "true",
+        "listbox should be hidden after Escape");
     assert.equal(getResultItems(window).length, 0, "results should be cleared");
+    assert.equal(input.hasAttribute("aria-activedescendant"), false,
+        "Escape should clear the active option reference");
+    assert.equal(window.document.activeElement, input,
+        "Escape should keep focus in the combobox");
 });
 
 test("[dropdown] ArrowDown selects first item", async function () {
@@ -283,6 +353,8 @@ test("[dropdown] ArrowDown selects first item", async function () {
 
     assert.ok(items[0].getAttribute("aria-selected") === "true",
         "first item should be selected after ArrowDown");
+    assert.equal(input.getAttribute("aria-activedescendant"), items[0].id,
+        "combobox should expose the active option");
 });
 
 test("[dropdown] form submit redirects to redirectUrl with query parameter", async function () {
@@ -334,9 +406,15 @@ test("[dropdown] handles fetch error gracefully", async function () {
         `<!doctype html>
         <div data-client-search-dropdown>
             <form data-cs-dropdown-form>
-                <input data-cs-dropdown-input type="search" value="greenland">
+                <input id="test-combobox" data-cs-dropdown-input type="search" value="greenland"
+                       role="combobox" aria-autocomplete="list" aria-expanded="false"
+                       aria-controls="test-listbox">
             </form>
-            <ul data-cs-dropdown-results data-max-items="5"></ul>
+            <div id="test-listbox" role="listbox" aria-label="Search suggestions"
+                 aria-hidden="true">
+                <ul role="presentation" aria-hidden="true"
+                    data-cs-dropdown-results data-max-items="5"></ul>
+            </div>
         </div>`,
         { url: "https://example.com/", runScripts: "outside-only" }
     );

@@ -189,3 +189,8 @@ desc "Run Ruby tests"
 task :spec do
   sh "bundle exec rspec"
 end
+
+desc "Generate docs/assets demo captures (needs Chrome, ffmpeg, img2webp)"
+task "docs:demo" do
+  sh "scripts/docs-demo.sh"
+end

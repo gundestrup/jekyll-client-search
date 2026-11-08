@@ -25,6 +25,20 @@ RSpec.describe Jekyll::ClientSearch::DropdownTag, :unit do
     expect(html).to include('data-max-items="10"')
   end
 
+  it "renders the accessible combobox and named listbox structure" do
+    html = render_tag("", minisearch_config)
+    input = html.match(/<input\b[^>]*>/).to_s
+    results_id = html.match(/<div id="([^"]+)" role="listbox"/)[1]
+
+    expect(input).to include('role="combobox"')
+    expect(input).to include('aria-autocomplete="list"')
+    expect(input).to include('aria-haspopup="listbox"')
+    expect(input).to include("aria-controls=\"#{results_id}\"")
+    expect(html).to include('role="listbox" aria-label="Search suggestions"')
+    expect(html).to include('aria-hidden="true"')
+    expect(html).to include('<ul role="presentation"')
+  end
+
   it "renders nothing when dropdown is disabled" do
     config = { "client_search" => { "enabled" => true, "engine" => "minisearch",
                                     "dropdown" => { "enabled" => false } } }

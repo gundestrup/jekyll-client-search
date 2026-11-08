@@ -39,6 +39,8 @@ The project uses a focused quality stack: RuboCop (style), bundler-audit
 (security), RSpec (Ruby tests), `npm test` (JavaScript tests), and Semgrep
 (security scanning). This covers the actionable ground without the
 maintenance burden of additional code-smell tools on a small focused gem.
+`npm test` also runs ESLint, Markdownlint, and jsdom tests for the browser
+runtime, including the dropdown combobox/listbox keyboard and ARIA contract.
 
 External automated code review services:
 
