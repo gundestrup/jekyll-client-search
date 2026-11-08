@@ -9,8 +9,8 @@
      * Features:
      *   - Lazy index loading (fetches search-index.json on first keystroke)
      *   - Two-stage search (AND first, fuzzy OR fallback) via engine adapter
-     *   - Compact <li><a> items with optional icon rendering
-     *   - Keyboard navigation (Arrow Up/Down, Enter, Escape)
+     *   - ARIA combobox + listbox with plain-text options and optional icons
+     *   - Active-descendant keyboard navigation (Arrow Up/Down, Enter, Escape)
      *   - Enter with no selection → redirect to redirect_url (?q=...)
      *   - Click outside or Escape → close dropdown
      *   - Multi-instance via [data-client-search-dropdown] attributes
@@ -20,6 +20,8 @@
     var sharedIndex = null;
     var sharedDocuments = null;
     var indexLoadPromise = null;
+    var nextDropdownInstanceId = 0;
+    var initializedRoots = new WeakSet();
 
     function safeUrl(value) {
         if (value === "#") {
@@ -116,25 +118,27 @@
         });
     }
 
-    function createResultItem(match, documents, iconField) {
+    function createResultItem(match, documents, iconField, optionId) {
         var entry = documents.get(match.ref);
         if (!entry) {
             return null;
         }
 
-        var li = document.createElement("li");
-        li.setAttribute("role", "option");
-        li.className = "client-search-dropdown-item";
-        li.dataset.url = safeUrl(entry.url);
+        var option = document.createElement("li");
+        option.id = optionId;
+        option.setAttribute("role", "option");
+        option.setAttribute("aria-selected", "false");
+        option.className = "client-search-dropdown-item";
+        option.dataset.url = safeUrl(entry.url);
 
         if (entry.source) {
-            li.dataset.source = entry.source;
+            option.dataset.source = entry.source;
         }
         if (entry.categories && entry.categories.length) {
-            li.dataset.categories = entry.categories.join(" ");
+            option.dataset.categories = entry.categories.join(" ");
         }
         if (entry.tags && entry.tags.length) {
-            li.dataset.tags = entry.tags.join(" ");
+            option.dataset.tags = entry.tags.join(" ");
         }
         Object.keys(entry).forEach(function (key) {
             var skip = ["id", "title", "url", "excerpt", "content",
@@ -145,7 +149,7 @@
             }
             var value = entry[key];
             if (typeof value === "string" || typeof value === "number") {
-                li.dataset[toCamelCase(key)] = String(value);
+                option.dataset[toCamelCase(key)] = String(value);
             }
         });
 
@@ -153,22 +157,21 @@
             var icon = document.createElement("img");
             icon.className = "client-search-dropdown-icon";
             icon.src = safeUrl(entry[iconField]);
-            icon.alt = entry.file_type || entry.source || "";
+            icon.alt = "";
+            icon.setAttribute("aria-hidden", "true");
             icon.loading = "lazy";
             icon.style.width = "1em";
             icon.style.height = "1em";
             icon.style.verticalAlign = "middle";
-            icon.style.marginRight = "0.3em";
-            li.appendChild(icon);
+            option.appendChild(icon);
         }
 
-        var link = document.createElement("a");
-        link.href = safeUrl(entry.url);
-        link.textContent = entry.title;
-        link.className = "client-search-dropdown-link";
-        li.appendChild(link);
+        var title = document.createElement("span");
+        title.className = "client-search-dropdown-link";
+        title.textContent = entry.title;
+        option.appendChild(title);
 
-        return li;
+        return option;
     }
 
     function DropdownInstance(root, config) {
@@ -176,6 +179,7 @@
         this.form = root.querySelector("[data-cs-dropdown-form]");
         this.input = root.querySelector("[data-cs-dropdown-input]");
         this.results = root.querySelector("[data-cs-dropdown-results]");
+        this.listbox = this.results.closest('[role="listbox"]') || this.results;
         this.config = config;
         this.maxItems = Number.parseInt(this.results.dataset.maxItems, 10) || config.maxItems || 5;
         this.selectedIndex = -1;
@@ -183,12 +187,20 @@
         this.debounceTimer = null;
         this.renderVersion = 0;
         this.adapter = null;
+        this.optionIdPrefix = this.results.id
+            ? this.results.id + "-option"
+            : "cs-dropdown-" + (++nextDropdownInstanceId) + "-option";
     }
 
     DropdownInstance.prototype.init = function () {
         if (!this.form || !this.input || !this.results) {
             return;
         }
+
+        this.results.setAttribute("aria-hidden", "true");
+        this.listbox.setAttribute("aria-hidden", "true");
+        this.input.setAttribute("aria-expanded", "false");
+        this.input.removeAttribute("aria-activedescendant");
 
         var self = this;
 
@@ -212,9 +224,9 @@
         });
 
         this.results.addEventListener("click", function (event) {
-            var li = event.target.closest("li");
-            if (li && li.dataset.url && li.dataset.url !== "#") {
-                window.location.href = li.dataset.url;
+            var option = event.target.closest('[role="option"]');
+            if (option && option.dataset.url && option.dataset.url !== "#") {
+                window.location.href = option.dataset.url;
             }
         });
     };
@@ -223,10 +235,10 @@
         var self = this;
         this.renderVersion += 1;
         clearTimeout(this.debounceTimer);
+        this.hide();
 
         var query = this.input.value.trim();
         if (!query || query.length < this.config.minChars) {
-            this.hide();
             return;
         }
 
@@ -264,7 +276,6 @@
                 break;
             case "Escape":
                 this.hide();
-                this.input.blur();
                 break;
             case "Tab":
                 this.hide();
@@ -318,6 +329,7 @@
         this.results.replaceChildren();
         this.currentItems = [];
         this.selectedIndex = -1;
+        this.input.removeAttribute("aria-activedescendant");
 
         if (!matches || matches.length === 0) {
             this.hide();
@@ -328,7 +340,12 @@
         var count = Math.min(matches.length, this.maxItems);
 
         for (var i = 0; i < count; i++) {
-            var item = createResultItem(matches[i], documents, iconField);
+            var item = createResultItem(
+                matches[i],
+                documents,
+                iconField,
+                this.optionIdPrefix + "-" + i
+            );
             if (item) {
                 this.results.appendChild(item);
                 this.currentItems.push(item);
@@ -353,18 +370,26 @@
             }
         }
         if (this.currentItems[index]) {
-            this.currentItems[index].scrollIntoView({ block: "nearest" });
+            this.input.setAttribute("aria-activedescendant", this.currentItems[index].id);
+            if (typeof this.currentItems[index].scrollIntoView === "function") {
+                this.currentItems[index].scrollIntoView({ block: "nearest" });
+            }
+        } else {
+            this.input.removeAttribute("aria-activedescendant");
         }
     };
 
     DropdownInstance.prototype.show = function () {
         this.results.setAttribute("aria-hidden", "false");
+        this.listbox.setAttribute("aria-hidden", "false");
         this.input.setAttribute("aria-expanded", "true");
     };
 
     DropdownInstance.prototype.hide = function () {
         this.results.setAttribute("aria-hidden", "true");
+        this.listbox.setAttribute("aria-hidden", "true");
         this.input.setAttribute("aria-expanded", "false");
+        this.input.removeAttribute("aria-activedescendant");
         this.results.replaceChildren();
         this.currentItems = [];
         this.selectedIndex = -1;
@@ -389,6 +414,11 @@
 
         var roots = document.querySelectorAll("[data-client-search-dropdown]");
         roots.forEach(function (root) {
+            if (initializedRoots.has(root)) {
+                return;
+            }
+            initializedRoots.add(root);
+
             var instance = new DropdownInstance(root, mergedConfig);
             instance.init();
         });

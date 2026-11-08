@@ -87,13 +87,17 @@ module Jekyll
           <div class="client-search-dropdown" data-client-search-dropdown>
             <form role="search" autocomplete="off" data-cs-dropdown-form>
               <label class="sr-only" for="#{@input_id}">Search</label>
-              <input id="#{@input_id}" type="search" name="q"
+              <input id="#{@input_id}" type="search" name="q" role="combobox"
+                     aria-autocomplete="list" aria-haspopup="listbox"
                      placeholder="Search…" autocomplete="off"
                      aria-expanded="false" aria-controls="#{@results_id}"
                      data-cs-dropdown-input>
             </form>
-            <ul id="#{@results_id}" role="listbox" aria-hidden="true"
-                data-cs-dropdown-results data-max-items="#{max}"></ul>
+            <div id="#{@results_id}" role="listbox" aria-label="Search suggestions"
+                 aria-hidden="true">
+              <ul role="presentation" aria-hidden="true"
+                  data-cs-dropdown-results data-max-items="#{max}"></ul>
+            </div>
           </div>
         HTML
       end
