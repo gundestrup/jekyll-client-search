@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    jekyll-client-search (0.5.0)
+    jekyll-client-search (0.5.1)
       jekyll (>= 4.0, < 5.0)
 
 GEM
@@ -358,7 +358,7 @@ CHECKSUMS
   io-console (0.9.5) sha256=83dd9bbf4c4680416629245b39cd4212eb5f4d9a4ea91804870c1f6b846414d5
   irb (1.19.0) sha256=55ee56acbdd6c9fe06a2e6909f46a24e5c41f45f16906bab04e8049cf46f1d27
   jekyll (4.4.1) sha256=4c1144d857a5b2b80d45b8cf5138289579a9f8136aadfa6dd684b31fe2bc18c1
-  jekyll-client-search (0.5.0)
+  jekyll-client-search (0.5.1)
   jekyll-sass-converter (3.1.0) sha256=83925d84f1d134410c11d0c6643b0093e82e3a3cf127e90757a85294a3862443
   jekyll-test-harness (0.1.0.alpha) sha256=2b134cbe6c4db4f3a7a6d9e0be8b53ba18767c3c44a95366886924a306bfd98c
   jekyll-watch (2.2.1) sha256=bc44ed43f5e0a552836245a54dbff3ea7421ecc2856707e8a1ee203a8387a7e1

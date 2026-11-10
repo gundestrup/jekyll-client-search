@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.1 — 2026-11-10
+
+### Changed
+
+- Gemspec `description` now renders as RDoc on rubygems.org — the heredoc
+  opens with an `==`-level heading at column 0 so the gem page shows
+  headings and bullet lists instead of one plain paragraph.
+
 ## 0.5.0 — 2026-11-08
 
 ### Added
