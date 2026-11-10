@@ -8,8 +8,18 @@ Gem::Specification.new do |spec|
   spec.authors = ["Svend Gundestrup"]
   spec.email = ["svend@gundestrup.dk"]
   spec.summary = "Build client-side search indexes for Jekyll sites"
-  spec.description = "A Jekyll plugin that generates a configurable JSON search index with pluggable " \
-                     "browser runtime adapters for client-side JavaScript search engines."
+  # NOTE: rubygems.org renders the description through RDoc::Markup only
+  # when it starts with an == heading at column 0 — keep the heredoc
+  # content flush-left or the page renders as one plain <p>.
+  spec.description = <<~DESC
+    == Client-side search indexes for Jekyll
+
+    Generates a configurable JSON search index and ships pluggable browser
+    runtime adapters for client-side JavaScript search engines.
+
+    * Collections, frontmatter fields and output path configurable
+    * Client-side runtime stays framework-agnostic
+  DESC
   spec.homepage = "https://github.com/gundestrup/jekyll-client-search"
   spec.license = "AGPL-3.0-or-later"
   spec.metadata = {
