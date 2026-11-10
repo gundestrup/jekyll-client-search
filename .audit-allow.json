@@ -3,5 +3,10 @@
     "package": "braces",
     "reason": "No patched release (all <=3.0.3 affected). Dev-only transitive dep of markdownlint-cli2 globbing; exploitation needs attacker-controlled glob patterns committed to the repo.",
     "expires": "2027-01-06"
+  },
+  "https://github.com/advisories/GHSA-g3hv-75wg-m249": {
+    "package": "minimatch",
+    "reason": "No in-range fix: eslint@10 pins minimatch ^10 and the patch only exists in a newer major outside that range. Dev-only transitive dep; exploitation needs attacker-controlled glob patterns.",
+    "expires": "2027-02-09"
   }
 }
