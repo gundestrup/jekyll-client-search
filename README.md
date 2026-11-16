@@ -1,6 +1,4 @@
-<!-- markdownlint-disable MD013 MD033 -->
 # jekyll-client-search <a href="https://gundestrup.github.io/flow/"><img align="right" src="https://gundestrup.github.io/flow/assets/badges/part-of-flow.svg?v=2" alt="Part of Flow software" height="40"></a>
-<!-- markdownlint-enable MD013 MD033 -->
 
 [![codecov](https://codecov.io/gh/gundestrup/jekyll-client-search/branch/main/graph/badge.svg)](https://codecov.io/gh/gundestrup/jekyll-client-search)
 
