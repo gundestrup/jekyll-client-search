@@ -13,6 +13,7 @@
 - Dev-tooling bumps: `ollama-ruby` 1.26.0 → 1.27.2, `rubocop` 1.92.2 →
   1.92.3 (plus transitive: `infobar` 0.17.0, `complex_config` 0.28.0,
   `excon` 1.12.0, `kramdown` 2.6.1, `parser` 3.3.14.0, `prism` 2.1.0).
+- Development Ruby pin bumped to 3.4.13 (CVE-2026-132825); `ruby/setup-ruby` bumped to v1.343.0.
 
 ## 0.5.1 — 2026-11-10
 
