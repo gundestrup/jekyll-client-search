@@ -6,6 +6,10 @@
 
 - npm dev-deps: `markdownlint-cli2` 0.24.0 → 0.24.2, `eslint` ~10.14.0 →
   ~10.15.0.
+- `jsdom` test-environment bump ^30.1.3 → ^31.0.1 — v31 breaking areas
+  (napi-rs canvas backend, CSS engine rewrite, blocking-script parse
+  pauses, `load` now window-only, `document.open` listener clearing) are
+  unused by the suite; all 156 tests pass.
 - Dev-tooling bumps: `ollama-ruby` 1.26.0 → 1.27.2, `rubocop` 1.92.2 →
   1.92.3 (plus transitive: `infobar` 0.17.0, `complex_config` 0.28.0,
   `excon` 1.12.0, `kramdown` 2.6.1, `parser` 3.3.14.0, `prism` 2.1.0).
